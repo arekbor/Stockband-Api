@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="FluentValidation">
+        <HintPath>..\..\..\..\..\..\..\home\arek\.nuget\packages\fluentvalidation\11.5.2\lib\net7.0\FluentValidation.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

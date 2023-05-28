@@ -1,0 +1,8 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
+  &lt;Assembly Path="/home/arek/.nuget/packages/mediatr.contracts/2.0.1/lib/netstandard2.0/MediatR.Contracts.dll" /&gt;
+  &lt;Assembly Path="/home/arek/.dotnet/packs/Microsoft.AspNetCore.App.Ref/7.0.5/ref/net7.0/Microsoft.AspNetCore.Http.Abstractions.dll" /&gt;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=cf649197_002D0e75_002D4462_002D91b1_002D9f29287a5798/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetUserViewModelByIdQuery" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/media/arek/Hitachi/projects/dotnet_projects/Stockband-Api" Presentation="&amp;lt;test&amp;gt;" /&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
