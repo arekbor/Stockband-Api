@@ -53,13 +53,13 @@ public class BaseResponse<T> : BaseResponse
     }
 
     public BaseResponse(Exception exception, BaseErrorCode code = BaseErrorCode.DefaultCode)
-        :base(exception)
+        :base(exception, code)
     {
         
     }
 
     public BaseResponse(ValidationResult validationResult, BaseErrorCode code = BaseErrorCode.FluentValidationCode)
-        :base(validationResult)
+        :base(validationResult, code)
     {
         
     }
