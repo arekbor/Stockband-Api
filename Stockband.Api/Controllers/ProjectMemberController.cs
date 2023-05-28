@@ -5,6 +5,7 @@ using Stockband.Api.Dtos.ProjectMember;
 using Stockband.Api.Interfaces;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.AddProjectMemberToProject;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMemberFromProject;
+using Stockband.Application.Features.ProjectMemberFeatures.Queries.GetAllProjectMembers;
 using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
@@ -20,6 +21,20 @@ public class ProjectMemberController:ControllerBase
     {
         _mediator = mediator;
         _authorizationUser = authorizationUser;
+    }
+
+    [HttpGet]
+    [Route("projectMember/{projectId:int}")]
+    public async Task<IActionResult> GetAllProjectMembers(int projectId)
+    {
+        BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = 
+            await _mediator.Send(new GetAllProjectMembersQuery
+            {
+                ProjectOwnerId = _authorizationUser.GetUserIdFromClaims(),
+                ProjectId = projectId
+            });
+
+        return Ok(response);
     }
 
     [HttpPost]
