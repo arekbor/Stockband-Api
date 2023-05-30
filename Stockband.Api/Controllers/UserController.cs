@@ -37,7 +37,6 @@ public class UserController:ControllerBase
         {
             return BadRequest(response);
         }
-
         return Ok(response);
     }
 
@@ -115,7 +114,6 @@ public class UserController:ControllerBase
         {
             return BadRequest(response);
         }
-
         return Ok(response);
     }
 }

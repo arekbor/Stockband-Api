@@ -37,6 +37,12 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
                 BaseErrorCode.UserUnauthorizedOperation);
         }
 
+        if (project.OwnerId == request.MemberId)
+        {
+            return new BaseResponse(new UnauthorizedOperationException(), 
+                BaseErrorCode.UserOperationRestricted);
+        }
+
         User? member = await _userRepository.GetByIdAsync(request.MemberId);
         if (member == null)
         {

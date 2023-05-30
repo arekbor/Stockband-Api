@@ -52,7 +52,7 @@ public class UserRepositoryMock
     {
         return new List<User>
         {
-            new User()
+            new()
             {
                 Id = 1,
                 Username = "Mock1",
@@ -61,7 +61,7 @@ public class UserRepositoryMock
                 Email = "mock1@mock.com",
                 Role = UserRole.User,
             },
-            new User()
+            new()
             {
                 Id = 2,
                 Username = "Mock2",
@@ -70,7 +70,7 @@ public class UserRepositoryMock
                 Email = "mock2@mock.com",
                 Role = UserRole.User,
             },
-            new User()
+            new()
             {
                 Id = 3,
                 Username = "Mock3",

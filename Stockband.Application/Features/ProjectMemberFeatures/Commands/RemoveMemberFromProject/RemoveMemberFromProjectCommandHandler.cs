@@ -32,12 +32,6 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
             return new BaseResponse(new UnauthorizedOperationException(), 
                 BaseErrorCode.UserUnauthorizedOperation);
         }
-
-        if (projectMember.Project.OwnerId == request.MemberId)
-        {
-            return new BaseResponse(new PerformRestrictedOperationException(), 
-                BaseErrorCode.UserOperationRestricted);
-        }
         
         await _projectMemberRepository.DeleteAsync(projectMember);
         return new BaseResponse();

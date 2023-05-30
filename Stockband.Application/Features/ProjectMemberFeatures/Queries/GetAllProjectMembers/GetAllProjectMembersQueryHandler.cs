@@ -19,7 +19,7 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
     }
     public async Task<BaseResponse<List<GetAllProjectMembersQueryViewModel>>>Handle(GetAllProjectMembersQuery request, CancellationToken cancellationToken)
     {
-        Project? project = await _projectRepository.GetProjectByIdWithIncludedUserAsync(request.ProjectId);
+        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project == null)
         {
             return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(
