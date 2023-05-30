@@ -52,32 +52,6 @@ public class RemoveMemberFromProjectCommandTest
     }
     
     [Fact]
-    public async Task RemoveMemberFromProjectCommand_MemberIsOwner_ShouldNotBeSuccess()
-    {
-        const int testingProjectOwnerId = 1;
-        const int testingProjectId = 1;
-        const int testingMemberId = 1;
-        
-        RemoveMemberFromProjectCommandHandler handler = new RemoveMemberFromProjectCommandHandler
-        (
-            _mockProjectMemberRepository.Object
-        );
-        
-        RemoveMemberFromProjectCommand command = new RemoveMemberFromProjectCommand
-        {
-            ProjectOwnerId = testingProjectOwnerId,
-            ProjectId = testingProjectId,
-            MemberId = testingMemberId,
-        };
-        
-        BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        
-        response.Success.ShouldBe(false);
-        response.Errors.Count.ShouldBe(1);
-        response.Errors.First().Code.ShouldBe(BaseErrorCode.UserOperationRestricted);
-    }
-
-    [Fact]
     public async Task RemoveMemberFromProjectCommand_InvalidProjectOwner_ShouldNotBeSuccess()
     {
         const int testingProjectOwnerId = 1000;

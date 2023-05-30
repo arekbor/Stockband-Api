@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stockband.Api.Dtos.Project;
 using Stockband.Api.Interfaces;
 using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
+using Stockband.Application.Features.ProjectFeatures.Commands.RemoveProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
 using Stockband.Domain;
 
@@ -36,7 +37,6 @@ public class ProjectController:ControllerBase
         {
             return BadRequest(response);
         }
-
         return Ok(response);
     }
 
@@ -51,11 +51,28 @@ public class ProjectController:ControllerBase
             ProjectName = updateProjectDto.ProjectName,
             ProjectDescription = updateProjectDto.ProjectDescription
         });
+        
         if (!response.Success)
         {
             return BadRequest(response);
         }
+        return Ok(response);
+    }
 
+    [HttpDelete]
+    [Route("project")]
+    public async Task<IActionResult> RemoveProject(RemoveProjectDto removeProjectDto)
+    {
+        BaseResponse response = await _mediator.Send(new RemoveProjectCommand
+        {
+            OwnerId = _authorizationUser.GetUserIdFromClaims(),
+            ProjectId = removeProjectDto.ProjectId
+        });
+        
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
         return Ok(response);
     }
 }

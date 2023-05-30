@@ -66,37 +66,37 @@ public class ProjectMemberRepositoryMock
     {
         return new List<ProjectMember>
         {
-            new ProjectMember
+            new()
             {
                 Id = 1,
                 MemberId = 1,
                 ProjectId = 1
             },
-            new ProjectMember
+            new()
             {
                 Id = 2,
                 MemberId = 2,
                 ProjectId = 1
             },
-            new ProjectMember
+            new()
             {
                 Id = 3,
                 MemberId = 3,
                 ProjectId = 1
             },
-            new ProjectMember
+            new()
             {
                 Id = 4,
                 MemberId = 3,
                 ProjectId = 4
             },
-            new ProjectMember
+            new()
             {
                 Id = 5,
                 MemberId = 3,
                 ProjectId = 5
             },
-            new ProjectMember
+            new()
             {
                 Id = 6,
                 MemberId = 3,

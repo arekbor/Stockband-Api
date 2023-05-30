@@ -28,7 +28,7 @@ public class AddProjectMemberToProjectCommandTest
     {
         const int testingProjectOwnerId = 2;
         const int testingProjectId = 3;
-        const int testingMemberId = 2;
+        const int testingMemberId = 3;
 
         List<ProjectMember> projectMembersBeforeAdd = _mockProjectMemberRepository.Object.GetAllAsync().Result.ToList();
         
@@ -164,5 +164,33 @@ public class AddProjectMemberToProjectCommandTest
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(1);
         response.Errors.First().Code.ShouldBe(BaseErrorCode.UserNotExists);
+    }
+
+    [Fact]
+    public async Task AddProjectMemberToProjectCommand_MemberIdIsSameAsOwnerId_ShouldNotBeSuccess()
+    {
+        //UserOperationRestricted
+        const int testingSameId = 2;
+        const int testingProjectId = 3;
+        
+        AddProjectMemberToProjectCommandHandler handler = new AddProjectMemberToProjectCommandHandler
+        (
+            _mockUserRepository.Object,
+            _mockProjectRepository.Object,
+            _mockProjectMemberRepository.Object
+        );
+        
+        AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
+        {
+            ProjectOwnerId = testingSameId,
+            ProjectId = testingProjectId,
+            MemberId = testingSameId
+        };
+
+        BaseResponse response = await handler.Handle(command, CancellationToken.None);
+        
+        response.Success.ShouldBe(false);
+        response.Errors.Count.ShouldBe(1);
+        response.Errors.First().Code.ShouldBe(BaseErrorCode.UserOperationRestricted);
     }
 }

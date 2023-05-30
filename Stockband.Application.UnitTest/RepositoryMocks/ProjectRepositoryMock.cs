@@ -22,6 +22,11 @@ public class ProjectRepositoryMock
         {
             projectMocks.Add(project);
         });
+
+        projectRepositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Project>())).Callback<Project>((project) =>
+        {
+            projectMocks.Remove(project);
+        });
         
         projectRepositoryMock.Setup(r => r.GetProjectByNameAsync(It.IsAny<string>())).ReturnsAsync((string name) =>
         {
@@ -67,26 +72,54 @@ public class ProjectRepositoryMock
     {
         return new List<Project>
         {
-            new Project()
+            new()
             {
                 Id = 1,
                 OwnerId = 1,
                 Name = "Project test 1",
                 Description = "Project description 1"
             },
-            new Project()
+            new()
             {
                 Id = 2,
                 OwnerId = 2,
                 Name = "Project test 2",
                 Description = "Project description 2"
             },
-            new Project()
+            new()
             {
                 Id = 3,
                 OwnerId = 2,
                 Name = "Project test 3",
                 Description = "Project description 3"
+            },
+            new()
+            {
+                Id = 4,
+                OwnerId = 2,
+                Name = "Project test 4",
+                Description = "Project description 4"
+            },
+            new()
+            {
+                Id = 5,
+                OwnerId = 4,
+                Name = "Project test 5",
+                Description = "Project description 5"
+            },
+            new()
+            {
+                Id = 6,
+                OwnerId = 5,
+                Name = "Project test 6",
+                Description = "Project description 6"
+            },
+            new()
+            {
+                Id = 7,
+                OwnerId = 5,
+                Name = "Project test 7",
+                Description = "Project description 7"
             }
         };
     }

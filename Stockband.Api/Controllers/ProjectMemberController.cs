@@ -70,7 +70,6 @@ public class ProjectMemberController:ControllerBase
         {
             return BadRequest(response);
         }
-
         return Ok(response);
     }
 }
