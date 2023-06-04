@@ -68,12 +68,18 @@ builder.Services.AddApplication(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 app.UseCors("ReactClientPolicy");
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stockband API");
+        c.InjectStylesheet("/swagger-ui/style.css");
+    });
 }
 
 app.UseHttpsRedirection();
