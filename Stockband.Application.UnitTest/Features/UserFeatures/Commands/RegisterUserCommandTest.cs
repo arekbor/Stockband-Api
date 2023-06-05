@@ -41,10 +41,10 @@ public class RegisterUserCommandTest
 
         List<User> userMocksAfterCommand = _mock.Object.GetAllAsync().Result.ToList();
         
-        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count+1);
-        
         response.Success.ShouldBe(true);
         response.Errors.Count.ShouldBe(0);
+        
+        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count+1);
     }
 
     [Fact]
@@ -68,12 +68,11 @@ public class RegisterUserCommandTest
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
 
         List<User> userMocksAfterCommand = _mock.Object.GetAllAsync().Result.ToList();
-        
-        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count);
-        
+
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(1);
         response.Errors.First().Code.ShouldBe(BaseErrorCode.UserAlreadyCreated);
+        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count);
     }
 
     [Fact]
@@ -99,11 +98,10 @@ public class RegisterUserCommandTest
 
         List<User> userMocksAfterCommand = _mock.Object.GetAllAsync().Result.ToList();
         
-        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count);
-        
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(1);
         response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
+        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count);
     }
     
     [Fact]
@@ -128,10 +126,9 @@ public class RegisterUserCommandTest
 
         List<User> userMocksAfterCommand = _mock.Object.GetAllAsync().Result.ToList();
         
-        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count);
-        
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(1);
         response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
+        userMocksAfterCommand.Count.ShouldBe(userMocksBeforeCommand.Count);
     }
 }

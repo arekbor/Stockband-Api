@@ -104,7 +104,7 @@ public class UserController:ControllerBase
     {
         BaseResponse response =  await _mediator.Send(new UpdatePasswordCommand
         {
-            UserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
             CurrentPassword = updateUserPasswordDto.CurrentPassword,
             NewPassword = updateUserPasswordDto.NewPassword,
             ConfirmNewPassword = updateUserPasswordDto.ConfirmNewPassword

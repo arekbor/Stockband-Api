@@ -26,7 +26,7 @@ public class CreateProjectCommandTest
     {
         const string testingProjectName = "test project name";
         const string testingProjectDescription = "testing project description";
-        const int testingProjectUserId = 1;
+        const int testingRequestedUserId = 1;
         
         List<Project> projectMocksBeforeCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
 
@@ -35,7 +35,7 @@ public class CreateProjectCommandTest
 
         CreateProjectCommand command = new CreateProjectCommand
         {
-            OwnerId = testingProjectUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
         };
@@ -44,10 +44,10 @@ public class CreateProjectCommandTest
         
         List<Project> projectMocksAfterCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
         
-        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count+1);
-        
         response.Success.ShouldBe(true);
         response.Errors.Count.ShouldBe(0);
+        
+        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count+1);
     }
     
     [Fact]
@@ -55,14 +55,14 @@ public class CreateProjectCommandTest
     {
         const string testingProjectName = "Project test 2";
         const string testingProjectDescription = "testing project description";
-        const int testingProjectUserId = 1;
+        const int testingRequestedUserId = 1;
 
         CreateProjectCommandHandler handler =
             new CreateProjectCommandHandler(_projectRepositoryMock.Object, _userRepositoryMock.Object);
 
         CreateProjectCommand command = new CreateProjectCommand
         {
-            OwnerId = testingProjectUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
         };
@@ -79,7 +79,7 @@ public class CreateProjectCommandTest
     {
         const string testingProjectName = "test project name";
         const string testingProjectDescription = "testing project description";
-        const int testingProjectUserId = 500;
+        const int testingRequestedUserId = 500;
         
         List<Project> projectMocksBeforeCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
 
@@ -88,7 +88,7 @@ public class CreateProjectCommandTest
 
         CreateProjectCommand command = new CreateProjectCommand
         {
-            OwnerId = testingProjectUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
         };
@@ -97,11 +97,11 @@ public class CreateProjectCommandTest
         
         List<Project> projectMocksAfterCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
         
-        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
-        
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(1);
         response.Errors.Last().Code.ShouldBe(BaseErrorCode.UserNotExists);
+        
+        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
     }
     
     [Fact]
@@ -114,7 +114,7 @@ public class CreateProjectCommandTest
             "name test project name test project name test project name test project " +
             "name test project name test project name test project name";
         const string testingProjectDescription = "testing project description";
-        const int testingProjectUserId = 1;
+        const int testingRequestedUserId = 1;
         
         List<Project> projectMocksBeforeCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
 
@@ -123,7 +123,7 @@ public class CreateProjectCommandTest
 
         CreateProjectCommand command = new CreateProjectCommand
         {
-            OwnerId = testingProjectUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
         };
@@ -132,11 +132,11 @@ public class CreateProjectCommandTest
         
         List<Project> projectMocksAfterCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
         
-        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
-        
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(1);
         response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
+        
+        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
     }
     
     [Fact]
@@ -163,7 +163,7 @@ public class CreateProjectCommandTest
             "testing project description testing project description " +
             "testing project description testing project description " +
             "testing project description testing project description";
-        const int testingProjectUserId = 1;
+        const int testingRequestedUserId = 1;
         
         List<Project> projectMocksBeforeCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
 
@@ -172,7 +172,7 @@ public class CreateProjectCommandTest
 
         CreateProjectCommand command = new CreateProjectCommand
         {
-            OwnerId = testingProjectUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
         };
@@ -180,12 +180,12 @@ public class CreateProjectCommandTest
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
         
         List<Project> projectMocksAfterCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
-        
-        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
-        
+
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(1);
         response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
+        
+        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
     }
     [Fact]
     public async Task CreateProjectCommand_InvalidProjectNameAndInvalidDescriptionName_ShouldNotBeSuccess()
@@ -216,7 +216,7 @@ public class CreateProjectCommandTest
             "testing project description testing project description " +
             "testing project description testing project description " +
             "testing project description testing project description";
-        const int testingProjectUserId = 1;
+        const int testingRequestedUserId = 1;
         
         List<Project> projectMocksBeforeCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
 
@@ -225,7 +225,7 @@ public class CreateProjectCommandTest
 
         CreateProjectCommand command = new CreateProjectCommand
         {
-            OwnerId = testingProjectUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
         };
@@ -234,11 +234,11 @@ public class CreateProjectCommandTest
         
         List<Project> projectMocksAfterCommand = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
         
-        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
-        
         response.Success.ShouldBe(false);
         response.Errors.Count.ShouldBe(2);
         response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
         response.Errors.Last().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
+        
+        projectMocksAfterCommand.Count.ShouldBe(projectMocksBeforeCommand.Count);
     }
 }

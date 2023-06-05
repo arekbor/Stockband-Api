@@ -30,7 +30,7 @@ public class ProjectMemberController:ControllerBase
         BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = 
             await _mediator.Send(new GetAllProjectMembersQuery
             {
-                ProjectOwnerId = _authorizationUser.GetUserIdFromClaims(),
+                RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
                 ProjectId = projectId
             });
 
@@ -43,7 +43,7 @@ public class ProjectMemberController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new AddProjectMemberToProjectCommand
         {
-            ProjectOwnerId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
             ProjectId = addProjectMemberDto.ProjectId,
             MemberId = addProjectMemberDto.MemberId
         });
@@ -61,7 +61,7 @@ public class ProjectMemberController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new RemoveMemberFromProjectCommand
         {
-            ProjectOwnerId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
             ProjectId = removeProjectMemberDto.ProjectId,
             MemberId = removeProjectMemberDto.MemberId
         });
