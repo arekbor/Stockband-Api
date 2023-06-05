@@ -14,24 +14,27 @@ namespace Stockband.Application.UnitTest.Features.ProjectFeatures.Commands;
 public class UpdateProjectCommandTest
 {
     private readonly Mock<IProjectRepository> _projectRepositoryMock;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
 
     public UpdateProjectCommandTest()
     {
         _projectRepositoryMock = ProjectRepositoryMock.GetProjectRepositoryMock();
+        _userRepositoryMock = UserRepositoryMock.GetUserRepositoryMock();
     }
 
     [Fact]
     public async Task UpdateProjectCommand_ShouldBeSuccess()
     {
-        const int testingUserId = 1;
+        const int testingRequestedUserId = 1;
         const int testingProjectId = 1;
         const string testingProjectName = "test name";
         const string testingProjectDescription = "test description";
         
-        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(_projectRepositoryMock.Object);
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
         UpdateProjectCommand command = new UpdateProjectCommand
         {
-            OwnerId = testingUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectId = testingProjectId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
@@ -47,25 +50,68 @@ public class UpdateProjectCommandTest
 
         response.Success.ShouldBe(true);
         response.Errors.Count.ShouldBe(0);
-
-        project.Owner.Id.ShouldBe(testingUserId);
-        project.OwnerId.ShouldBe(testingUserId);
+        
+        project.OwnerId.ShouldBe(testingRequestedUserId);
         project.Description.ShouldBe(testingProjectDescription);
         project.Name.ShouldBe(testingProjectName);
         project.Id.ShouldBe(testingProjectId);
     }
+    
     [Fact]
-    public async Task UpdateProjectCommand_InvalidProjectOwner_ShouldNotBeSuccess()
+    public async Task UpdateProjectCommand_RequestedUserIsNotOwnerButIsAdmin_ShouldBeSuccess()
     {
-        const int testingUserId = 2;
+        const int testingRequestedUserId = 5;
         const int testingProjectId = 1;
         const string testingProjectName = "test name";
         const string testingProjectDescription = "test description";
         
-        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(_projectRepositoryMock.Object);
+        Project? testingProject = _projectRepositoryMock.Object.GetByIdAsync(testingProjectId).Result;
+        if (testingProject == null)
+        {
+            throw new ObjectNotFound(typeof(Project), testingProjectId);
+        }
+        
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
         UpdateProjectCommand command = new UpdateProjectCommand
         {
-            OwnerId = testingUserId,
+            RequestedUserId = testingRequestedUserId,
+            ProjectId = testingProjectId,
+            ProjectName = testingProjectName,
+            ProjectDescription = testingProjectDescription
+        };
+
+        BaseResponse response = await handler.Handle(command, new CancellationToken());
+
+        Project? project = await _projectRepositoryMock.Object.GetByIdAsync(testingProjectId);
+        if (project == null)
+        {
+            throw new ObjectNotFound(typeof(Project), testingProjectId);
+        }
+
+        response.Success.ShouldBe(true);
+        response.Errors.Count.ShouldBe(0);
+        
+        project.Description.ShouldBe(testingProjectDescription);
+        project.Name.ShouldBe(testingProjectName);
+        project.Id.ShouldBe(testingProjectId);
+        
+        testingProject.OwnerId.ShouldNotBe(testingRequestedUserId);
+    }
+    
+    [Fact]
+    public async Task UpdateProjectCommand_InvalidProjectOwner_ShouldNotBeSuccess()
+    {
+        const int testingRequestedUserId = 2;
+        const int testingProjectId = 1;
+        const string testingProjectName = "test name";
+        const string testingProjectDescription = "test description";
+        
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
+        UpdateProjectCommand command = new UpdateProjectCommand
+        {
+            RequestedUserId = testingRequestedUserId,
             ProjectId = testingProjectId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
@@ -80,7 +126,7 @@ public class UpdateProjectCommandTest
     [Fact]
     public async Task UpdateProjectCommand_InvalidDescriptionName_ShouldNotBeSuccess()
     {
-        const int testingUserId = 2;
+        const int testingRequestedUserId = 2;
         const int testingProjectId = 1;
         const string testingProjectName = "test name";
         const string testingProjectDescription =  
@@ -104,10 +150,11 @@ public class UpdateProjectCommandTest
             "testing project description testing project description " +
             "testing project description testing project description";
         
-        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(_projectRepositoryMock.Object);
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
         UpdateProjectCommand command = new UpdateProjectCommand
         {
-            OwnerId = testingUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectId = testingProjectId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
@@ -123,7 +170,7 @@ public class UpdateProjectCommandTest
     [Fact]
     public async Task UpdateProjectCommand_InvalidProjectName_ShouldNotBeSuccess()
     {
-        const int testingUserId = 2;
+        const int testingRequestedUserId = 2;
         const int testingProjectId = 1;
         const string testingProjectName = 
             "test project name test project name test project name test project " +
@@ -133,10 +180,11 @@ public class UpdateProjectCommandTest
             "name test project name test project name test project name";
         const string testingProjectDescription = "test description";
 
-        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(_projectRepositoryMock.Object);
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
         UpdateProjectCommand command = new UpdateProjectCommand
         {
-            OwnerId = testingUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectId = testingProjectId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
@@ -151,7 +199,7 @@ public class UpdateProjectCommandTest
     [Fact]
     public async Task UpdateProjectCommand_InvalidProjectNameAndInvalidDescriptionName_ShouldNotBeSuccess()
     {
-        const int testingUserId = 2;
+        const int testingRequestedUserId = 2;
         const int testingProjectId = 1;
         const string testingProjectName =
             "test project name test project name test project name test project " +
@@ -180,10 +228,11 @@ public class UpdateProjectCommandTest
             "testing project description testing project description " +
             "testing project description testing project description";
 
-        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(_projectRepositoryMock.Object);
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
         UpdateProjectCommand command = new UpdateProjectCommand
         {
-            OwnerId = testingUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectId = testingProjectId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
@@ -200,15 +249,16 @@ public class UpdateProjectCommandTest
     [Fact]
     public async Task UpdateProjectCommand_ProjectNotExists_ShouldNotBeSuccess()
     {
-        const int testingUserId = 1;
+        const int testingRequestedUserId = 1;
         const int testingProjectId = 1000;
         const string testingProjectName = "test name";
         const string testingProjectDescription = "test description";
         
-        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(_projectRepositoryMock.Object);
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
         UpdateProjectCommand command = new UpdateProjectCommand
         {
-            OwnerId = testingUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectId = testingProjectId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription
@@ -224,15 +274,16 @@ public class UpdateProjectCommandTest
     [Fact]
     public async Task UpdateProjectCommand_ProjectAlreadyCreated_ShouldNotBeSuccess()
     {
-        const int testingUserId = 1;
+        const int testingRequestedUserId = 1;
         const int testingProjectId = 1;
         const string testingProjectName = "Project test 1";
         const string testingProjectDescription = "test description";
         
-        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(_projectRepositoryMock.Object);
+        UpdateProjectCommandHandler handler = new UpdateProjectCommandHandler(
+            _projectRepositoryMock.Object, _userRepositoryMock.Object);
         UpdateProjectCommand command = new UpdateProjectCommand
         {
-            OwnerId = testingUserId,
+            RequestedUserId = testingRequestedUserId,
             ProjectId = testingProjectId,
             ProjectName = testingProjectName,
             ProjectDescription = testingProjectDescription

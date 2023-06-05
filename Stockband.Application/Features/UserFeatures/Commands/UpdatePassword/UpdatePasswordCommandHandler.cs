@@ -25,11 +25,11 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
         }
         
         User? user = await _userRepository
-            .GetByIdAsync(request.UserId);
+            .GetByIdAsync(request.RequestedUserId);
 
         if (user == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.UserId), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
                 BaseErrorCode.UserNotExists);
         }
 

@@ -5,7 +5,7 @@ namespace Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMe
 
 public class RemoveMemberFromProjectCommand:IRequest<BaseResponse>
 {
-    public int ProjectOwnerId { get; set; }
+    public int RequestedUserId { get; set; }
     public int ProjectId { get; set; }
     public int MemberId { get; set; }
 }

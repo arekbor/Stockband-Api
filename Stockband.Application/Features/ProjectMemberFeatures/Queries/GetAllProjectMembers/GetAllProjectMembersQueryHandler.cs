@@ -11,11 +11,16 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
 {
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IUserRepository _userRepository;
 
-    public GetAllProjectMembersQueryHandler(IProjectMemberRepository projectMemberRepository, IProjectRepository projectRepository)
+    public GetAllProjectMembersQueryHandler(
+        IProjectMemberRepository projectMemberRepository, 
+        IProjectRepository projectRepository,
+        IUserRepository userRepository)
     {
         _projectMemberRepository = projectMemberRepository;
         _projectRepository = projectRepository;
+        _userRepository = userRepository;
     }
     public async Task<BaseResponse<List<GetAllProjectMembersQueryViewModel>>>Handle(GetAllProjectMembersQuery request, CancellationToken cancellationToken)
     {
@@ -27,7 +32,14 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
                 BaseErrorCode.ProjectNotExists);
         }
 
-        if (project.OwnerId != request.ProjectOwnerId)
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
+        {
+            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.UserNotExists);
+        }
+
+        if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
         {
             return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);

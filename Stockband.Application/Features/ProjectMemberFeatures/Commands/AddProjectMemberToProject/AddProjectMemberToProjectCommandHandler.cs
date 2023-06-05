@@ -31,9 +31,16 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
                 BaseErrorCode.ProjectNotExists);
         }
 
-        if (project.OwnerId != request.ProjectOwnerId)
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
         {
-            return new BaseResponse(new UnauthorizedOperationException(), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.UserNotExists);
+        }
+
+        if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
+        {
+            return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
 

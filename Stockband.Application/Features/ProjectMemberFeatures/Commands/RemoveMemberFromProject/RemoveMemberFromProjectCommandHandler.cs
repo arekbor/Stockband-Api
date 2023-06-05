@@ -10,11 +10,14 @@ namespace Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMe
 public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberFromProjectCommand, BaseResponse>
 {
     private readonly IProjectMemberRepository _projectMemberRepository;
+    private readonly IUserRepository _userRepository;
 
     public RemoveMemberFromProjectCommandHandler(
-        IProjectMemberRepository projectMemberRepository)
+        IProjectMemberRepository projectMemberRepository,
+        IUserRepository userRepository)
     {
         _projectMemberRepository = projectMemberRepository;
+        _userRepository = userRepository;
     }
     
     public async Task<BaseResponse> Handle(RemoveMemberFromProjectCommand request, CancellationToken cancellationToken)
@@ -27,9 +30,16 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
                 BaseErrorCode.ProjectMemberNotExists);
         }
         
-        if (projectMember.Project.OwnerId != request.ProjectOwnerId)
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
         {
-            return new BaseResponse(new UnauthorizedOperationException(), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.UserNotExists);
+        }
+
+        if (!requestedUser.IsEntityAccessibleByUser(projectMember.Project.OwnerId))
+        {
+            return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
         

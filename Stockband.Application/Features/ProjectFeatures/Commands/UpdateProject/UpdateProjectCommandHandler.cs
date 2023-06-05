@@ -11,10 +11,12 @@ namespace Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
 public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, BaseResponse>
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly IUserRepository _userRepository;
 
-    public UpdateProjectCommandHandler(IProjectRepository projectRepository)
+    public UpdateProjectCommandHandler(IProjectRepository projectRepository, IUserRepository userRepository)
     {
         _projectRepository = projectRepository;
+        _userRepository = userRepository;
     }
     
     public async Task<BaseResponse> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
@@ -26,16 +28,23 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
             return new BaseResponse(validationResult);
         }
 
-        Project? project = await _projectRepository.GetProjectByIdWithIncludedUserAsync(request.ProjectId);
+        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId), 
                 BaseErrorCode.ProjectNotExists);
         }
 
-        if (project.OwnerId != request.OwnerId)
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
         {
-            return new BaseResponse(new UnauthorizedOperationException(), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.UserNotExists);
+        }
+
+        if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
+        {
+            return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
 

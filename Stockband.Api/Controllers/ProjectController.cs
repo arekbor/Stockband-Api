@@ -28,7 +28,7 @@ public class ProjectController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new CreateProjectCommand
         {
-            OwnerId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
             ProjectName = createProjectDto.ProjectName,
             ProjectDescription = createProjectDto.ProjectDescription
         });
@@ -46,7 +46,7 @@ public class ProjectController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new UpdateProjectCommand
         {
-            OwnerId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
             ProjectId = updateProjectDto.ProjectId,
             ProjectName = updateProjectDto.ProjectName,
             ProjectDescription = updateProjectDto.ProjectDescription
@@ -65,7 +65,7 @@ public class ProjectController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new RemoveProjectCommand
         {
-            OwnerId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
             ProjectId = removeProjectDto.ProjectId
         });
         

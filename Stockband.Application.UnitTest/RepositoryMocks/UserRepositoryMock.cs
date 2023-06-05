@@ -77,6 +77,24 @@ public class UserRepositoryMock
                 //usermocktestpassword3
                 Password = "$2a$11$xLF4MuqyTWQp7wZhHX0KMe2ghha.lgEjfJpFd7ujdsaUZnnBPlSnG",
                 Email = "mock3@mock.com",
+                Role = UserRole.User,
+            },
+            new()
+            {
+                Id = 4,
+                Username = "Mock4",
+                //usermocktestpassword3
+                Password = "$2a$11$xLF4MuqyTWQp7wZhHX0KMe2ghha.lgEjfJpFd7ujdsaUZnnBPlSnG",
+                Email = "mock4@mock.com",
+                Role = UserRole.User,
+            },
+            new()
+            {
+                Id = 5,
+                Username = "Mock5",
+                //usermocktestpassword3
+                Password = "$2a$11$xLF4MuqyTWQp7wZhHX0KMe2ghha.lgEjfJpFd7ujdsaUZnnBPlSnG",
+                Email = "mock4@mock.com",
                 Role = UserRole.Admin,
             }
         };

@@ -23,7 +23,7 @@ public class UpdatePasswordCommandTest
     [Fact]
     public async Task UpdatePasswordCommand_ShouldBeSuccess()
     {
-        const int testingId = 1;
+        const int testingRequestedUserId = 1;
         const string testingCurrentPassword = "usermocktestpassword1";
         const string testingNewPassword = "supertestpassword!@32WW";
 
@@ -31,7 +31,7 @@ public class UpdatePasswordCommandTest
 
         UpdatePasswordCommand command = new UpdatePasswordCommand
         {
-            UserId = testingId,
+            RequestedUserId = testingRequestedUserId,
             CurrentPassword = testingCurrentPassword,
             NewPassword = testingNewPassword,
             ConfirmNewPassword = testingNewPassword
@@ -39,10 +39,10 @@ public class UpdatePasswordCommandTest
 
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
 
-        User? user = _mock.Object.GetByIdAsync(testingId).Result;
+        User? user = _mock.Object.GetByIdAsync(testingRequestedUserId).Result;
         if (user == null)
         {
-            throw new ObjectNotFound(typeof(User), testingId);
+            throw new ObjectNotFound(typeof(User), testingRequestedUserId);
         }
         
         bool verify = BCrypt.Net.BCrypt.Verify(testingNewPassword, user.Password);
@@ -55,7 +55,7 @@ public class UpdatePasswordCommandTest
     [Fact]
     public async Task UpdatePasswordCommand_PasswordNotEquals_ShouldNotBeSuccess()
     {
-        const int testingId = 1;
+        const int testingRequestedUserId = 1;
         const string testingCurrentPassword = "usermocktestpassword1";
         const string testingNewPassword = "supertestpassword!@32WW";
         const string testingConfirmNewPassword = "supertestpassword!@32WWsssss";
@@ -64,7 +64,7 @@ public class UpdatePasswordCommandTest
 
         UpdatePasswordCommand command = new UpdatePasswordCommand
         {
-            UserId = testingId,
+            RequestedUserId = testingRequestedUserId,
             CurrentPassword = testingCurrentPassword,
             NewPassword = testingNewPassword,
             ConfirmNewPassword = testingConfirmNewPassword
@@ -72,10 +72,10 @@ public class UpdatePasswordCommandTest
 
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
 
-        User? user = _mock.Object.GetByIdAsync(testingId).Result;
+        User? user = _mock.Object.GetByIdAsync(testingRequestedUserId).Result;
         if (user == null)
         {
-            throw new ObjectNotFound(typeof(User), testingId);
+            throw new ObjectNotFound(typeof(User), testingRequestedUserId);
         }
         
         bool verify = BCrypt.Net.BCrypt.Verify(testingNewPassword, user.Password);
@@ -89,7 +89,7 @@ public class UpdatePasswordCommandTest
     [Fact]
     public async Task UpdatePasswordCommand_InvalidCurrentPassword_ShouldNotBeSuccess()
     {
-        const int testingId = 1;
+        const int testingRequestedUserId = 1;
         const string testingCurrentPassword = "usermocktest";
         const string testingNewPassword = "supertestpassword!@32WW";
 
@@ -97,7 +97,7 @@ public class UpdatePasswordCommandTest
 
         UpdatePasswordCommand command = new UpdatePasswordCommand
         {
-            UserId = testingId,
+            RequestedUserId = testingRequestedUserId,
             CurrentPassword = testingCurrentPassword,
             NewPassword = testingNewPassword,
             ConfirmNewPassword = testingNewPassword
@@ -105,10 +105,10 @@ public class UpdatePasswordCommandTest
 
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
 
-        User? user = _mock.Object.GetByIdAsync(testingId).Result;
+        User? user = _mock.Object.GetByIdAsync(testingRequestedUserId).Result;
         if (user == null)
         {
-            throw new ObjectNotFound(typeof(User), testingId);
+            throw new ObjectNotFound(typeof(User), testingRequestedUserId);
         }
         
         bool verify = BCrypt.Net.BCrypt.Verify(testingNewPassword, user.Password);
@@ -121,7 +121,7 @@ public class UpdatePasswordCommandTest
     [Fact]
     public async Task UpdatePasswordCommand_UserNotExists_ShouldNotBeSuccess()
     {
-        const int testingId = 1000;
+        const int testingRequestedUserId = 1000;
         const string testingCurrentPassword = "usermocktest";
         const string testingNewPassword = "supertestpassword!@32WW";
 
@@ -129,7 +129,7 @@ public class UpdatePasswordCommandTest
 
         UpdatePasswordCommand command = new UpdatePasswordCommand
         {
-            UserId = testingId,
+            RequestedUserId = testingRequestedUserId,
             CurrentPassword = testingCurrentPassword,
             NewPassword = testingNewPassword,
             ConfirmNewPassword = testingNewPassword

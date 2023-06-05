@@ -5,7 +5,7 @@ namespace Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 
 public class CreateProjectCommand:IRequest<BaseResponse>
 {
-    public int OwnerId { get; set; }
+    public int RequestedUserId { get; set; }
     public string ProjectName { get; set; }
     public string ProjectDescription { get; set; }
 }

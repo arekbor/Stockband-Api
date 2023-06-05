@@ -27,11 +27,11 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
             return new BaseResponse(validationResult);
         }
         
-        User? user = await _userRepository.GetByIdAsync(request.OwnerId);
+        User? user = await _userRepository.GetByIdAsync(request.RequestedUserId);
         if (user == null)
         {
             return new BaseResponse(
-                new ObjectNotFound(typeof(User), request.OwnerId), BaseErrorCode.UserNotExists);
+                new ObjectNotFound(typeof(User), request.RequestedUserId), BaseErrorCode.UserNotExists);
         }
 
         Project? project = await _projectRepository.GetProjectByNameAsync(request.ProjectName);
@@ -43,7 +43,7 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
 
         Project newProject = new Project
         {
-            OwnerId = request.OwnerId,
+            OwnerId = request.RequestedUserId,
             Name = request.ProjectName,
             Description = request.ProjectDescription,
         };

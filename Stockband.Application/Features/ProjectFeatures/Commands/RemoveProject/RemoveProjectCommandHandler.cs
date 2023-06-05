@@ -11,11 +11,16 @@ public class RemoveProjectCommandHandler:IRequestHandler<RemoveProjectCommand, B
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
+    private readonly IUserRepository _userRepository;
 
-    public RemoveProjectCommandHandler(IProjectRepository projectRepository, IProjectMemberRepository projectMemberRepository)
+    public RemoveProjectCommandHandler(
+        IProjectRepository projectRepository, 
+        IProjectMemberRepository projectMemberRepository,
+        IUserRepository userRepository)
     {
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
+        _userRepository = userRepository;
     }
     public async Task<BaseResponse> Handle(RemoveProjectCommand request, CancellationToken cancellationToken)
     {
@@ -26,9 +31,16 @@ public class RemoveProjectCommandHandler:IRequestHandler<RemoveProjectCommand, B
                 BaseErrorCode.ProjectNotExists);
         }
 
-        if (project.OwnerId != request.OwnerId)
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
         {
-            return new BaseResponse(new UnauthorizedOperationException(), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.UserNotExists);
+        }
+
+        if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
+        {
+            return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
 

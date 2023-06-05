@@ -5,6 +5,6 @@ namespace Stockband.Application.Features.ProjectMemberFeatures.Queries.GetAllPro
 
 public class GetAllProjectMembersQuery:IRequest<BaseResponse<List<GetAllProjectMembersQueryViewModel>>>
 {
-    public int ProjectOwnerId { get; set; }
+    public int RequestedUserId { get; set; }
     public int ProjectId { get; set; }
 }
