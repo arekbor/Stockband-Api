@@ -71,13 +71,21 @@ public class GetAllProjectMembersQueryTest
         };
 
         BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = await handler.Handle(query, CancellationToken.None);
-        
+
+        User? requestedUser = _mockUserRepository.Object.GetByIdAsync(testingRequestedUserId).Result;
+        if (requestedUser == null)
+        {
+            throw new ObjectNotFound(typeof(User), testingRequestedUserId);
+        }
+
         response.Success.ShouldBe(true);
         response.Errors.Count.ShouldBe(0);
         response.Result.Count.ShouldBeGreaterThan(0);
         response.Result.ShouldNotBeNull();
         
         testingProject.OwnerId.ShouldNotBe(testingRequestedUserId);
+        
+        requestedUser.Role.ShouldBe(UserRole.Admin);
     }
     
     [Fact]

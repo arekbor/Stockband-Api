@@ -77,11 +77,19 @@ public class RemoveProjectCommandTest
         
         List<Project> projectsAfterRemove = _projectRepositoryMock.Object.GetAllAsync().Result.ToList();
         
+        User? requestedUser = _userRepositoryMock.Object.GetByIdAsync(testingRequestedUserId).Result;
+        if (requestedUser == null)
+        {
+            throw new ObjectNotFound(typeof(User), testingRequestedUserId);
+        }
+        
         response.Success.ShouldBe(true);
         response.Errors.Count.ShouldBe(0);
         
         testingProject.OwnerId.ShouldNotBe(testingRequestedUserId);
         projectsAfterRemove.Count.ShouldBe(projectsBeforeRemove.Count-1);
+        
+        requestedUser.Role.ShouldBe(UserRole.Admin);
     }
     
     [Fact]
