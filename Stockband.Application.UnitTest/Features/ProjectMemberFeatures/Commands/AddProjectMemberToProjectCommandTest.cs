@@ -90,11 +90,19 @@ public class AddProjectMemberToProjectCommandTest
         
         List<ProjectMember> projectMembersAfterAdd = _mockProjectMemberRepository.Object.GetAllAsync().Result.ToList();
         
+        User? requestedUser = _mockUserRepository.Object.GetByIdAsync(testingRequestedUserId).Result;
+        if (requestedUser == null)
+        {
+            throw new ObjectNotFound(typeof(User), testingRequestedUserId);
+        }
+        
         response.Success.ShouldBe(true);
         response.Errors.Count.ShouldBe(0);
         
         projectMembersAfterAdd.Count.ShouldBe(projectMembersBeforeAdd.Count+1);
         testingProject.OwnerId.ShouldNotBe(testingRequestedUserId);
+        
+        requestedUser.Role.ShouldBe(UserRole.Admin);
     }
     
     [Fact]

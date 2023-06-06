@@ -5,6 +5,7 @@ using Stockband.Api.Dtos.User;
 using Stockband.Api.Interfaces;
 using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
+using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetUserById;
 using Stockband.Domain;
@@ -110,6 +111,25 @@ public class UserController:ControllerBase
             ConfirmNewPassword = updateUserPasswordDto.ConfirmNewPassword
         });
 
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+
+    [HttpPut]
+    [Route("/user/update")]
+    public async Task<IActionResult> UserUpdate(UpdateUserDto updateUserDto)
+    {
+        BaseResponse response = await _mediator.Send(new UpdateUserCommand
+        {
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            UserId = updateUserDto.UserId,
+            Username = updateUserDto.Username,
+            Email = updateUserDto.Email,
+        });
+        
         if (!response.Success)
         {
             return BadRequest(response);

@@ -88,6 +88,12 @@ public class UpdateProjectCommandTest
         {
             throw new ObjectNotFound(typeof(Project), testingProjectId);
         }
+        
+        User? requestedUser = _userRepositoryMock.Object.GetByIdAsync(testingRequestedUserId).Result;
+        if (requestedUser == null)
+        {
+            throw new ObjectNotFound(typeof(User), testingRequestedUserId);
+        }
 
         response.Success.ShouldBe(true);
         response.Errors.Count.ShouldBe(0);
@@ -97,6 +103,8 @@ public class UpdateProjectCommandTest
         project.Id.ShouldBe(testingProjectId);
         
         testingProject.OwnerId.ShouldNotBe(testingRequestedUserId);
+        
+        requestedUser.Role.ShouldBe(UserRole.Admin);
     }
     
     [Fact]
