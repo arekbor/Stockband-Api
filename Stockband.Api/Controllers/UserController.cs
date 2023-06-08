@@ -5,6 +5,7 @@ using Stockband.Api.Dtos.User;
 using Stockband.Api.Interfaces;
 using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
+using Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetUserById;
@@ -100,7 +101,7 @@ public class UserController:ControllerBase
     }
 
     [HttpPut]
-    [Route("/user/updatepassword")]
+    [Route("/user/password")]
     public async Task<IActionResult> UserUpdatePassword(UpdateUserPasswordDto updateUserPasswordDto)
     {
         BaseResponse response =  await _mediator.Send(new UpdatePasswordCommand
@@ -130,6 +131,25 @@ public class UserController:ControllerBase
             Email = updateUserDto.Email,
         });
         
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+
+    [HttpPut]
+    [Route("/user/role")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UserRole(UpdateRoleDto updateRoleDto)
+    {
+        BaseResponse response = await _mediator.Send(new UpdateRoleCommand
+        {
+            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            UserId = updateRoleDto.UserId,
+            Role = updateRoleDto.Role
+        });
+
         if (!response.Success)
         {
             return BadRequest(response);
