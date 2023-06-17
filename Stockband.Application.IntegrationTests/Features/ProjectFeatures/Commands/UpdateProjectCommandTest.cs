@@ -239,7 +239,7 @@ public class UpdateProjectCommandTest:BaseTest
             .With(x => x.OwnerId = testingRequestedUserId)
             .Build()
             .ToList();
-        await Context.Projects.AddRangeAsync(projectsForTest);
+        await projectRepository.AddRangeAsync(projectsForTest);
         
         User userTest = Builder<User>
             .CreateNew()

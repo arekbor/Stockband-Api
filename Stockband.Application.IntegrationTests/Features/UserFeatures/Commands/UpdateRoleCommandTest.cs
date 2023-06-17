@@ -42,8 +42,7 @@ public class UpdateRoleCommandTest:BaseTest
             .With(x => x.Id = testingUserId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
-        await Context.SaveChangesAsync();
+        await userRepository.AddRangeAsync(usersForTest);
 
         UpdateRoleCommandHandler handler = new UpdateRoleCommandHandler(userRepository);
         
@@ -90,8 +89,7 @@ public class UpdateRoleCommandTest:BaseTest
             .With(x => x.Id = testingUserId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
-        await Context.SaveChangesAsync();
+        await userRepository.AddRangeAsync(usersForTest);
         
         UpdateRoleCommandHandler handler = new UpdateRoleCommandHandler(userRepository);
         

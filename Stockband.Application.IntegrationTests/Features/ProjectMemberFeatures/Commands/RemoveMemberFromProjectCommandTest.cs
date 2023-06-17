@@ -42,7 +42,7 @@ public class RemoveMemberFromProjectCommandTest:BaseTest
             .With(x => x.Id = testingRequestedUserId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(membersForTest);
+        await userRepository.AddRangeAsync(membersForTest);
 
         Project projectForTest = Builder<Project>
             .CreateNew()
@@ -106,7 +106,7 @@ public class RemoveMemberFromProjectCommandTest:BaseTest
             .With(x => x.Id = testingRequestedUserId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
+        await userRepository.AddRangeAsync(usersForTest);
 
         Project projectForTest = Builder<Project>
             .CreateNew()
@@ -176,7 +176,7 @@ public class RemoveMemberFromProjectCommandTest:BaseTest
             .With(x => x.Id = testingMemberId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
+        await userRepository.AddRangeAsync(usersForTest);
 
         ProjectMember projectMemberForTest = Builder<ProjectMember>
             .CreateNew()
