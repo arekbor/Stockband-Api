@@ -139,7 +139,7 @@ public class RemoveMemberFromProjectCommandTest:BaseTest
     }
 
     [Test]
-    public async Task RemoveMemberFromProjectCommand_RequestedUserIsNotOwner_ResponseShouldBeSuccess()
+    public async Task RemoveMemberFromProjectCommand_RequestedUserIsNotOwner_ResponseShouldBeNotSuccess()
     {
         //Arrange
         UserRepository userRepository = new UserRepository(Context);
@@ -199,7 +199,7 @@ public class RemoveMemberFromProjectCommandTest:BaseTest
     }
 
     [Test]
-    public async Task RemoveMemberFromProjectCommand_ProjectMemberNotExists_ResponseShouldBeSuccess()
+    public async Task RemoveMemberFromProjectCommand_ProjectMemberNotExists_ResponseShouldBeNotSuccess()
     {
         //Arrange
         UserRepository userRepository = new UserRepository(Context);

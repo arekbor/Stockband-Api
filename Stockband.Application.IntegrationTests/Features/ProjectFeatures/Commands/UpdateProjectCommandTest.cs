@@ -130,7 +130,7 @@ public class UpdateProjectCommandTest:BaseTest
     }
 
     [Test]
-    public async Task UpdateProjectCommand_InvalidProjectOwner_ResponseShouldBeNotSuccess()
+    public async Task UpdateProjectCommand_RequestedUserIsNotOwner_ResponseShouldBeNotSuccess()
     {
         //Arrange
         UserRepository userRepository = new UserRepository(Context);

@@ -105,7 +105,7 @@ public class RemoveProjectCommandTest:BaseTest
     }
 
     [Test]
-    public async Task RemoveProjectCommand_InvalidProjectOwner_ResponseShouldBeNotSuccess()
+    public async Task RemoveProjectCommand_RequestedUserIsNotOwner_ResponseShouldBeNotSuccess()
     {
         //Arrange
         UserRepository userRepository = new UserRepository(Context);
