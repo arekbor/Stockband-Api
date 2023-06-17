@@ -27,6 +27,12 @@ public class BaseRepository<T>: IBaseRepository<T>
         await _stockbandDbContext.SaveChangesAsync();
     }
 
+    public async Task AddRangeAsync(IEnumerable<T> entities)
+    {
+        await _stockbandDbContext.Set<T>().AddRangeAsync(entities);
+        await _stockbandDbContext.SaveChangesAsync();
+    }
+
     public async Task UpdateAsync(T entity)
     {
         _stockbandDbContext.Entry(entity).State = EntityState.Modified;

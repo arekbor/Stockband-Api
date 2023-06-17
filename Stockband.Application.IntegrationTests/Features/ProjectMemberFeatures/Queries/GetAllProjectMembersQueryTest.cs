@@ -43,7 +43,7 @@ public class GetAllProjectMembersQueryTest:BaseTest
             .With(x => x.MemberId = testingSecondMemberId)
             .Build()
             .ToList();
-        await Context.ProjectMembers.AddRangeAsync(projectMembersForTest);
+        await projectMemberRepository.AddRangeAsync(projectMembersForTest);
 
         Project projectForTest = Builder<Project>
             .CreateNew()
@@ -107,7 +107,7 @@ public class GetAllProjectMembersQueryTest:BaseTest
             .With(x => x.MemberId = testingSecondMemberId)
             .Build()
             .ToList();
-        await Context.ProjectMembers.AddRangeAsync(projectMembersForTest);
+        await projectMemberRepository.AddRangeAsync(projectMembersForTest);
 
         Project projectForTest = Builder<Project>
             .CreateNew()

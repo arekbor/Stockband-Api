@@ -90,8 +90,7 @@ public class UpdateUserCommandTest:BaseTest
             .With(x => x.Id = testingUserId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
-        await Context.SaveChangesAsync();
+        await userRepository.AddRangeAsync(usersForTest);
 
         UpdateUserCommandHandler handler = new UpdateUserCommandHandler(userRepository);
         
@@ -143,8 +142,7 @@ public class UpdateUserCommandTest:BaseTest
             .With(x => x.Id = testingUserId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
-        await Context.SaveChangesAsync();
+        await userRepository.AddRangeAsync(usersForTest);
         
         UpdateUserCommandHandler handler = new UpdateUserCommandHandler(userRepository);
         

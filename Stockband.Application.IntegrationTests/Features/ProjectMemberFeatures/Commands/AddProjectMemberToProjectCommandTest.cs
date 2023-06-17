@@ -42,7 +42,7 @@ public class AddProjectMemberToProjectCommandTest:BaseTest
             .With(x => x.Id = testingMemberId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
+        await userRepository.AddRangeAsync(usersForTest);
 
         Project projectForTest = Builder<Project>
             .CreateNew()
@@ -98,7 +98,7 @@ public class AddProjectMemberToProjectCommandTest:BaseTest
             .With(x => x.Id = testingMemberId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
+        await userRepository.AddRangeAsync(usersForTest);
 
         Project projectForTest = Builder<Project>
             .CreateNew()
@@ -130,9 +130,9 @@ public class AddProjectMemberToProjectCommandTest:BaseTest
         ProjectRepository projectRepository = new ProjectRepository(Context);
         ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
         
-        const int testingRequestedUserId = 90093;
-        const int testingProjectId = 433256;
-        const int testingMemberId = 977412;
+        const int testingRequestedUserId = 9009335;
+        const int testingProjectId = 43325654;
+        const int testingMemberId = 97741231;
         
         AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
         {
@@ -161,7 +161,7 @@ public class AddProjectMemberToProjectCommandTest:BaseTest
             .With(x => x.Id = testingMemberId)
             .Build()
             .ToList();
-        await Context.Users.AddRangeAsync(usersForTest);
+        await userRepository.AddRangeAsync(usersForTest);
 
         ProjectMember projectMemberForTest = Builder<ProjectMember>
             .CreateNew()
@@ -190,9 +190,9 @@ public class AddProjectMemberToProjectCommandTest:BaseTest
         ProjectRepository projectRepository = new ProjectRepository(Context);
         ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
         
-        const int testingRequestedUserId = 1255;
-        const int testingProjectId = 6612;
-        const int testingMemberId = 3354;
+        const int testingRequestedUserId = 1543999814;
+        const int testingProjectId = 1543999812;
+        const int testingMemberId = 1543999813;
         
         Project projectForTest = Builder<Project>
             .CreateNew()
@@ -267,9 +267,9 @@ public class AddProjectMemberToProjectCommandTest:BaseTest
         ProjectRepository projectRepository = new ProjectRepository(Context);
         ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
         
-        const int testingRequestedUserId = 905;
-        const int testingProjectId = 1012;
-        const int testingMemberId = 2542;
+        const int testingRequestedUserId = 54123;
+        const int testingProjectId = 10331512;
+        const int testingMemberId = 612542;
         
         AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
         {
@@ -314,9 +314,9 @@ public class AddProjectMemberToProjectCommandTest:BaseTest
         ProjectRepository projectRepository = new ProjectRepository(Context);
         ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
         
-        const int testingRequestedUserId = 905;
-        const int testingProjectId = 1012;
-        const int testingMemberId = 905;
+        const int testingRequestedUserId = 888712;
+        const int testingProjectId = 1333476;
+        const int testingMemberId = 888712;
         
         AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
         {

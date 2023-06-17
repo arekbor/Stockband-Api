@@ -4,12 +4,15 @@
   &lt;Assembly Path="/home/arek/.dotnet/packs/Microsoft.AspNetCore.App.Ref/7.0.5/ref/net7.0/Microsoft.AspNetCore.Http.Abstractions.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">/home/arek/.cache/JetBrains/Rider2023.1/resharper-host/temp/Rider/vAny/CoverageData/_Stockband.872573734/Snapshot/snapshot.utdcvr</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=138d3353_002D7a96_002D43e4_002D95b1_002De9a8d90d3a27/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=18b9125e_002D7994_002D49aa_002Db90c_002Da282e2a63cc1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=56b8c2b6_002D6334_002D447f_002Dbbc7_002Dd6fa7d799afa/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Solution /&gt;
-&lt;/SessionState&gt;</s:String>
+	
+	
+	
+	
+	
+	
 	
 	
 	
