@@ -14,11 +14,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Domain", "Stockba
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Application", "Stockband.Application\Stockband.Application.csproj", "{CB8868E8-3EEB-4783-B34D-46CAF86808F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Application.UnitTest", "Stockband.Application.UnitTest\Stockband.Application.UnitTest.csproj", "{F7169ECA-8FD6-4DD1-842F-973E34170C08}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Infrastructure", "Stockband.Infrastructure\Stockband.Infrastructure.csproj", "{8760022C-793B-430E-93CA-36B0FDA8D0BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Api", "Stockband.Api\Stockband.Api.csproj", "{254FF858-6346-4A6F-8DE7-AFF6896E8953}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Application.IntegrationTests", "Stockband.Application.IntegrationTests\Stockband.Application.IntegrationTests.csproj", "{029E74AD-EA93-4489-90DD-C569C170DC4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,9 +31,9 @@ Global
 		{3655CE4C-ACDD-4FDE-9BA3-77C13A66B148} = {350C628F-473A-4D27-AAAF-56071BDA4379}
 		{44E5C762-F46E-4537-9D88-1DE2802064BD} = {7ABE9494-F69F-4C6A-9739-4068E5599368}
 		{CB8868E8-3EEB-4783-B34D-46CAF86808F3} = {7ABE9494-F69F-4C6A-9739-4068E5599368}
-		{F7169ECA-8FD6-4DD1-842F-973E34170C08} = {FA0ABF0E-827A-4892-855A-71FAB5C74454}
 		{8760022C-793B-430E-93CA-36B0FDA8D0BB} = {3655CE4C-ACDD-4FDE-9BA3-77C13A66B148}
 		{254FF858-6346-4A6F-8DE7-AFF6896E8953} = {F71221ED-3031-4295-B03F-C3E2D5DF5C74}
+		{029E74AD-EA93-4489-90DD-C569C170DC4A} = {FA0ABF0E-827A-4892-855A-71FAB5C74454}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{44E5C762-F46E-4537-9D88-1DE2802064BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,10 +44,6 @@ Global
 		{CB8868E8-3EEB-4783-B34D-46CAF86808F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB8868E8-3EEB-4783-B34D-46CAF86808F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB8868E8-3EEB-4783-B34D-46CAF86808F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F7169ECA-8FD6-4DD1-842F-973E34170C08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7169ECA-8FD6-4DD1-842F-973E34170C08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7169ECA-8FD6-4DD1-842F-973E34170C08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F7169ECA-8FD6-4DD1-842F-973E34170C08}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8760022C-793B-430E-93CA-36B0FDA8D0BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8760022C-793B-430E-93CA-36B0FDA8D0BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8760022C-793B-430E-93CA-36B0FDA8D0BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -56,5 +52,9 @@ Global
 		{254FF858-6346-4A6F-8DE7-AFF6896E8953}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{254FF858-6346-4A6F-8DE7-AFF6896E8953}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{254FF858-6346-4A6F-8DE7-AFF6896E8953}.Release|Any CPU.Build.0 = Release|Any CPU
+		{029E74AD-EA93-4489-90DD-C569C170DC4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{029E74AD-EA93-4489-90DD-C569C170DC4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{029E74AD-EA93-4489-90DD-C569C170DC4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{029E74AD-EA93-4489-90DD-C569C170DC4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

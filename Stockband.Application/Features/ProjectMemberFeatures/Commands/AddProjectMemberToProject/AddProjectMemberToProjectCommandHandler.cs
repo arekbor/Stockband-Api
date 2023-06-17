@@ -54,7 +54,7 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
         if (member == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.MemberId), 
-                BaseErrorCode.UserNotExists);
+                BaseErrorCode.MemberForProjectMemberNotExists);
         }
 
         IEnumerable<ProjectMember> projectMembers = await _projectMemberRepository
