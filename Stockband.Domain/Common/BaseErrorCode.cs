@@ -43,4 +43,9 @@ public enum BaseErrorCode
     /// This code indicates that the project member could not be found.
     /// </summary>
     ProjectMemberNotExists = 9,
+    /// <summary>
+    /// This code indicates that member (user) could not be found.
+    /// </summary>
+    MemberForProjectMemberNotExists = 10,
+    
 }

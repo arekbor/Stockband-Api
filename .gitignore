@@ -9,6 +9,9 @@
 /Stockband.Application.UnitTest/obj/
 /Stockband.Application.UnitTest/bin/
 
+/Stockband.Application.IntegrationTests/obj/
+/Stockband.Application.IntegrationTests/bin/
+
 
 /Stockband.Domain/obj/
 /Stockband.Domain/bin/
