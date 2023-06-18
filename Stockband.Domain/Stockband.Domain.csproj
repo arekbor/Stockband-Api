@@ -5,11 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
+    
     <ItemGroup>
-      <Reference Include="FluentValidation">
-        <HintPath>..\..\..\..\..\..\..\home\arek\.nuget\packages\fluentvalidation\11.5.2\lib\net7.0\FluentValidation.dll</HintPath>
-      </Reference>
+      <PackageReference Include="FluentValidation" Version="11.5.2" />
     </ItemGroup>
-
+    
 </Project>
