@@ -3,6 +3,7 @@ using FizzWare.NBuilder;
 using NUnit.Framework;
 using Shouldly;
 using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
+using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -12,12 +13,17 @@ namespace Stockband.Application.IntegrationTests.Features.UserFeatures.Commands;
 
 public class RegisterUserCommandTest:BaseTest
 {
+    private IUserRepository _userRepository = null!;
+    [SetUp]
+    public void SetUp()
+    {
+        _userRepository = new UserRepository(Context);
+    }
+    
     [Test]
     public async Task RegisterUserCommand_ResponseShouldBeSuccess()
     {
-        //Assert
-        UserRepository userRepository = new UserRepository(Context);
-        
+        //Assert  
         string testingUsername = new Faker().Person.UserName;
         string testingEmail = new Faker().Person.Email;
 
@@ -31,12 +37,12 @@ public class RegisterUserCommandTest:BaseTest
             ConfirmPassword = testingPassword,
         };
         
-        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(userRepository);
+        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(_userRepository);
         
         //Act
-        IEnumerable<User> listOfUsersBeforeHandler = await userRepository.GetAllAsync();
+        IEnumerable<User> listOfUsersBeforeHandler = await _userRepository.GetAllAsync();
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        IEnumerable<User> listOfUsersAfterHandler = await userRepository.GetAllAsync();
+        IEnumerable<User> listOfUsersAfterHandler = await _userRepository.GetAllAsync();
 
         //Assert
         response.Success.ShouldBe(true);
@@ -47,9 +53,7 @@ public class RegisterUserCommandTest:BaseTest
     [Test]
     public async Task RegisterUserCommand_UserAlreadyExists_ResponseShouldBeNotSuccess()
     {
-        //Assert
-        UserRepository userRepository = new UserRepository(Context);
-        
+        //Assert  
         string testingUsername = new Faker().Person.UserName;
         string testingEmail = new Faker().Person.Email;
         const string testingPassword = "TesTPassWord!@23";
@@ -68,9 +72,9 @@ public class RegisterUserCommandTest:BaseTest
             .With(x => x.Email = testingEmail)
             .With(x => x.Username = testingUsername)
             .Build();
-        await userRepository.AddAsync(userForTest);
+        await _userRepository.AddAsync(userForTest);
 
-        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(userRepository);
+        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -84,9 +88,7 @@ public class RegisterUserCommandTest:BaseTest
     [Test]
     public async Task RegisterUserCommand_PasswordsNotEquals_ResponseShouldBeNotSuccess()
     {
-        //Assert
-        UserRepository userRepository = new UserRepository(Context);
-        
+        //Assert  
         string testingUsername = new Faker().Person.UserName;
         string testingEmail = new Faker().Person.Email;
         const string testingPassword = "TesTPassWord!@23";
@@ -100,7 +102,7 @@ public class RegisterUserCommandTest:BaseTest
             ConfirmPassword = testingConfirmPassword,
         };
         
-        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(userRepository);
+        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -114,9 +116,7 @@ public class RegisterUserCommandTest:BaseTest
     [Test]
     public async Task RegisterUserCommand_InvalidEmail_ResponseShouldBeNotSuccess()
     {
-        //Assert
-        UserRepository userRepository = new UserRepository(Context);
-        
+        //Assert  
         string testingUsername = new Faker().Person.UserName;
         string testingEmail = new Faker().Person.UserName;
         const string testingPassword = "TesTPassWord!@23";
@@ -129,7 +129,7 @@ public class RegisterUserCommandTest:BaseTest
             ConfirmPassword = testingPassword,
         };
         
-        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(userRepository);
+        RegisterUserCommandHandler handler = new RegisterUserCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);

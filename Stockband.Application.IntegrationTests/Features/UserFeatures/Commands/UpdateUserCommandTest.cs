@@ -3,6 +3,7 @@ using FizzWare.NBuilder;
 using NUnit.Framework;
 using Shouldly;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
+using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -13,12 +14,17 @@ namespace Stockband.Application.IntegrationTests.Features.UserFeatures.Commands;
 
 public class UpdateUserCommandTest:BaseTest
 {
+    private IUserRepository _userRepository = null!;
+    [SetUp]
+    public void SetUp()
+    {
+        _userRepository = new UserRepository(Context);
+    }
+    
     [Test]
     public async Task UpdateUserCommand_ResponseShouldBeSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 2006;
         const int testingUserId = 2006;
         string testingUsername = new Faker().Person.UserName;
@@ -38,13 +44,13 @@ public class UpdateUserCommandTest:BaseTest
             .With(x => x.Role = UserRole.User)
             .With(x => x.Id = testingRequestedUserId)
             .Build();
-        await userRepository.AddAsync(userForTest);
+        await _userRepository.AddAsync(userForTest);
         
-        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(userRepository);
+        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        User? updatedUser = await userRepository.GetByIdAsync(testingUserId);
+        User? updatedUser = await _userRepository.GetByIdAsync(testingUserId);
         if (updatedUser == null)
         {
             throw new ObjectNotFound(typeof(User), testingUserId);
@@ -63,8 +69,6 @@ public class UpdateUserCommandTest:BaseTest
     public async Task UpdateUserCommand_RequestedUserIsNotOwnerButIsAdmin_ResponseShouldBeSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 20012;
         const int testingUserId = 76341;
         string testingUsername = new Faker().Person.UserName;
@@ -90,13 +94,13 @@ public class UpdateUserCommandTest:BaseTest
             .With(x => x.Id = testingUserId)
             .Build()
             .ToList();
-        await userRepository.AddRangeAsync(usersForTest);
+        await _userRepository.AddRangeAsync(usersForTest);
 
-        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(userRepository);
+        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        User? updatedUser = await userRepository.GetByIdAsync(testingUserId);
+        User? updatedUser = await _userRepository.GetByIdAsync(testingUserId);
         if (updatedUser == null)
         {
             throw new ObjectNotFound(typeof(User), testingUserId);
@@ -115,8 +119,6 @@ public class UpdateUserCommandTest:BaseTest
     public async Task UpdateUserCommand_InvalidRequestedUser_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 50012;
         const int testingUserId = 71121;
         string testingUsername = new Faker().Person.UserName;
@@ -142,9 +144,9 @@ public class UpdateUserCommandTest:BaseTest
             .With(x => x.Id = testingUserId)
             .Build()
             .ToList();
-        await userRepository.AddRangeAsync(usersForTest);
+        await _userRepository.AddRangeAsync(usersForTest);
         
-        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(userRepository);
+        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -161,8 +163,6 @@ public class UpdateUserCommandTest:BaseTest
         (string testingUsername, string testingEmail)
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 50012;
         const int testingUserId = 71121;
         
@@ -174,7 +174,7 @@ public class UpdateUserCommandTest:BaseTest
             Email = testingEmail,
         };
         
-        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(userRepository);
+        UpdateUserCommandHandler handler = new UpdateUserCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);

@@ -2,6 +2,7 @@ using FizzWare.NBuilder;
 using NUnit.Framework;
 using Shouldly;
 using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
+using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -12,12 +13,17 @@ namespace Stockband.Application.IntegrationTests.Features.UserFeatures.Commands;
 
 public class UpdatePasswordCommandTest:BaseTest
 {
+    private IUserRepository _userRepository = null!;
+    [SetUp]
+    public void SetUp()
+    {
+        _userRepository = new UserRepository(Context);
+    }
+    
     [Test]
     public async Task UpdatePasswordCommand_ResponseShouldBeSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 105;
         const string testingCurrentPassword = "usermocktestpassword1";
         const string testingNewPassword = "TesTPassWord!@23";
@@ -42,13 +48,13 @@ public class UpdatePasswordCommandTest:BaseTest
             .With(x => x.Id = testingRequestedUserId)
             .With(x => x.Password = hashedTestingCurrentPassword)
             .Build();
-        await userRepository.AddAsync(userForTest);
+        await _userRepository.AddAsync(userForTest);
 
-        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(userRepository);
+        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        User? userAfterHandler = await userRepository.GetByIdAsync(testingRequestedUserId);
+        User? userAfterHandler = await _userRepository.GetByIdAsync(testingRequestedUserId);
         if (userAfterHandler == null)
         {
             throw new ObjectNotFound(typeof(User), testingRequestedUserId);
@@ -66,8 +72,6 @@ public class UpdatePasswordCommandTest:BaseTest
     public async Task UpdatePasswordCommand_PasswordsNotEquals_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 322131234;
         const string testingCurrentPassword = "usermocktestpassword1";
         const string testingNewPassword = "TesTPassWord!@23";
@@ -80,7 +84,7 @@ public class UpdatePasswordCommandTest:BaseTest
             NewPassword = testingNewPassword,
             ConfirmNewPassword = testingConfirmPassword
         };
-        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(userRepository);
+        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -95,8 +99,6 @@ public class UpdatePasswordCommandTest:BaseTest
     public async Task UpdatePasswordCommand_InvalidCurrentPassword_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 33213;
         const string testingCurrentPassword = "usermocktestpassword1";
         const string testingNewPassword = "TesTPassWord!@23";
@@ -121,9 +123,9 @@ public class UpdatePasswordCommandTest:BaseTest
             .With(x => x.Password = "$2a$11$o.e5SfIYGqby.NVyq/6vrONg76hL6yo2R2DZkuH1esekWcd6ihQnO")
             .With(x => x.Id = testingRequestedUserId)
             .Build();
-        await userRepository.AddAsync(userForTest);
+        await _userRepository.AddAsync(userForTest);
 
-        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(userRepository);
+        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -138,8 +140,6 @@ public class UpdatePasswordCommandTest:BaseTest
     public async Task UpdatePasswordCommand_UserNotExists_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        
         const int testingRequestedUserId = 120332213;
         const string testingCurrentPassword = "usermocktestpassword1";
         const string testingNewPassword = "TesTPassWord!@23";
@@ -152,7 +152,7 @@ public class UpdatePasswordCommandTest:BaseTest
             ConfirmNewPassword = testingNewPassword
         };
         
-        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(userRepository);
+        UpdatePasswordCommandHandler handler = new UpdatePasswordCommandHandler(_userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
