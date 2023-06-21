@@ -3,6 +3,7 @@ using FizzWare.NBuilder;
 using NUnit.Framework;
 using Shouldly;
 using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
+using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -13,12 +14,17 @@ namespace Stockband.Application.IntegrationTests.Features.UserFeatures.Queries;
 
 public class GetLoggedUserQueryTest:BaseTest
 {
+    private IUserRepository _userRepository = null!;
+    [SetUp]
+    public void SetUp()
+    {
+        _userRepository = new UserRepository(Context);
+    }
+    
     [Test]
     public async Task GetLoggedUserQuery_ResponseShouldBeSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-
         string testingEmail = new Faker().Person.Email;
         string testingPassword = new Faker().Internet.Password(20);
 
@@ -41,9 +47,9 @@ public class GetLoggedUserQueryTest:BaseTest
             .With(x => x.Email = testingEmail)
             .With(x => x.Password = hashedPassword)
             .Build();
-        await userRepository.AddAsync(userForTest);
+        await _userRepository.AddAsync(userForTest);
 
-        GetLoggedUserQueryHandler handler = new GetLoggedUserQueryHandler(userRepository);
+        GetLoggedUserQueryHandler handler = new GetLoggedUserQueryHandler(_userRepository);
         
         //Act
         BaseResponse<GetLoggedUserQueryViewModel> response = await handler.Handle(query, CancellationToken.None);
@@ -59,15 +65,13 @@ public class GetLoggedUserQueryTest:BaseTest
         (string testingEmail, string testingPassword)
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-
         GetLoggedUserQuery query = new GetLoggedUserQuery
         {
             Email = testingEmail,
             Password = testingPassword
         };
         
-        GetLoggedUserQueryHandler handler = new GetLoggedUserQueryHandler(userRepository);
+        GetLoggedUserQueryHandler handler = new GetLoggedUserQueryHandler(_userRepository);
         
         //Act
         BaseResponse<GetLoggedUserQueryViewModel> response = await handler.Handle(query, CancellationToken.None);

@@ -2,6 +2,7 @@ using FizzWare.NBuilder;
 using NUnit.Framework;
 using Shouldly;
 using Stockband.Application.Features.ProjectFeatures.Commands.RemoveProject;
+using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -11,14 +12,21 @@ namespace Stockband.Application.IntegrationTests.Features.ProjectFeatures.Comman
 
 public class RemoveProjectCommandTest:BaseTest
 {
+    private IUserRepository _userRepository = null!;
+    private IProjectRepository _projectRepository = null!;
+    private IProjectMemberRepository _projectMemberRepository = null!;
+    [SetUp]
+    public void SetUp()
+    {
+        _userRepository = new UserRepository(Context);
+        _projectRepository = new ProjectRepository(Context);
+        _projectMemberRepository = new ProjectMemberRepository(Context);
+    }
+
     [Test]
     public async Task RemoveProjectCommand_ResponseShouldBeSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-        ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
-        
         const int testingRequestedUserId = 5032;
         const int testingProjectId = 7331;
         
@@ -34,7 +42,7 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.OwnerId = testingRequestedUserId)
             .With(x => x.Id = testingProjectId)
             .Build();
-        await projectRepository.AddAsync(projectTest);
+        await _projectRepository.AddAsync(projectTest);
 
         User userTest = Builder<User>
             .CreateNew()
@@ -42,15 +50,15 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.Role = UserRole.User)
             .With(x => x.Id = testingRequestedUserId)
             .Build();
-        await userRepository.AddAsync(userTest);
+        await _userRepository.AddAsync(userTest);
 
         RemoveProjectCommandHandler handler = new RemoveProjectCommandHandler(
-            projectRepository, projectMemberRepository, userRepository);
+            _projectRepository, _projectMemberRepository, _userRepository);
         
         //Act
-        IEnumerable<Project> listOfProjectsBeforeHandler = await projectRepository.GetAllAsync();
+        IEnumerable<Project> listOfProjectsBeforeHandler = await _projectRepository.GetAllAsync();
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        IEnumerable<Project> listOfProjectsAfterHandler = await projectRepository.GetAllAsync();
+        IEnumerable<Project> listOfProjectsAfterHandler = await _projectRepository.GetAllAsync();
         
         //Assert
         response.Success.ShouldBe(true);
@@ -62,10 +70,6 @@ public class RemoveProjectCommandTest:BaseTest
     public async Task RemoveProjectCommand_RequestedUserIsNotOwnerButIsAdmin_ResponseShouldBeSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-        ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
-        
         const int testingRequestedUserId = 5312;
         const int testingProjectId = 25523;
         
@@ -80,7 +84,7 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.Deleted = false)
             .With(x => x.Id = testingProjectId)
             .Build();
-        await projectRepository.AddAsync(projectTest);
+        await _projectRepository.AddAsync(projectTest);
 
         User userTest = Builder<User>
             .CreateNew()
@@ -88,15 +92,15 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.Id = testingRequestedUserId)
             .With(x => x.Role = UserRole.Admin)
             .Build();
-        await userRepository.AddAsync(userTest);
+        await _userRepository.AddAsync(userTest);
         
         RemoveProjectCommandHandler handler = new RemoveProjectCommandHandler(
-            projectRepository, projectMemberRepository, userRepository);
+            _projectRepository, _projectMemberRepository, _userRepository);
         
         //Act
-        IEnumerable<Project> listOfProjectsBeforeHandler = await projectRepository.GetAllAsync();
+        IEnumerable<Project> listOfProjectsBeforeHandler = await _projectRepository.GetAllAsync();
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        IEnumerable<Project> listOfProjectsAfterHandler = await projectRepository.GetAllAsync();
+        IEnumerable<Project> listOfProjectsAfterHandler = await _projectRepository.GetAllAsync();
         
         //Assert
         response.Success.ShouldBe(true);
@@ -108,10 +112,6 @@ public class RemoveProjectCommandTest:BaseTest
     public async Task RemoveProjectCommand_RequestedUserIsNotOwner_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-        ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
-        
         const int testingRequestedUserId = 53511;
         const int testingProjectId = 71296;
         
@@ -126,7 +126,7 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.Deleted = false)
             .With(x => x.Id = testingProjectId)
             .Build();
-        await projectRepository.AddAsync(projectTest);
+        await _projectRepository.AddAsync(projectTest);
 
         User userTest = Builder<User>
             .CreateNew()
@@ -134,10 +134,10 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.Role = UserRole.User)
             .With(x => x.Id = testingRequestedUserId)
             .Build();
-        await userRepository.AddAsync(userTest);
+        await _userRepository.AddAsync(userTest);
         
         RemoveProjectCommandHandler handler = new RemoveProjectCommandHandler(
-            projectRepository, projectMemberRepository, userRepository);
+            _projectRepository, _projectMemberRepository, _userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -152,10 +152,6 @@ public class RemoveProjectCommandTest:BaseTest
     public async Task RemoveProjectCommand_ProjectNotExists_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-        ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
-        
         const int testingRequestedUserId = 82333;
         const int testingProjectId = 77112;
         
@@ -166,7 +162,7 @@ public class RemoveProjectCommandTest:BaseTest
         };
         
         RemoveProjectCommandHandler handler = new RemoveProjectCommandHandler(
-            projectRepository, projectMemberRepository, userRepository);
+            _projectRepository, _projectMemberRepository, _userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -181,10 +177,6 @@ public class RemoveProjectCommandTest:BaseTest
     public async Task RemoveProjectCommand_ProjectMembersAreAssigned_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-        ProjectMemberRepository projectMemberRepository = new ProjectMemberRepository(Context);
-        
         const int testingRequestedUserId = 155441;
         const int testingProjectId = 1333166;
         
@@ -200,7 +192,7 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.OwnerId = testingRequestedUserId)
             .With(x => x.Id = testingProjectId)
             .Build();
-        await projectRepository.AddAsync(projectTest);
+        await _projectRepository.AddAsync(projectTest);
 
         User userTest = Builder<User>
             .CreateNew()
@@ -208,17 +200,17 @@ public class RemoveProjectCommandTest:BaseTest
             .With(x => x.Role = UserRole.User)
             .With(x => x.Id = testingRequestedUserId)
             .Build();
-        await userRepository.AddAsync(userTest);
+        await _userRepository.AddAsync(userTest);
 
         ProjectMember projectMemberTest = Builder<ProjectMember>
             .CreateNew()
             .With(x => x.Deleted = false)
             .With(x => x.ProjectId = testingProjectId)
             .Build();
-        await projectMemberRepository.AddAsync(projectMemberTest);
+        await _projectMemberRepository.AddAsync(projectMemberTest);
 
         RemoveProjectCommandHandler handler = new RemoveProjectCommandHandler(
-            projectRepository, projectMemberRepository, userRepository);
+            _projectRepository, _projectMemberRepository, _userRepository);
         
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);

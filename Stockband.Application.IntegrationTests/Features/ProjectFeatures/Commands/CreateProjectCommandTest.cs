@@ -3,6 +3,7 @@ using FizzWare.NBuilder;
 using NUnit.Framework;
 using Shouldly;
 using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
+using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -12,13 +13,19 @@ namespace Stockband.Application.IntegrationTests.Features.ProjectFeatures.Comman
 
 public class CreateProjectCommandTest:BaseTest
 {
+    private IUserRepository _userRepository = null!;
+    private IProjectRepository _projectRepository = null!;
+    [SetUp]
+    public void SetUp()
+    {
+        _userRepository = new UserRepository(Context);
+        _projectRepository = new ProjectRepository(Context);
+    }
+
     [Test]
     public async Task CreateProjectCommand_ResponseShouldBeSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-
         string testingProjectName = new Faker().Lorem.Sentence(1);
         string testingProjectDescription = new Faker().Lorem.Sentence(5);
         const int testingRequestedUserId = 1052;
@@ -29,7 +36,7 @@ public class CreateProjectCommandTest:BaseTest
             .With(x => x.Role = UserRole.User)
             .With(x => x.Id = testingRequestedUserId)
             .Build();
-        await userRepository.AddAsync(userTest);
+        await _userRepository.AddAsync(userTest);
 
         CreateProjectCommand command = new CreateProjectCommand
         {
@@ -39,12 +46,12 @@ public class CreateProjectCommandTest:BaseTest
         };
 
         CreateProjectCommandHandler handler =
-            new CreateProjectCommandHandler(projectRepository, userRepository);
+            new CreateProjectCommandHandler(_projectRepository, _userRepository);
 
         //Act
-        IEnumerable<Project> listOfProjectsBeforeHandler = await projectRepository.GetAllAsync();
+        IEnumerable<Project> listOfProjectsBeforeHandler = await _projectRepository.GetAllAsync();
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
-        IEnumerable<Project> listOfProjectsAfterHandler = await projectRepository.GetAllAsync();
+        IEnumerable<Project> listOfProjectsAfterHandler = await _projectRepository.GetAllAsync();
 
         //Assert
         response.Success.ShouldBe(true);
@@ -56,9 +63,6 @@ public class CreateProjectCommandTest:BaseTest
     public async Task CreateProjectCommand_ProjectIsAlreadyCreated_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-
         string testingProjectName = new Faker().Lorem.Sentence(1);
         string testingProjectDescription = new Faker().Lorem.Sentence(5);
         const int testingRequestedUserId = 5623;
@@ -76,7 +80,7 @@ public class CreateProjectCommandTest:BaseTest
             .With(x => x.Role = UserRole.User)
             .With(x => x.Id = testingRequestedUserId)
             .Build();
-        await userRepository.AddAsync(user);
+        await _userRepository.AddAsync(user);
 
         Project project = Builder<Project>
             .CreateNew()
@@ -84,10 +88,10 @@ public class CreateProjectCommandTest:BaseTest
             .With(x => x.Name = testingProjectName)
             .With(x => x.Description = testingProjectDescription)
             .Build();
-        await projectRepository.AddAsync(project);
+        await _projectRepository.AddAsync(project);
 
         CreateProjectCommandHandler handler =
-            new CreateProjectCommandHandler(projectRepository, userRepository);
+            new CreateProjectCommandHandler(_projectRepository, _userRepository);
 
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -102,9 +106,6 @@ public class CreateProjectCommandTest:BaseTest
     public async Task CreateProjectCommand_RequestedUserNotExists_ResponseShouldBeNotSuccess()
     {
         //Arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
-
         string testingProjectName = new Faker().Lorem.Sentence(1);
         string testingProjectDescription = new Faker().Lorem.Sentence(5);
         const int testingRequestedUserId = 5000;
@@ -117,7 +118,7 @@ public class CreateProjectCommandTest:BaseTest
         };
 
         CreateProjectCommandHandler handler =
-            new CreateProjectCommandHandler(projectRepository, userRepository);
+            new CreateProjectCommandHandler(_projectRepository, _userRepository);
 
         //Act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -134,8 +135,8 @@ public class CreateProjectCommandTest:BaseTest
         (string testingProjectName, string testingProjectDescription)
     {
         //arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
+        UserRepository _userRepository = new UserRepository(Context);
+        ProjectRepository _projectRepository = new ProjectRepository(Context);
         
         const int testingRequestedUserId = 1323123215;
         
@@ -147,7 +148,7 @@ public class CreateProjectCommandTest:BaseTest
         };
         
         CreateProjectCommandHandler handler =
-            new CreateProjectCommandHandler(projectRepository, userRepository);
+            new CreateProjectCommandHandler(_projectRepository, _userRepository);
         
         //act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
@@ -164,8 +165,8 @@ public class CreateProjectCommandTest:BaseTest
         (string testingProjectName, string testingProjectDescription)
     {
         //arrange
-        UserRepository userRepository = new UserRepository(Context);
-        ProjectRepository projectRepository = new ProjectRepository(Context);
+        UserRepository _userRepository = new UserRepository(Context);
+        ProjectRepository _projectRepository = new ProjectRepository(Context);
         
         const int testingRequestedUserId = 943445511;
         
@@ -177,7 +178,7 @@ public class CreateProjectCommandTest:BaseTest
         };
         
         CreateProjectCommandHandler handler =
-            new CreateProjectCommandHandler(projectRepository, userRepository);
+            new CreateProjectCommandHandler(_projectRepository, _userRepository);
         
         //act
         BaseResponse response = await handler.Handle(command, CancellationToken.None);
