@@ -19,14 +19,13 @@ public class ProjectRepository: BaseRepository<Project>, IProjectRepository
         return project;
     }
 
-    public async Task<Project?> GetProjectByIdWithIncludedUserAsync(int id)
+    public async Task<IEnumerable<Project>> GetAllProjectsByOwnerId(int ownerId)
     {
-        Project? project = await _stockbandDbContext
-            .Projects
+        List<Project> projects = await _stockbandDbContext.Projects
+            .Where(x => x.OwnerId == ownerId)
             .AsNoTracking()
-            .Include(x => x.Owner)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .ToListAsync();
 
-        return project;
+        return projects;
     }
 }

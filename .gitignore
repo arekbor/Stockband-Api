@@ -6,8 +6,8 @@
 /Stockband.Application/obj/
 /Stockband.Application/bin/
 
-/Stockband.Application.UnitTest/obj/
-/Stockband.Application.UnitTest/bin/
+/Stockband.Application.UnitTests/obj/
+/Stockband.Application.UnitTests/bin/
 
 /Stockband.Application.IntegrationTests/obj/
 /Stockband.Application.IntegrationTests/bin/
@@ -21,3 +21,6 @@
 
 
 .idea
+
+Stockband.sln
+Stockband.sln.DotSettings.user
