@@ -12,15 +12,29 @@ public class ConfigurationHelperCommonService:IConfigurationHelperCommonService
         _configuration = configuration;
     }
     
-    public int GetProjectsLimitPerUser()
-    {
-        return Get<int>("ProjectFeaturesSettings:ProjectsLimitPerUser");
-    }
+    public int GetProjectsLimitPerUser() => 
+        Get<int>("ProjectFeaturesSettings:ProjectsLimitPerUser");
 
-    public int GetProjectMembersLimitPerProject()
-    {
-        return Get<int>("ProjectMemberFeaturesSettings:ProjectMembersLimitPerProject");
-    }
+    public int GetProjectMembersLimitPerProject() => 
+        Get<int>("ProjectMemberFeaturesSettings:ProjectMembersLimitPerProject");
+
+    public string GetJwtKey() => 
+        Get<string>("JwtKey");
+
+    public string GetJwtAudience() => 
+        Get<string>("JwtAudience");
+
+    public string GetJwtIssuer() => 
+        Get<string>("JwtIssuer");
+    
+    public double GetJwtExpires() => 
+        Get<double>("JWTExpires");
+    
+    public double GetCookieExpires() => 
+        Get<double>("CookieExpires");
+    
+    public string GetCookieName() => 
+        Get<string>("CookieName");
 
     private T Get<T>(string key)
     {

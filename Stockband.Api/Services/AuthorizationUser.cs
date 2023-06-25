@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Stockband.Api.Interfaces;
-using Stockband.Domain;
+using Stockband.Application.Interfaces.CommonServices;
 using Stockband.Domain.Exceptions;
 
 namespace Stockband.Api.Services;
@@ -11,46 +11,26 @@ namespace Stockband.Api.Services;
 public class AuthorizationUser:IAuthorizationUser
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IConfiguration _configuration;
+    private readonly IConfigurationHelperCommonService _configurationHelperCommonService;
 
-    public AuthorizationUser(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+    public AuthorizationUser(
+        IHttpContextAccessor httpContextAccessor, 
+        IConfigurationHelperCommonService configurationHelperCommonService)
     {
         _httpContextAccessor = httpContextAccessor;
-        _configuration = configuration;
+        _configurationHelperCommonService = configurationHelperCommonService;
     }
     public string CreateJwt(string userId, string username, string email, string role)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-        
-        string? jwtKey = _configuration["JwtKey"];
-        if (jwtKey == null)
-        {
-            throw new ObjectNotFound(nameof(jwtKey));
-        }
-        
-        string? jwtAudience = _configuration["JwtAudience"];
-        if (jwtAudience == null)
-        {
-            throw new ObjectNotFound(nameof(jwtAudience));
-        }
-        
-        string? jwtIssuer = _configuration["JwtIssuer"];
-        if (jwtIssuer == null)
-        {
-            throw new ObjectNotFound(nameof(jwtIssuer));
-        }
-        
-        string? cookieExpires = _configuration["CookieExpires"];
-        if (cookieExpires == null)
-        {
-            throw new ObjectNotFound(nameof(cookieExpires));
-        }
-        
-        bool success = double.TryParse(cookieExpires, out double cookieExpiresMinutes);
-        if (!success)
-        {
-            throw new FormatException();
-        }
+
+        string jwtKey = _configurationHelperCommonService.GetJwtKey();
+
+        string jwtAudience = _configurationHelperCommonService.GetJwtAudience();
+
+        string jwtIssuer = _configurationHelperCommonService.GetJwtIssuer();
+
+        double jwtExpires = _configurationHelperCommonService.GetJwtExpires();
         
         byte[] keyBytes = Encoding.UTF8.GetBytes(jwtKey);
         SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
@@ -62,7 +42,7 @@ public class AuthorizationUser:IAuthorizationUser
                 new (ClaimTypes.Email, email),
                 new (ClaimTypes.Role, role)
             }),
-            Expires = DateTime.Now.AddMinutes(cookieExpiresMinutes),
+            Expires = DateTime.Now.AddMinutes(jwtExpires),
             Audience = jwtAudience,
             Issuer = jwtIssuer,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
@@ -76,23 +56,9 @@ public class AuthorizationUser:IAuthorizationUser
 
     public void AddJwtCookie(string jwtToken)
     {
-        string? cookieName = _configuration["CookieName"];
-        if (cookieName == null)
-        {
-            throw new ObjectNotFound(nameof(cookieName));
-        }
-        
-        string? cookieExpires = _configuration["CookieExpires"];
-        if (cookieExpires == null)
-        {
-            throw new ObjectNotFound(nameof(cookieExpires));
-        }
-        
-        bool success = double.TryParse(cookieExpires, out double cookieExpiresMinutes);
-        if (!success)
-        {
-            throw new FormatException();
-        }
+        string cookieName = _configurationHelperCommonService.GetCookieName();
+
+        double cookieExpires = _configurationHelperCommonService.GetCookieExpires();
         
         HttpContext? httpContext = _httpContextAccessor.HttpContext;
         if (httpContext == null)
@@ -103,18 +69,14 @@ public class AuthorizationUser:IAuthorizationUser
         httpContext.Response.Cookies.Append(cookieName, jwtToken, new CookieOptions
         {
             HttpOnly = true,
-            Expires = DateTime.Now.AddMinutes(cookieExpiresMinutes),
+            Expires = DateTime.Now.AddMinutes(cookieExpires),
             SameSite = SameSiteMode.None
         });
     }
 
     public void ClearJwtCookie()
     {
-        string? cookieName = _configuration["CookieName"];
-        if (cookieName == null)
-        {
-            throw new ObjectNotFound(nameof(cookieName));
-        }
+        string cookieName = _configurationHelperCommonService.GetCookieName();
 
         HttpContext? httpContext = _httpContextAccessor.HttpContext;
         if (httpContext == null)
