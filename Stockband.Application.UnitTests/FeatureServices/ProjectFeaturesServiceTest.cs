@@ -10,7 +10,7 @@ using Stockband.Domain.Entities;
 
 namespace Stockband.Application.UnitTests.FeatureServices;
 
-public class IsProjectsLimitExceededTest
+public class ProjectFeaturesServiceTest
 {
     private Mock<IProjectRepository> _projectRepositoryMock = null!;
     private Mock<IConfigurationHelperCommonService> _configurationHelperServiceMock = null!;
