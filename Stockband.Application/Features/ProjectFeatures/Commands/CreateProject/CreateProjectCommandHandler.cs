@@ -1,6 +1,7 @@
 using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -12,11 +13,16 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
-
-    public CreateProjectCommandHandler(IProjectRepository projectRepository, IUserRepository userRepository)
+    private readonly IProjectFeaturesService _projectFeaturesService;
+    
+    public CreateProjectCommandHandler(
+        IProjectRepository projectRepository, 
+        IUserRepository userRepository, 
+        IProjectFeaturesService projectFeaturesService)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
+        _projectFeaturesService = projectFeaturesService;
     }
     public async Task<BaseResponse> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
@@ -27,13 +33,19 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
             return new BaseResponse(validationResult);
         }
         
+        if (await _projectFeaturesService.IsProjectsLimitExceeded(request.RequestedUserId))
+        {
+            return new BaseResponse(
+                new PerformRestrictedOperationException(), BaseErrorCode.ProjectsLimitPerUserExceeded);
+        }
+        
         User? user = await _userRepository.GetByIdAsync(request.RequestedUserId);
         if (user == null)
         {
             return new BaseResponse(
                 new ObjectNotFound(typeof(User), request.RequestedUserId), BaseErrorCode.UserNotExists);
         }
-
+        
         Project? project = await _projectRepository.GetProjectByNameAsync(request.ProjectName);
         if (project != null)
         {

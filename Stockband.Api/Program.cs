@@ -64,7 +64,7 @@ builder.Services.AddScoped<IAuthorizationUser, AuthorizationUser>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureDbContexts(builder.Configuration);
-builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddApplication();
 
 var app = builder.Build();
 

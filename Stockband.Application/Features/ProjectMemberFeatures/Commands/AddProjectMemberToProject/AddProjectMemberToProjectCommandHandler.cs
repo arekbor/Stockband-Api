@@ -1,4 +1,5 @@
 using MediatR;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -12,15 +13,18 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
+    private readonly IProjectMemberFeaturesService _projectMemberFeaturesService;
 
     public AddProjectMemberToProjectCommandHandler(
         IUserRepository userRepository, 
         IProjectRepository projectRepository, 
-        IProjectMemberRepository projectMemberRepository)
+        IProjectMemberRepository projectMemberRepository, 
+        IProjectMemberFeaturesService projectMemberFeaturesService)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
+        _projectMemberFeaturesService = projectMemberFeaturesService;
     }
     public async Task<BaseResponse> Handle(AddProjectMemberToProjectCommand request, CancellationToken cancellationToken)
     {
@@ -30,14 +34,20 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
             return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId), 
                 BaseErrorCode.ProjectNotExists);
         }
+        
+        if (await _projectMemberFeaturesService.IsProjectMembersLimitExceeded(request.ProjectId))
+        {
+            return new BaseResponse(
+                new PerformRestrictedOperationException(), BaseErrorCode.ProjectMembersLimitPerProjectExceeded);
+        }
 
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId); 
         if (requestedUser == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
                 BaseErrorCode.UserNotExists);
         }
-
+        
         if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),

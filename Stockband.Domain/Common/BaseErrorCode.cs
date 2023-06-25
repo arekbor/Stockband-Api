@@ -48,4 +48,13 @@ public enum BaseErrorCode
     /// </summary>
     MemberForProjectMemberNotExists = 10,
     
+    /// <summary>
+    /// This code indicates that the limit of created projects (per user) has been exceeded
+    /// </summary>
+    ProjectsLimitPerUserExceeded = 11,
+    
+    /// <summary>
+    /// This code indicates that the limit of created project members (per project) has been exceeded
+    /// </summary>
+    ProjectMembersLimitPerProjectExceeded = 12,
 }

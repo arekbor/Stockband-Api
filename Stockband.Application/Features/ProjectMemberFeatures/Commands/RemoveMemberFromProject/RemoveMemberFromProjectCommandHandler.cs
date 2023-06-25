@@ -26,7 +26,7 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
             .GetProjectMemberIncludedProjectAndMemberAsync(request.ProjectId, request.MemberId);
         if (projectMember == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(ProjectMember), request.ProjectId), 
+            return new BaseResponse(new ObjectNotFound(typeof(ProjectMember), request.ProjectId, request.MemberId), 
                 BaseErrorCode.ProjectMemberNotExists);
         }
         
