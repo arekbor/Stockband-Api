@@ -2,6 +2,7 @@ using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
+using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
 using Stockband.Domain.Exceptions;
 
@@ -26,13 +27,15 @@ public class GetLoggedUserQueryHandler:IRequestHandler<GetLoggedUserQuery, BaseR
         User? user = await _userRepository.GetUserByEmailAsync(request.Email);
         if (user == null)
         {
-            return new BaseResponse<GetLoggedUserQueryViewModel>(new UnauthorizedOperationException());
+            return new BaseResponse<GetLoggedUserQueryViewModel>(new UnauthorizedOperationException(), 
+                BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         
         bool verify = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
         if (!verify)
         {
-            return new BaseResponse<GetLoggedUserQueryViewModel>(new UnauthorizedOperationException());
+            return new BaseResponse<GetLoggedUserQueryViewModel>(new UnauthorizedOperationException(), 
+                BaseErrorCode.WrongEmailOrPasswordLogin);
         }
 
         GetLoggedUserQueryViewModel viewModel = new GetLoggedUserQueryViewModel
