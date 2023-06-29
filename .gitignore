@@ -12,6 +12,8 @@
 /Stockband.Application.IntegrationTests/obj/
 /Stockband.Application.IntegrationTests/bin/
 
+/Stockband.Api.E2E/obj/
+/Stockband.Api.E2E/bin/
 
 /Stockband.Domain/obj/
 /Stockband.Domain/bin/

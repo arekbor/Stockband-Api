@@ -1,4 +1,5 @@
 using FluentValidation.Results;
+using Newtonsoft.Json;
 using Stockband.Domain.Common;
 
 namespace Stockband.Domain;
@@ -40,7 +41,7 @@ public class BaseResponse
 
 public class BaseResponse<T> : BaseResponse
 {
-    public T Result { get; }
+    public T Result { get; set; }
 
     public BaseResponse()
     {
