@@ -72,6 +72,7 @@ public abstract class BaseTest
         TestServer.Dispose();
     }
 
+    //TODO: prepare this
     /*protected string GetJwtToken(int userId, string username, string email, UserRole userRole = UserRole.Admin)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
