@@ -1,7 +1,3 @@
-using System.Configuration;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using FlueFlame.AspNetCore;
 using FlueFlame.Http.Host;
 using FlueFlame.Serialization.Newtonsoft;
@@ -12,9 +8,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Stockband.Api.Services;
-using Stockband.Application.CommonServices;
+using Stockband.Application.Common.Services;
 using Stockband.Domain.Common;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure;

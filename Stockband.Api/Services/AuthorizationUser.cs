@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Stockband.Api.Interfaces;
-using Stockband.Application.Interfaces.CommonServices;
+using Stockband.Application.Interfaces.Common;
 using Stockband.Domain.Exceptions;
 
 namespace Stockband.Api.Services;

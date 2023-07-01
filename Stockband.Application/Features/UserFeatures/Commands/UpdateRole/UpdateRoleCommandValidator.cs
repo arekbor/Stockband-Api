@@ -6,6 +6,7 @@ public class UpdateRoleCommandValidator:AbstractValidator<UpdateRoleCommand>
 {
     public UpdateRoleCommandValidator()
     {
-        RuleFor(x => x.Role).IsInEnum();
+        RuleFor(x => x.Role)
+            .IsInEnum();
     }
 }
