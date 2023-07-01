@@ -24,13 +24,12 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
             return new BaseResponse(validationResult);
         }
         
-        User? user = await _userRepository
-            .GetByIdAsync(request.RequestedUserId);
+        User? user = await _userRepository.GetByIdAsync(request.RequestedUserId);
 
         if (user == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
-                BaseErrorCode.UserNotExists);
+                BaseErrorCode.RequestedUserNotExists);
         }
 
         bool verify = BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.Password);

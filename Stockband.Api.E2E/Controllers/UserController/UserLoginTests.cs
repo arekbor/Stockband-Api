@@ -1,5 +1,4 @@
 using System.Net;
-using Bogus;
 using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
@@ -26,15 +25,15 @@ public class UserLoginTests:BaseTest
     }
 
     [Test]
-    public void UserLogin_BaseResponse_WithoutErrors()
+    public void UserLogin_BaseResponse_Success_ShouldBeTrue()
     {
         //Arrange
-        string testingEmail = new Faker().Person.Email;
+        const string testingEmail = "test@gmail.com";
         const string testingPassword = "AbcDf@#!1233";
         
         UserBuilder(testingEmail, testingPassword);
 
-        LoginUserDto dto = LoginUserDtoBuilder(testingEmail, testingPassword);
+        LoginUserDto dto = new LoginUserDto(testingEmail, testingPassword);
         
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto);
@@ -59,7 +58,7 @@ public class UserLoginTests:BaseTest
         //Arrange
         UserBuilder(emailCreate, passwordCreate);
         
-        LoginUserDto dto = LoginUserDtoBuilder(emailLogin, passwordLogin);
+        LoginUserDto dto = new LoginUserDto(emailLogin, passwordLogin);
         
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto);
@@ -83,7 +82,7 @@ public class UserLoginTests:BaseTest
         (string email, string password)
     {
         //Arrange
-        LoginUserDto dto = LoginUserDtoBuilder(email, password);
+        LoginUserDto dto = new LoginUserDto(email, password);
         
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto);
@@ -99,16 +98,7 @@ public class UserLoginTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
         });
     }
-
-    private LoginUserDto LoginUserDtoBuilder(string email, string password)
-    {
-        return new LoginUserDto
-        {
-            Email = email,
-            Password = password
-        };
-    }
-
+    
     private void UserBuilder(string email, string password)
     {
         string hash = BCrypt.Net.BCrypt.HashPassword(password);
@@ -118,6 +108,7 @@ public class UserLoginTests:BaseTest
             .With(x => x.Deleted = false)
             .With(x => x.Password = hash)
             .With(x => x.Email = email)
+            .With(x => x.Role == UserRole.User)
             .Build();
 
         _userRepository.AddAsync(mockUser);

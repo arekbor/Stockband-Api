@@ -20,7 +20,8 @@ public class GetUserByIdQueryHandler:IRequestHandler<GetUserByIdQuery, BaseRespo
         User? user = await _userRepository.GetByIdAsync(request.Id);
         if (user == null)
         {
-            return new BaseResponse<GetUserByIdQueryViewModel>(new ObjectNotFound(typeof(User), request.Id));
+            return new BaseResponse<GetUserByIdQueryViewModel>(new ObjectNotFound(typeof(User), request.Id), 
+                BaseErrorCode.UserNotExists);
         }
 
         GetUserByIdQueryViewModel userViewModel = new GetUserByIdQueryViewModel

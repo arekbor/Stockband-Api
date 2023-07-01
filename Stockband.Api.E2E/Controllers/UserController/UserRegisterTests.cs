@@ -1,5 +1,4 @@
 using System.Net;
-using Bogus;
 using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
@@ -25,7 +24,7 @@ public class UserRegisterTests:BaseTest
     }
 
     [Test]
-    public void UserRegister_BaseResponse_WithoutErrors()
+    public void UserRegister_BaseResponse_Success_ShouldBeTrue()
     {
         //Arrange
         RegisterUserDto dto = RegisterUserDtoBuilder();
@@ -47,7 +46,7 @@ public class UserRegisterTests:BaseTest
     public void UserRegister_WrongEmailScheme_BaseErrorCodeShouldBe_FluentValidationCode()
     {
         //Arrange
-        RegisterUserDto dto = RegisterUserDtoBuilder(email:"test.gmail.com");
+        RegisterUserDto dto = RegisterUserDtoBuilder(email:"test#gmail.com");
         
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto);
@@ -88,7 +87,7 @@ public class UserRegisterTests:BaseTest
     public async Task UserRegister_UserEmailIsAlreadyRegistered_BaseErrorCodeShouldBe_UserAlreadyCreated()
     {
         //Arrange
-        string testingEmail = new Faker().Person.Email;
+        const string testingEmail = "test@gmail.com";
 
         await UserBuilder(testingEmail);
         
@@ -107,9 +106,7 @@ public class UserRegisterTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.UserAlreadyCreated);
         });
     }
-
     
-
     private HttpResponseModule ActResponseModule(RegisterUserDto dto)
     {
         return HttpHost
@@ -126,6 +123,7 @@ public class UserRegisterTests:BaseTest
             .CreateNew()
             .With(x => x.Deleted = false)
             .With(x => x.Email = email)
+            .With(x => x.Role == UserRole.User)
             .Build();
         await _userRepository.AddAsync(userMock);
     }
@@ -136,9 +134,9 @@ public class UserRegisterTests:BaseTest
         const string testingPassword = "Tdddfgfss@!223ASD";
         
         if (String.IsNullOrEmpty(username))
-            username = new Faker().Person.UserName;
+            username = "testUsername";
         if (String.IsNullOrEmpty(email))
-            email = new Faker().Person.Email;
+            email = "test@gmail.com";
         if (String.IsNullOrEmpty(password))
             password = testingPassword;
         if (String.IsNullOrEmpty(confirmPassword))

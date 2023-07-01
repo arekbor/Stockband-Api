@@ -35,7 +35,7 @@ public class RemoveProjectCommandHandler:IRequestHandler<RemoveProjectCommand, B
         if (requestedUser == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
-                BaseErrorCode.UserNotExists);
+                BaseErrorCode.RequestedUserNotExists);
         }
 
         if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))

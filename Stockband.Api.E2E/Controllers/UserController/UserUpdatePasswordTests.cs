@@ -1,5 +1,4 @@
 using System.Net;
-using Bogus;
 using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
@@ -25,12 +24,12 @@ public class UserUpdatePasswordTests:BaseTest
     }
     
     [Test]
-    public async Task UserUpdatePassword_BaseResponse_WithoutErrors()
+    public async Task UserUpdatePassword_BaseResponse_Success_ShouldBeTrue()
     {
         //Arrange
         const int testingUserId = 33412;
-        string testingEmail = new Faker().Person.Email;
-        string testingUsername = new Faker().Person.UserName;
+        const string testingEmail = "test@gmail.com";
+        const string testingUsername = "testUsername";
         const UserRole testingUserRole = UserRole.User;
         
         const string testingCurrentPassword = "TestPassword!@2334";
@@ -39,7 +38,7 @@ public class UserUpdatePasswordTests:BaseTest
         await UserBuilder
             (testingCurrentPassword, testingUsername, testingEmail, testingUserRole, testingUserId);
 
-        UpdateUserPasswordDto dto = UpdateUserPasswordDtoBuilder
+        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
             (testingCurrentPassword, testingNewPassword, testingNewPassword);
         
         //Act
@@ -60,8 +59,8 @@ public class UserUpdatePasswordTests:BaseTest
     {
         //Arrange
         const int testingUserId = 56643;
-        string testingEmail = new Faker().Person.Email;
-        string testingUsername = new Faker().Person.UserName;
+        const string testingEmail = "test@gmail.com";
+        const string testingUsername = "testUsername";
         const UserRole testingUserRole = UserRole.User;
 
         const string testingBadCurrentPassword = "TestPassword!@5555";
@@ -71,7 +70,7 @@ public class UserUpdatePasswordTests:BaseTest
         await UserBuilder
             (testingRealCurrentPassword, testingUsername, testingEmail, testingUserRole, testingUserId);
 
-        UpdateUserPasswordDto dto = UpdateUserPasswordDtoBuilder
+        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
             (testingBadCurrentPassword, testingNewPassword, testingNewPassword);
         
         //Act
@@ -94,8 +93,8 @@ public class UserUpdatePasswordTests:BaseTest
     {
         //Arrange
         const int testingUserId = 2560;
-        string testingEmail = new Faker().Person.Email;
-        string testingUsername = new Faker().Person.UserName;
+        const string testingEmail = "test@gmail.com";
+        const string testingUsername = "testUsername";
         const UserRole testingUserRole = UserRole.User;
         
         const string testingCurrentPassword = "TestPassword!@2334";
@@ -105,7 +104,7 @@ public class UserUpdatePasswordTests:BaseTest
         await UserBuilder
             (testingCurrentPassword, testingUsername, testingEmail, testingUserRole, testingUserId);
 
-        UpdateUserPasswordDto dto = UpdateUserPasswordDtoBuilder
+        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
             (testingCurrentPassword, testingNewPassword, testingNewConfirmPassword);
         
         //Act
@@ -121,18 +120,7 @@ public class UserUpdatePasswordTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
         });
     }
-
-    private UpdateUserPasswordDto UpdateUserPasswordDtoBuilder
-        (string currentPassword, string newPassword, string confirmNewPassword)
-    {
-        return new UpdateUserPasswordDto
-        {
-            CurrentPassword = currentPassword,
-            NewPassword = newPassword,
-            ConfirmNewPassword = confirmNewPassword
-        };
-    }
-
+    
     private async Task UserBuilder
         (string currentPassword, string username, string email, UserRole userRole, int id)
     {

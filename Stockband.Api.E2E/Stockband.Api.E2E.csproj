@@ -10,7 +10,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" Version="34.0.2" />
         <PackageReference Include="FlueFlame.AspNetCore" Version="1.0.0" />
         <PackageReference Include="FlueFlame.Http" Version="1.0.0" />
         <PackageReference Include="FlueFlame.Serialization.Newtonsoft" Version="1.0.0" />

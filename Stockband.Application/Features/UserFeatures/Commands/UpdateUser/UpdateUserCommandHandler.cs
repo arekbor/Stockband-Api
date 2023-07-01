@@ -24,24 +24,24 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
             return new BaseResponse(validationResult);
         }
         
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
+        {
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.RequestedUserNotExists);
+        }
+        
+        if (!requestedUser.IsEntityAccessibleByUser(request.UserId))
+        {
+            return new BaseResponse(new UnauthorizedOperationException(),
+                BaseErrorCode.UserUnauthorizedOperation);
+        }
+        
         User? user = await _userRepository.GetByIdAsync(request.UserId);
         if (user == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.UserId), 
                 BaseErrorCode.UserNotExists);
-        }
-        
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
-        if (requestedUser == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
-                BaseErrorCode.UserNotExists);
-        }
-
-        if (!requestedUser.IsEntityAccessibleByUser(request.UserId))
-        {
-            return new BaseResponse(new UnauthorizedOperationException(),
-                BaseErrorCode.UserUnauthorizedOperation);
         }
         
         User? userUsernameVerify = await _userRepository.GetUserByUsernameAsync(request.Username);
