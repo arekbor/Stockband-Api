@@ -20,7 +20,7 @@ public static partial class RuleBuilders
     public static IRuleBuilderOptions<T, string> EmailUserRuleBuilder<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder
-            .EmailAddress().WithMessage("{PropertyName} is invalid");
+            .EmailAddress().WithMessage("Email scheme is invalid.");
     }
     
     public static IRuleBuilderOptions<T, string> UsernameUserRuleBuilder<T>(this IRuleBuilder<T, string> ruleBuilder)
