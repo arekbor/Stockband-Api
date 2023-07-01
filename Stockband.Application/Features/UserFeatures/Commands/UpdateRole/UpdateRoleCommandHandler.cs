@@ -23,27 +23,21 @@ public class UpdateRoleCommandHandler:IRequestHandler<UpdateRoleCommand, BaseRes
         {
             return new BaseResponse(validationResult);
         }
-
+        
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
+        {
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId),
+                BaseErrorCode.RequestedUserNotExists);
+        }
+        
         User? user = await _userRepository.GetByIdAsync(request.UserId);
         if (user == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.UserId),
                 BaseErrorCode.UserNotExists);
         }
-
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
-        if (requestedUser == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId),
-                BaseErrorCode.UserNotExists);
-        }
-
-        if (requestedUser.Role != UserRole.Admin)
-        {
-            return new BaseResponse(new UnauthorizedOperationException(),
-                BaseErrorCode.UserUnauthorizedOperation);
-        }
-
+        
         user.Role = request.Role;
         await _userRepository.UpdateAsync(user);
 

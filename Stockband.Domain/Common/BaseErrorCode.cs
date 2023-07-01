@@ -72,4 +72,9 @@ public enum BaseErrorCode
     /// This code indicates that the user has entered an incorrect email or password
     /// </summary>
     WrongEmailOrPasswordLogin = 13,
+    
+    /// <summary>
+    /// This code indicates that the requested user could not be found.
+    /// </summary>
+    RequestedUserNotExists = 14,
 }

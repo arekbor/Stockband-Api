@@ -43,7 +43,8 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
         if (user == null)
         {
             return new BaseResponse(
-                new ObjectNotFound(typeof(User), request.RequestedUserId), BaseErrorCode.UserNotExists);
+                new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.RequestedUserNotExists);
         }
         
         Project? project = await _projectRepository.GetProjectByNameAsync(request.ProjectName);
