@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
-using Stockband.Application.Interfaces.CommonServices;
+using Stockband.Application.Interfaces.Common;
 using Stockband.Domain.Exceptions;
 
-namespace Stockband.Application.CommonServices;
+namespace Stockband.Application.Common.Services;
 
 public class ConfigurationHelperCommonService:IConfigurationHelperCommonService
 {

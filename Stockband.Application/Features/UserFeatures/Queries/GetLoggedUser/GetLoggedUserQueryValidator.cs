@@ -1,4 +1,5 @@
 using FluentValidation;
+using Stockband.Application.Common.FluentValidationRuleBuilders;
 
 namespace Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 
@@ -7,10 +8,9 @@ public class GetLoggedUserQueryValidator:AbstractValidator<GetLoggedUserQuery>
     public GetLoggedUserQueryValidator()
     {
         RuleFor(x => x.Email)
-            .EmailAddress().WithMessage("{PropertyName} is invalid");
+            .EmailUserRuleBuilder();
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("{PropertyName} is required")
-            .NotNull().WithMessage("{PropertyName} is required");
+            .PasswordNotEmptyUserRuleBuilder();
     }
 }

@@ -1,9 +1,9 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Stockband.Application.CommonServices;
+using Stockband.Application.Common.Services;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.FeatureServices;
-using Stockband.Application.Interfaces.CommonServices;
+using Stockband.Application.Interfaces.Common;
 
 namespace Stockband.Application;
 

@@ -1,4 +1,4 @@
-namespace Stockband.Application.Interfaces.CommonServices;
+namespace Stockband.Application.Interfaces.Common;
 
 public interface IConfigurationHelperCommonService
 { 
