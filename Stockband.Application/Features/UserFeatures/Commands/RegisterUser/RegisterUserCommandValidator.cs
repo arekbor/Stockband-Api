@@ -6,7 +6,6 @@ public class RegisterUserCommandValidator:AbstractValidator<RegisterUserCommand>
 {
     public RegisterUserCommandValidator()
     {
-        //TODO: https://docs.fluentvalidation.net/en/latest/rulesets.html
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("{PropertyName} is required")
             .NotNull().WithMessage("{PropertyName} is required")
