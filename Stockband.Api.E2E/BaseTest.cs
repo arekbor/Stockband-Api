@@ -1,11 +1,21 @@
+using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using FlueFlame.AspNetCore;
 using FlueFlame.Http.Host;
 using FlueFlame.Serialization.Newtonsoft;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Stockband.Api.Services;
+using Stockband.Application.CommonServices;
+using Stockband.Domain.Common;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure;
 
@@ -36,13 +46,12 @@ public abstract class BaseTest
                                  typeof(DbContextOptions<StockbandDbContext>));
                         if (dbContextDescriptor == null)
                         {
-                            throw new ObjectNotFound(typeof(ServiceDescriptor));
+                            throw new ObjectNotFound(typeof(ServiceDescriptor), typeof(DbContextOptions<StockbandDbContext>));
                         }
-
+                        
                         services.Remove(dbContextDescriptor);
 
                         string dbName = $"E2E_{Guid.NewGuid()}";
-
                         services.AddDbContext<StockbandDbContext>(x => x.UseInMemoryDatabase(dbName));
                     });
                 });
@@ -52,10 +61,6 @@ public abstract class BaseTest
         HttpHost = FlueFlameAspNetBuilder.CreateDefaultBuilder(factory)
             .BuildHttpHost(builder =>
             {
-                builder.ConfigureHttpClient(client =>
-                {
-                    
-                });
                 builder.UseNewtonsoftJsonSerializer();
                 builder.Build();
             });
@@ -71,31 +76,20 @@ public abstract class BaseTest
         
         TestServer.Dispose();
     }
-
-    //TODO: prepare this
-    /*protected string GetJwtToken(int userId, string username, string email, UserRole userRole = UserRole.Admin)
+    
+    protected string GetJwtToken(int userId, string username, string email, UserRole userRole)
     {
-        JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-        byte[] keyBytes = Encoding.UTF8.GetBytes("JzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikpv");
+        IConfiguration configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+        IHttpContextAccessor httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
         
-        SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-                new (ClaimTypes.NameIdentifier, userId.ToString()),
-                new (ClaimTypes.Name, username),
-                new (ClaimTypes.Email, email),
-                new (ClaimTypes.Role, userRole.ToString())
-            }),
-            Expires = DateTime.Now.AddMinutes(2),
-            Audience = "http://localhost:5000",
-            Issuer = "localhost",
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
-        };
-        
-        SecurityToken token = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
-        string tokenString = jwtSecurityTokenHandler.WriteToken(token);
-        
-        return $"Bearer {tokenString}";
-    }*/
+        ConfigurationHelperCommonService configurationHelperCommonService = 
+            new ConfigurationHelperCommonService(configuration);
+
+        AuthorizationUser authorizationUser =
+            new AuthorizationUser(httpContextAccessor, configurationHelperCommonService);
+
+        string token =  authorizationUser.CreateJwt(userId.ToString(), username, email, userRole.ToString());
+
+        return token;
+    }
 }

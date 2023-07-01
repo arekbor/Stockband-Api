@@ -8,6 +8,7 @@ using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Application.IntegrationTests.Repositories;
 
+[TestFixture]
 public class ProjectMemberRepositoryTest:BaseTest
 {
     private IProjectMemberRepository _projectMemberRepository = null!;

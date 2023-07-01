@@ -9,6 +9,7 @@ using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Application.IntegrationTests.Repositories;
 
+[TestFixture]
 public class UserRepositoryTest:BaseTest
 {
     private IUserRepository _userRepository = null!;
