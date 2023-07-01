@@ -12,6 +12,7 @@ using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Api.E2E.Controllers.UserController;
 
+[TestFixture]
 public class UserRegisterTests:BaseTest
 {
     private IUserRepository _userRepository = null!;
@@ -43,7 +44,7 @@ public class UserRegisterTests:BaseTest
     }
 
     [Test]
-    public void UserRegister_BadEmailScheme_BaseErrorCodeShouldBe_FluentValidationCode()
+    public void UserRegister_WrongEmailScheme_BaseErrorCodeShouldBe_FluentValidationCode()
     {
         //Arrange
         RegisterUserDto dto = RegisterUserDtoBuilder(email:"test.gmail.com");
@@ -89,12 +90,7 @@ public class UserRegisterTests:BaseTest
         //Arrange
         string testingEmail = new Faker().Person.Email;
 
-        User userMock = Builder<User>
-            .CreateNew()
-            .With(x => x.Deleted = false)
-            .With(x => x.Email = testingEmail)
-            .Build();
-        await _userRepository.AddAsync(userMock);
+        await UserBuilder(testingEmail);
         
         RegisterUserDto dto = RegisterUserDtoBuilder(email: testingEmail);
         
@@ -112,6 +108,8 @@ public class UserRegisterTests:BaseTest
         });
     }
 
+    
+
     private HttpResponseModule ActResponseModule(RegisterUserDto dto)
     {
         return HttpHost
@@ -120,6 +118,16 @@ public class UserRegisterTests:BaseTest
             .Json(dto)
             .Send()
             .Response;
+    }
+    
+    private async Task UserBuilder(string email)
+    {
+        User userMock =  Builder<User>
+            .CreateNew()
+            .With(x => x.Deleted = false)
+            .With(x => x.Email = email)
+            .Build();
+        await _userRepository.AddAsync(userMock);
     }
 
     private static RegisterUserDto RegisterUserDtoBuilder

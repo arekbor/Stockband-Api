@@ -13,6 +13,7 @@ using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Api.E2E.Controllers.UserController;
 
+[TestFixture]
 public class UserLoginTests:BaseTest
 {
     private const string TestingUri = "/user/login";
@@ -31,13 +32,9 @@ public class UserLoginTests:BaseTest
         string testingEmail = new Faker().Person.Email;
         const string testingPassword = "AbcDf@#!1233";
         
-        UserEntityBuilder(testingEmail, testingPassword);
+        UserBuilder(testingEmail, testingPassword);
 
-        LoginUserDto dto = new LoginUserDto
-        {
-            Email = testingEmail,
-            Password = testingPassword
-        };
+        LoginUserDto dto = LoginUserDtoBuilder(testingEmail, testingPassword);
         
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto);
@@ -60,13 +57,9 @@ public class UserLoginTests:BaseTest
         (string emailCreate, string emailLogin, string passwordCreate, string passwordLogin)
     {
         //Arrange
-        UserEntityBuilder(emailCreate, passwordCreate);
+        UserBuilder(emailCreate, passwordCreate);
         
-        LoginUserDto dto = new LoginUserDto
-        {
-            Email = emailLogin,
-            Password = passwordLogin
-        };
+        LoginUserDto dto = LoginUserDtoBuilder(emailLogin, passwordLogin);
         
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto);
@@ -90,11 +83,7 @@ public class UserLoginTests:BaseTest
         (string email, string password)
     {
         //Arrange
-        LoginUserDto dto = new LoginUserDto
-        {
-            Email = email,
-            Password = password
-        };
+        LoginUserDto dto = LoginUserDtoBuilder(email, password);
         
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto);
@@ -111,7 +100,16 @@ public class UserLoginTests:BaseTest
         });
     }
 
-    private void UserEntityBuilder(string email, string password)
+    private LoginUserDto LoginUserDtoBuilder(string email, string password)
+    {
+        return new LoginUserDto
+        {
+            Email = email,
+            Password = password
+        };
+    }
+
+    private void UserBuilder(string email, string password)
     {
         string hash = BCrypt.Net.BCrypt.HashPassword(password);
         

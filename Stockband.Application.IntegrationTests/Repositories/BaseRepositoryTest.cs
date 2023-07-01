@@ -10,6 +10,7 @@ using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Application.IntegrationTests.Repositories;
 
+[TestFixture]
 public class BaseRepositoryTest:BaseTest
 {
     private IBaseRepository<User> _baseRepository = null!;
@@ -139,7 +140,7 @@ public class BaseRepositoryTest:BaseTest
         result.Last().Email.ShouldBe(secondTestingEmail);
         result.Last().Role.ShouldBe(secondTestingUserRole);
     }
-
+    
     [Test]
     public async Task UpdateAsync_ObjectShouldBeUpdated()
     {
@@ -148,7 +149,6 @@ public class BaseRepositoryTest:BaseTest
         string testingUsername = new Faker().Person.UserName;
         string testingEmail = new Faker().Person.Email;
         UserRole testingUserRole = UserRole.User;
-        
         
         string testingUsernameUpdate = new Faker().Person.UserName;
         string testingEmailUpdate = new Faker().Person.Email;
