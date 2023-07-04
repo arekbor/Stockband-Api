@@ -1,26 +1,23 @@
 using System.Net;
-using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.Dtos.User;
-using Stockband.Application.Interfaces.Repositories;
+using Stockband.Api.E2E.Builders;
 using Stockband.Domain;
 using Stockband.Domain.Common;
-using Stockband.Domain.Entities;
-using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Api.E2E.Controllers.UserController;
 
 [TestFixture]
 public class UserUpdatePasswordTests:BaseTest
 {
-    private IUserRepository _userRepository = null!;
+    private UserBuilder _userBuilder = null!;
     private const string TestingUri = "/user/password";
 
     [SetUp]
     public void SetUp()
     {
-        _userRepository = new UserRepository(Context);
+        _userBuilder = new UserBuilder(Context);
     }
     
     [Test]
@@ -35,15 +32,17 @@ public class UserUpdatePasswordTests:BaseTest
         const string testingCurrentPassword = "TestPassword!@2334";
         const string testingNewPassword = "TestNewPassword@@!1233";
 
-        await UserBuilder
-            (testingCurrentPassword, testingUsername, testingEmail, testingUserRole, testingUserId);
-
+        
+        await _userBuilder
+            .Build(userId: testingUserId, username: testingUsername, email: testingEmail,
+                password: testingCurrentPassword, userRole: testingUserRole);
+        
         UpdateUserPasswordDto dto = new UpdateUserPasswordDto
             (testingCurrentPassword, testingNewPassword, testingNewPassword);
         
         //Act
         HttpResponseModule responseModule = 
-            ActResponseModule(dto, testingUserId, testingUsername, testingEmail, testingUserRole);
+            ActResponseModule(dto, GetUserJwtToken(testingUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -67,15 +66,16 @@ public class UserUpdatePasswordTests:BaseTest
         const string testingRealCurrentPassword = "TestPassword!@2334";
         const string testingNewPassword = "TestNewPassword@@!1233";
         
-        await UserBuilder
-            (testingRealCurrentPassword, testingUsername, testingEmail, testingUserRole, testingUserId);
+        await _userBuilder
+            .Build(userId: testingUserId, username: testingUsername, email: testingEmail,
+                password: testingRealCurrentPassword, userRole: testingUserRole);
 
         UpdateUserPasswordDto dto = new UpdateUserPasswordDto
             (testingBadCurrentPassword, testingNewPassword, testingNewPassword);
         
         //Act
         HttpResponseModule responseModule = 
-            ActResponseModule(dto, testingUserId, testingUsername, testingEmail, testingUserRole);
+            ActResponseModule(dto, GetUserJwtToken(testingUserId));
         
         
         //Assert
@@ -100,16 +100,18 @@ public class UserUpdatePasswordTests:BaseTest
         const string testingCurrentPassword = "TestPassword!@2334";
         const string testingNewPassword = "TestPassword!@55523";
         const string testingNewConfirmPassword = "TestPassword!@3123";
-        
-        await UserBuilder
-            (testingCurrentPassword, testingUsername, testingEmail, testingUserRole, testingUserId);
+
+
+        await _userBuilder
+            .Build(userId: testingUserId, username: testingUsername, email: testingEmail,
+            password: testingCurrentPassword, userRole: testingUserRole);
 
         UpdateUserPasswordDto dto = new UpdateUserPasswordDto
             (testingCurrentPassword, testingNewPassword, testingNewConfirmPassword);
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, testingUserId, testingUsername, testingEmail, testingUserRole);
+            ActResponseModule(dto, GetUserJwtToken(testingUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -121,30 +123,13 @@ public class UserUpdatePasswordTests:BaseTest
         });
     }
     
-    private async Task UserBuilder
-        (string currentPassword, string username, string email, UserRole userRole, int id)
-    {
-        string hash = BCrypt.Net.BCrypt.HashPassword(currentPassword);
-        
-        User user = Builder<User>
-            .CreateNew()
-            .With(x => x.Deleted = false)
-            .With(x => x.Username = username)
-            .With(x => x.Email = email)
-            .With(x => x.Role = userRole)
-            .With(x => x.Password = hash)
-            .With(x => x.Id = id)
-            .Build();
-        await _userRepository.AddAsync(user);
-    }
-
     private HttpResponseModule ActResponseModule
-        (UpdateUserPasswordDto dto, int jwtUserId, string jwtUserUsername, string jwtUserEmail, UserRole jwtRole)
+        (UpdateUserPasswordDto dto, string jwtToken)
     {
         return HttpHost
             .Put
             .Url(TestingUri)
-            .WithJwtToken(GetJwtToken(jwtUserId, jwtUserUsername, jwtUserEmail, jwtRole))
+            .WithJwtToken(jwtToken)
             .Json(dto)
             .Send()
             .Response;

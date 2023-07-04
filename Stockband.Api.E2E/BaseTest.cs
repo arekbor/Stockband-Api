@@ -71,8 +71,20 @@ public abstract class BaseTest
         
         TestServer.Dispose();
     }
-    
-    protected string GetJwtToken(int userId, string username, string email, UserRole userRole)
+
+    protected string GetUserJwtToken
+        (int userId, string username = "user", string email = "user@gmail.com")
+    {
+        return GetJwtToken(userId, username, email, UserRole.User);
+    }
+
+    protected string GetAdminJwtToken
+        (int userId, string username = "admin", string email = "admin@gmail.com")
+    {
+        return GetJwtToken(userId, username, email, UserRole.Admin);
+    }
+
+    private string GetJwtToken(int userId, string username, string email, UserRole userRole)
     {
         IConfiguration configuration = ServiceProvider.GetRequiredService<IConfiguration>();
         IHttpContextAccessor httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();

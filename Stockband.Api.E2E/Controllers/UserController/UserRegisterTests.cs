@@ -3,6 +3,7 @@ using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.Dtos.User;
+using Stockband.Api.E2E.Builders;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -14,13 +15,13 @@ namespace Stockband.Api.E2E.Controllers.UserController;
 [TestFixture]
 public class UserRegisterTests:BaseTest
 {
-    private IUserRepository _userRepository = null!;
+    private UserBuilder _userBuilder = null!;
     private const string TestingUri = "/user/register";
 
     [SetUp]
     public void SetUp()
     {
-        _userRepository = new UserRepository(Context);
+        _userBuilder = new UserBuilder(Context);
     }
 
     [Test]
@@ -89,8 +90,9 @@ public class UserRegisterTests:BaseTest
         //Arrange
         const string testingEmail = "test@gmail.com";
 
-        await UserBuilder(testingEmail);
-        
+        await _userBuilder
+            .Build(userId:1000, email: testingEmail);
+
         RegisterUserDto dto = RegisterUserDtoBuilder(email: testingEmail);
         
         //Act
@@ -117,17 +119,6 @@ public class UserRegisterTests:BaseTest
             .Response;
     }
     
-    private async Task UserBuilder(string email)
-    {
-        User userMock =  Builder<User>
-            .CreateNew()
-            .With(x => x.Deleted = false)
-            .With(x => x.Email = email)
-            .With(x => x.Role == UserRole.User)
-            .Build();
-        await _userRepository.AddAsync(userMock);
-    }
-
     private static RegisterUserDto RegisterUserDtoBuilder
         (string username = "", string email = "", string password = "", string confirmPassword = "")
     {

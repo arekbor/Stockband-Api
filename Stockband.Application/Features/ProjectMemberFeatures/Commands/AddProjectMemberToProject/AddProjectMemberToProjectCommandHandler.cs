@@ -53,18 +53,18 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
-
-        if (project.OwnerId == request.MemberId)
-        {
-            return new BaseResponse(new UnauthorizedOperationException(), 
-                BaseErrorCode.UserOperationRestricted);
-        }
-
+        
         User? member = await _userRepository.GetByIdAsync(request.MemberId);
         if (member == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.MemberId), 
                 BaseErrorCode.MemberForProjectMemberNotExists);
+        }
+        
+        if (project.OwnerId == request.MemberId)
+        {
+            return new BaseResponse(new UnauthorizedOperationException(), 
+                BaseErrorCode.UserOperationRestricted);
         }
 
         IEnumerable<ProjectMember> projectMembers = await _projectMemberRepository

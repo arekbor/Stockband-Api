@@ -2,6 +2,7 @@ using System.Net;
 using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
+using Stockband.Api.E2E.Builders;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -13,14 +14,14 @@ namespace Stockband.Api.E2E.Controllers.UserController;
 [TestFixture]
 public class GetUserByIdTests:BaseTest
 {
-    private static Func<int, string> TestingUri = id => $"/user/{id}";
+    private static readonly Func<int, string> TestingUri = id => $"/user/{id}";
     
-    private IUserRepository _userRepository = null!;
+    private UserBuilder _userBuilder = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _userRepository = new UserRepository(Context);
+        _userBuilder = new UserBuilder(Context);
     }
 
     [Test]
@@ -29,10 +30,12 @@ public class GetUserByIdTests:BaseTest
         //Arrange
         const int testingUserId = 2425;
 
-        await UserBuilder(testingUserId);
+        await _userBuilder
+            .Build(userId: testingUserId);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(testingUserId, UserRole.Admin);
+        HttpResponseModule responseModule = 
+            ActResponseModule(testingUserId, GetAdminJwtToken(3244));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -50,7 +53,8 @@ public class GetUserByIdTests:BaseTest
         const int testingUserId = 5663;
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(testingUserId, UserRole.Admin);
+        HttpResponseModule responseModule = 
+            ActResponseModule(testingUserId, GetAdminJwtToken(5400));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -69,33 +73,22 @@ public class GetUserByIdTests:BaseTest
         const int testingUserId = 5200;
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(testingUserId, UserRole.User);
+        HttpResponseModule responseModule = 
+            ActResponseModule(testingUserId, GetUserJwtToken(5000));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.Forbidden);
     }
 
-    private HttpResponseModule ActResponseModule(int userId, UserRole executingUserRole)
+    private HttpResponseModule ActResponseModule(int userId, string jwtToken)
     {
         string url = TestingUri(userId);
         
         return HttpHost
             .Get
             .Url(url)
-            .WithJwtToken(GetJwtToken(500, "admin", "admin@stockband.com", executingUserRole))
+            .WithJwtToken(jwtToken)
             .Send()
             .Response;
-    }
-
-    private async Task UserBuilder(int userId)
-    {
-        User user = Builder<User>
-            .CreateNew()
-            .With(x => x.Deleted = false)
-            .With(x => x.Id = userId)
-            .With(x => x.Role = UserRole.User)
-            .Build();
-
-        await _userRepository.AddAsync(user);
     }
 }

@@ -3,6 +3,7 @@ using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.Dtos.User;
+using Stockband.Api.E2E.Builders;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -14,13 +15,13 @@ namespace Stockband.Api.E2E.Controllers.UserController;
 [TestFixture]
 public class UserRoleTests:BaseTest
 {
-    private IUserRepository _userRepository = null!;
+    private UserBuilder _userBuilder = null!;
     private const string TestingUri = "/user/role";
 
     [SetUp]
     public void SetUp()
     {
-        _userRepository = new UserRepository(Context);
+        _userBuilder = new UserBuilder(Context);
     }
 
     [Test]
@@ -29,16 +30,19 @@ public class UserRoleTests:BaseTest
         //Arrange
         const int testingUserId = 45530;
         const UserRole testingUserRole = UserRole.User;
-        await UserBuilder(testingUserId, UserRole.User);
-
+        await _userBuilder
+            .Build(userId:testingUserId, userRole: testingUserRole);
+        
         const int testingRequestedUserId = 43350;
-        await UserBuilder(testingRequestedUserId, UserRole.Admin);
+        const UserRole testingRequestedUserRole = UserRole.Admin;
+        await _userBuilder
+            .Build(userId:testingRequestedUserId, userRole: testingRequestedUserRole);
         
         UpdateRoleDto dto = new UpdateRoleDto(testingUserId, testingUserRole);
 
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, testingRequestedUserId);
+            ActResponseModule(dto, GetAdminJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -60,7 +64,7 @@ public class UserRoleTests:BaseTest
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, 2933);
+            ActResponseModule(dto, GetAdminJwtToken(5000));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -83,7 +87,7 @@ public class UserRoleTests:BaseTest
 
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, 2933, "user", "user@gmail.com", UserRole.User);
+            ActResponseModule(dto, GetUserJwtToken(54435));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.Forbidden);
@@ -97,13 +101,15 @@ public class UserRoleTests:BaseTest
         const UserRole testingUserRole = UserRole.User;
 
         const int testingRequestedUserId = 5400;
-        await UserBuilder(testingRequestedUserId, UserRole.Admin);
+        
+        await _userBuilder
+            .Build(userId:testingRequestedUserId, userRole: UserRole.Admin);
         
         UpdateRoleDto dto = new UpdateRoleDto(testingUserId, testingUserRole);
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, testingRequestedUserId);
+            ActResponseModule(dto, GetAdminJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -116,25 +122,14 @@ public class UserRoleTests:BaseTest
     }
 
     private HttpResponseModule ActResponseModule
-        (UpdateRoleDto dto, int userId, string username = "admin", string email = "admin@gmail.com", UserRole userRole = UserRole.Admin)
+        (UpdateRoleDto dto, string jwtToken)
     {
         return HttpHost
             .Put
             .Url(TestingUri)
-            .WithJwtToken(GetJwtToken(userId, username, email, userRole))
+            .WithJwtToken(jwtToken)
             .Json(dto)
             .Send()
             .Response;
-    }
-
-    private async Task UserBuilder(int userId, UserRole userRole)
-    {
-        User user = Builder<User>
-            .CreateNew()
-            .With(x => x.Deleted = false)
-            .With(x => x.Role = userRole)
-            .With(x => x.Id = userId)
-            .Build();
-        await _userRepository.AddAsync(user);
     }
 }

@@ -22,21 +22,7 @@ public class ProjectMemberController:ControllerBase
         _mediator = mediator;
         _authorizationUser = authorizationUser;
     }
-
-    [HttpGet]
-    [Route("projectMember/{projectId:int}")]
-    public async Task<IActionResult> GetAllProjectMembers(int projectId)
-    {
-        BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = 
-            await _mediator.Send(new GetAllProjectMembersQuery
-            {
-                RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
-                ProjectId = projectId
-            });
-
-        return Ok(response);
-    }
-
+    
     [HttpPost]
     [Route("projectMember")]
     public async Task<IActionResult> AddProjectMemberToProject(AddProjectMemberDto addProjectMemberDto)
@@ -70,6 +56,20 @@ public class ProjectMemberController:ControllerBase
         {
             return BadRequest(response);
         }
+        return Ok(response);
+    }
+    
+    [HttpGet]
+    [Route("projectMember/{projectId:int}")]
+    public async Task<IActionResult> GetAllProjectMembers(int projectId)
+    {
+        BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = 
+            await _mediator.Send(new GetAllProjectMembersQuery
+            {
+                RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+                ProjectId = projectId
+            });
+
         return Ok(response);
     }
 }
