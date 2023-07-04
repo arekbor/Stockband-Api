@@ -8,6 +8,7 @@ using Stockband.Domain.Common;
 
 namespace Stockband.Api.E2E.Controllers.ProjectMemberController;
 
+[TestFixture]
 public class AddProjectMemberToProjectTests:BaseTest
 {
     private ProjectBuilder _projectBuilder = null!;

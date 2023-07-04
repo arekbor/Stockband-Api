@@ -8,6 +8,7 @@ using Stockband.Domain.Common;
 
 namespace Stockband.Api.E2E.Controllers.ProjectController;
 
+[TestFixture]
 public class RemoveProjectTests:BaseTest
 {
     private ProjectBuilder _projectBuilder = null!;

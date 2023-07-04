@@ -8,6 +8,7 @@ using Stockband.Domain.Common;
 
 namespace Stockband.Api.E2E.Controllers.ProjectController;
 
+[TestFixture]
 public class CreateProjectTests:BaseTest
 {
     private UserBuilder _userBuilder = null!;

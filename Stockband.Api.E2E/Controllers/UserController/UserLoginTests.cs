@@ -1,15 +1,11 @@
 using System.Net;
-using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.Dtos.User;
 using Stockband.Api.E2E.Builders;
 using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
-using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
-using Stockband.Domain.Entities;
-using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Api.E2E.Controllers.UserController;
 
