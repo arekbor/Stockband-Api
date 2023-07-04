@@ -1,28 +1,26 @@
 using System.Net;
-using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.Dtos.User;
-using Stockband.Application.Interfaces.Repositories;
+using Stockband.Api.E2E.Builders;
 using Stockband.Domain;
 using Stockband.Domain.Common;
-using Stockband.Domain.Entities;
-using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Api.E2E.Controllers.UserController;
 
 [TestFixture]
 public class UserUpdateTests:BaseTest
 {
-    private IUserRepository _userRepository = null!;
+    private UserBuilder _userBuilder = null!;
+    
     private const string TestingUri = "/user/update";
 
     [SetUp]
     public void SetUp()
     {
-        _userRepository = new UserRepository(Context);
+        _userBuilder = new UserBuilder(Context);
     }
-
+    
     [Test]
     public async Task UserUpdate_BaseResponse_Success_ShouldBeTrue()
     {
@@ -31,13 +29,14 @@ public class UserUpdateTests:BaseTest
         const string testingUpdateUsername = "testUsername";
         const string testingUpdateEmail = "test@gmail.com";
         
-        await UserBuilder(testingUserId);
+        await _userBuilder
+            .Build(testingUserId);
         
         UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, testingUserId, "testUsername", "user@test.com", UserRole.User);
+            ActResponseModule(dto, GetUserJwtToken(testingUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -62,11 +61,12 @@ public class UserUpdateTests:BaseTest
         const string testingRequestedUsername = "requestedUser";
         const string testingRequestedEmail = "requested@gmail.com";
 
-        await UserBuilder(testingRequestedId, testingRequestedUsername, testingRequestedEmail);
-        
+        await _userBuilder
+            .Build(userId:testingRequestedId, username:testingRequestedUsername, email:testingRequestedEmail);
+
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, testingRequestedId, testingRequestedUsername, testingRequestedEmail, UserRole.User);
+            ActResponseModule(dto, GetUserJwtToken(testingRequestedId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -92,11 +92,13 @@ public class UserUpdateTests:BaseTest
         const string testingRequestedUsername = "requestedUser";
         const string testingRequestedEmail = "requested@gmail.com";
 
-        await UserBuilder(testingRequestedId, testingRequestedUsername, testingRequestedEmail, UserRole.Admin);
-        
+        await _userBuilder
+            .Build(userId:testingRequestedId, username:testingRequestedUsername, 
+                email:testingRequestedEmail, userRole: UserRole.Admin);
+
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, testingRequestedId, testingRequestedUsername, testingRequestedEmail, UserRole.Admin);
+            ActResponseModule(dto, GetAdminJwtToken(testingRequestedId));
         
         //Assert
 
@@ -123,16 +125,17 @@ public class UserUpdateTests:BaseTest
         
         const string testingRequestedUsername = "requestedUser";
         const string testingRequestedEmail = "requested@gmail.com";
-        await UserBuilder(testingUserId, testingRequestedUsername, testingRequestedEmail);
+        await _userBuilder
+            .Build(userId:testingUserId, username:testingRequestedUsername, email:testingRequestedEmail);
 
         const int testingExistingUserId = 5430;
         string testingExistingUsername = username ?? "existingUsername";
         string testingExistingEmail = email ?? "existing@gmail.com";
-        await UserBuilder(testingExistingUserId, testingExistingUsername, testingExistingEmail);
+        await _userBuilder
+            .Build(userId:testingExistingUserId, username:testingExistingUsername, email:testingExistingEmail);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule
-            (dto, testingUserId, testingRequestedUsername, testingRequestedEmail, UserRole.User);
+        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -145,27 +148,14 @@ public class UserUpdateTests:BaseTest
     }
 
     private HttpResponseModule ActResponseModule
-        (UpdateUserDto dto, int userId, string username, string email, UserRole userRole)
+        (UpdateUserDto dto, string jwtToken)
     {
         return HttpHost
             .Put
             .Url(TestingUri)
-            .WithJwtToken(GetJwtToken(userId, username, email, userRole))
+            .WithJwtToken(jwtToken)
             .Json(dto)
             .Send()
             .Response;
-    }
-
-    private async Task UserBuilder(int userId, string? username = "", string? email = "", UserRole userRole = UserRole.User)
-    {
-        User user = Builder<User>
-            .CreateNew()
-            .With(x => x.Deleted)
-            .With(x => x.Id = userId)
-            .With(x => x.Username = username?? "test")
-            .With(x => x.Email = email?? "testing@gmail.com")
-            .With(x => x.Role = userRole)
-            .Build();
-        await _userRepository.AddAsync(user);
     }
 }

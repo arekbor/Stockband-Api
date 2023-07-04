@@ -1,14 +1,11 @@
 using System.Net;
-using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.Dtos.User;
+using Stockband.Api.E2E.Builders;
 using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
-using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
-using Stockband.Domain.Entities;
-using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Api.E2E.Controllers.UserController;
 
@@ -16,22 +13,23 @@ namespace Stockband.Api.E2E.Controllers.UserController;
 public class UserLoginTests:BaseTest
 {
     private const string TestingUri = "/user/login";
-    private IUserRepository _userRepository = null!;
+    private UserBuilder _userBuilder = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _userRepository = new UserRepository(Context);
+        _userBuilder = new UserBuilder(Context);
     }
 
     [Test]
-    public void UserLogin_BaseResponse_Success_ShouldBeTrue()
+    public async Task UserLogin_BaseResponse_Success_ShouldBeTrue()
     {
         //Arrange
         const string testingEmail = "test@gmail.com";
         const string testingPassword = "AbcDf@#!1233";
-        
-        UserBuilder(testingEmail, testingPassword);
+
+        await _userBuilder
+            .Build(userId:500, email:testingEmail, password: testingPassword);
 
         LoginUserDto dto = new LoginUserDto(testingEmail, testingPassword);
         
@@ -52,11 +50,12 @@ public class UserLoginTests:BaseTest
     [Test]
     [TestCase("test@gmail.com","test_wrong@com.pl","Addds12@3#1d","Addds12@3#1d")]
     [TestCase("test@gmail.com","test@gmail.com","Addds12@3#1d","test_wrong@3#1d")]
-    public void UserLogin_WrongEmailOrPassword_BaseErrorCodeShouldBe_WrongEmailOrPasswordLogin
+    public async Task UserLogin_WrongEmailOrPassword_BaseErrorCodeShouldBe_WrongEmailOrPasswordLogin
         (string emailCreate, string emailLogin, string passwordCreate, string passwordLogin)
     {
         //Arrange
-        UserBuilder(emailCreate, passwordCreate);
+        await _userBuilder
+            .Build(userId:500, email:emailCreate, password: passwordCreate);
         
         LoginUserDto dto = new LoginUserDto(emailLogin, passwordLogin);
         
@@ -97,21 +96,6 @@ public class UserLoginTests:BaseTest
             response.Result.ShouldBeNull();
             response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
         });
-    }
-    
-    private void UserBuilder(string email, string password)
-    {
-        string hash = BCrypt.Net.BCrypt.HashPassword(password);
-        
-        User mockUser = Builder<User>
-            .CreateNew()
-            .With(x => x.Deleted = false)
-            .With(x => x.Password = hash)
-            .With(x => x.Email = email)
-            .With(x => x.Role == UserRole.User)
-            .Build();
-
-        _userRepository.AddAsync(mockUser);
     }
     
     private HttpResponseModule ActResponseModule(LoginUserDto dto)
