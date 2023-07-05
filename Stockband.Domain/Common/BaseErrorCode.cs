@@ -81,5 +81,5 @@ public enum BaseErrorCode
     /// <summary>
     /// This code indicates that the provided email already exists.
     /// </summary>
-    UserEmailAlreadyExists = 16,
+    UserEmailAlreadyExists = 15,
 }
