@@ -48,7 +48,7 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
                 BaseErrorCode.RequestedUserNotExists);
         }
         
-        if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
+        if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
@@ -67,16 +67,12 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
                 BaseErrorCode.UserOperationRestricted);
         }
 
-        IEnumerable<ProjectMember> projectMembers = await _projectMemberRepository
-            .GetAllProjectMembersByProjectIdAsync(request.ProjectId);
-
-        bool isMemberAlreadyInProject = projectMembers.Any(x => x.MemberId == request.MemberId);
-        if (isMemberAlreadyInProject)
+        if (await _projectMemberFeaturesService.IsProjectMemberBelongToProject(request.ProjectId, request.MemberId))
         {
             return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(ProjectMember)), 
                 BaseErrorCode.ProjectMemberAlreadyCreated);
         }
-
+        
         ProjectMember projectMember = new ProjectMember
         {
             MemberId = request.MemberId,

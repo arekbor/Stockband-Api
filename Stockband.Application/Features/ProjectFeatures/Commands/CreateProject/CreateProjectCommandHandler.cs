@@ -47,11 +47,10 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
                 BaseErrorCode.RequestedUserNotExists);
         }
         
-        Project? project = await _projectRepository.GetProjectByNameAsync(request.ProjectName);
-        if (project != null)
+        if (await _projectFeaturesService.IsProjectNameAlreadyExists(request.ProjectName))
         {
-            return new BaseResponse(
-                new ObjectIsAlreadyCreatedException(typeof(Project), request.ProjectName), BaseErrorCode.ProjectAlreadyCreated);
+            return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(Project), request.ProjectName), 
+                BaseErrorCode.ProjectAlreadyCreated);
         }
 
         Project newProject = new Project

@@ -37,7 +37,7 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
                 BaseErrorCode.RequestedUserNotExists);
         }
 
-        if (!requestedUser.IsEntityAccessibleByUser(projectMember.Project.OwnerId))
+        if (!requestedUser.IsAdminOrSameAsUser(projectMember.Project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);

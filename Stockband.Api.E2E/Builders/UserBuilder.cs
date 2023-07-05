@@ -1,4 +1,6 @@
 using FizzWare.NBuilder;
+using Stockband.Application.FeatureServices;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -10,10 +12,12 @@ namespace Stockband.Api.E2E.Builders;
 internal class UserBuilder:BaseTest
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUserFeaturesService _userFeaturesService;
     
     internal UserBuilder(StockbandDbContext context)
     {
         _userRepository = new UserRepository(context);
+        _userFeaturesService = new UserFeaturesService(_userRepository);
     }
     
     internal async Task Build
@@ -35,8 +39,8 @@ internal class UserBuilder:BaseTest
     {
         if (String.IsNullOrEmpty(password))
         {
-            return BCrypt.Net.BCrypt.HashPassword("testTest@@##12345");
+            return _userFeaturesService.HashPassword("testTest@@##12345");
         }
-        return BCrypt.Net.BCrypt.HashPassword(password);
+        return _userFeaturesService.HashPassword(password);
     }
 }

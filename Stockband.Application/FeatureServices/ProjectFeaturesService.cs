@@ -26,4 +26,8 @@ public class ProjectFeaturesService:IProjectFeaturesService
 
         return (projects.Count() >= limit);
     }
+
+    public async Task<bool> IsProjectNameAlreadyExists(string projectName) => 
+        await _projectRepository.GetProjectByNameAsync(projectName) != null;
+    
 }

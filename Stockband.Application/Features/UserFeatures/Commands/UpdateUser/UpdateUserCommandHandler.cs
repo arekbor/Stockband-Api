@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using MediatR;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -11,9 +12,14 @@ namespace Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
 public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseResponse>
 {
     private readonly IUserRepository _userRepository;
-    public UpdateUserCommandHandler(IUserRepository userRepository)
+    private readonly IUserFeaturesService _userFeaturesService;
+    public UpdateUserCommandHandler(
+        IUserRepository userRepository,
+        IUserFeaturesService userFeaturesService
+        )
     {
         _userRepository = userRepository;
+        _userFeaturesService = userFeaturesService;
     }
     public async Task<BaseResponse> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
@@ -31,7 +37,7 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
                 BaseErrorCode.RequestedUserNotExists);
         }
         
-        if (!requestedUser.IsEntityAccessibleByUser(request.UserId))
+        if (!requestedUser.IsAdminOrSameAsUser(request.UserId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
@@ -43,19 +49,11 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
             return new BaseResponse(new ObjectNotFound(typeof(User), request.UserId), 
                 BaseErrorCode.UserNotExists);
         }
-        
-        User? userUsernameVerify = await _userRepository.GetUserByUsernameAsync(request.Username);
-        if (userUsernameVerify != null)
-        {
-            return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(User), request.Username), 
-                BaseErrorCode.UserAlreadyCreated);
-        }
 
-        User? userEmailVerify = await _userRepository.GetUserByEmailAsync(request.Email);
-        if (userEmailVerify != null)
+        if (await _userFeaturesService.IsEmailAlreadyUsed(request.Email))
         {
             return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(User), request.Email), 
-                BaseErrorCode.UserAlreadyCreated);
+                BaseErrorCode.UserEmailAlreadyExists);
         }
 
         user.Email = request.Email;

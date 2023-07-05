@@ -27,4 +27,20 @@ public class ProjectMemberFeaturesService:IProjectMemberFeaturesService
         
         return (members.Count() >= limit);
     }
+
+    public async Task<bool> IsProjectMemberBelongToProject(int projectId, int memberId)
+    {
+        IEnumerable<ProjectMember> projectMembers = await _projectMemberRepository
+            .GetAllProjectMembersByProjectIdAsync(projectId);
+        
+        return projectMembers.Any(x => x.MemberId == memberId);
+    }
+
+    public async Task<bool> IsAnyProjectMemberBelongToProject(int projectId)
+    {
+        IEnumerable<ProjectMember> projectMembers = await _projectMemberRepository
+            .GetAllProjectMembersByProjectIdAsync(projectId);
+
+        return projectMembers.Any();
+    }
 }
