@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using MediatR;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -11,9 +12,13 @@ namespace Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 public class GetLoggedUserQueryHandler:IRequestHandler<GetLoggedUserQuery, BaseResponse<GetLoggedUserQueryViewModel>>
 {
     private readonly IUserRepository _userRepository;
-    public GetLoggedUserQueryHandler(IUserRepository userRepository)
+    private readonly IUserFeaturesService _userFeaturesService;
+    public GetLoggedUserQueryHandler(
+        IUserRepository userRepository, 
+        IUserFeaturesService userFeaturesService)
     {
         _userRepository = userRepository;
+        _userFeaturesService = userFeaturesService;
     }
     public async Task<BaseResponse<GetLoggedUserQueryViewModel>> Handle(GetLoggedUserQuery request, CancellationToken cancellationToken)
     {
@@ -31,8 +36,7 @@ public class GetLoggedUserQueryHandler:IRequestHandler<GetLoggedUserQuery, BaseR
                 BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         
-        bool verify = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
-        if (!verify)
+        if (!_userFeaturesService.VerifyHashedPassword(request.Password, user.Password))
         {
             return new BaseResponse<GetLoggedUserQueryViewModel>(new UnauthorizedOperationException(), 
                 BaseErrorCode.WrongEmailOrPasswordLogin);

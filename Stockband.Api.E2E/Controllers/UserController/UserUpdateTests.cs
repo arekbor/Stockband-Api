@@ -112,27 +112,20 @@ public class UserUpdateTests:BaseTest
     }
 
     [Test]
-    [TestCase(null, "existing@gmail.com")]
-    [TestCase("existingUsername", null)]
-    public async Task UserUpdate_ProvidedUsernameOrEmailAlreadyExists_BaseErrorCodeShouldBe_UserAlreadyCreated
-        (string? username, string? email)
+    public async Task UserUpdate_ProvidedEmailAlreadyExists_BaseErrorCodeShouldBe_UserEmailAlreadyExists()
     {
         //Arrange
         const int testingUserId = 1200;
-        string testingUpdateUsername = username ?? "updateUsername";
-        string testingUpdateEmail = email ?? "update@gmail.com";
-        UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
-        
-        const string testingRequestedUsername = "requestedUser";
-        const string testingRequestedEmail = "requested@gmail.com";
-        await _userBuilder
-            .Build(userId:testingUserId, username:testingRequestedUsername, email:testingRequestedEmail);
+        string testingUpdateUsername = "updateUsername";
+        string testingUpdateEmail = "existing@gmail.com";
 
-        const int testingExistingUserId = 5430;
-        string testingExistingUsername = username ?? "existingUsername";
-        string testingExistingEmail = email ?? "existing@gmail.com";
         await _userBuilder
-            .Build(userId:testingExistingUserId, username:testingExistingUsername, email:testingExistingEmail);
+            .Build(userId:6500, username:"test username", email:testingUpdateEmail);
+        
+        await _userBuilder
+            .Build(userId:testingUserId);
+        
+        UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
 
         //Act
         HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingUserId));
@@ -143,7 +136,7 @@ public class UserUpdateTests:BaseTest
         {
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserAlreadyCreated);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserEmailAlreadyExists);
         });
     }
 

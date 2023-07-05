@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using MediatR;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -12,11 +13,16 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IProjectFeaturesService _projectFeaturesService;
 
-    public UpdateProjectCommandHandler(IProjectRepository projectRepository, IUserRepository userRepository)
+    public UpdateProjectCommandHandler(
+        IProjectRepository projectRepository, 
+        IUserRepository userRepository,
+        IProjectFeaturesService projectFeaturesService)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
+        _projectFeaturesService = projectFeaturesService;
     }
     
     public async Task<BaseResponse> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
@@ -42,14 +48,13 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
                 BaseErrorCode.RequestedUserNotExists);
         }
 
-        if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
+        if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
-
-        Project? projectNameVerify = await _projectRepository.GetProjectByNameAsync(request.ProjectName);
-        if (projectNameVerify != null)
+        
+        if (await _projectFeaturesService.IsProjectNameAlreadyExists(request.ProjectName))
         {
             return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(Project), request.ProjectName), 
                 BaseErrorCode.ProjectAlreadyCreated);

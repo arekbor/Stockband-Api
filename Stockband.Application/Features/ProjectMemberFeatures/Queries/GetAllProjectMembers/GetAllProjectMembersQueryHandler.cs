@@ -35,18 +35,25 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
         User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
         if (requestedUser == null)
         {
-            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
+            (new ObjectNotFound(typeof(User), request.RequestedUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
 
-        if (!requestedUser.IsEntityAccessibleByUser(project.OwnerId))
+        if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
         {
-            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(new UnauthorizedOperationException(),
-                BaseErrorCode.UserUnauthorizedOperation);
+            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
+            (new UnauthorizedOperationException(), BaseErrorCode.UserUnauthorizedOperation);
         }
+        
+        return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
+            (await GetAllProjectMembersQueryViewModels(request.ProjectId));
+    }
 
+    private async Task<List<GetAllProjectMembersQueryViewModel>> GetAllProjectMembersQueryViewModels(int projectId)
+    {
         IEnumerable<ProjectMember> projectMembers = 
-            await _projectMemberRepository.GetAllProjectMembersByProjectIdAsync(request.ProjectId);
+            await _projectMemberRepository.GetAllProjectMembersByProjectIdAsync(projectId);
 
         List<GetAllProjectMembersQueryViewModel> projectMembersQueryViewModels =
             new List<GetAllProjectMembersQueryViewModel>();
@@ -61,6 +68,6 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
             projectMembersQueryViewModels.Add(projectMembersQueryViewModel);
         }
 
-        return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(projectMembersQueryViewModels);
+        return projectMembersQueryViewModels;
     }
 }

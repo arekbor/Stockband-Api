@@ -82,7 +82,7 @@ public class UserRegisterTests:BaseTest
     }
 
     [Test]
-    public async Task UserRegister_UserEmailIsAlreadyRegistered_BaseErrorCodeShouldBe_UserAlreadyCreated()
+    public async Task UserRegister_UserEmailIsAlreadyRegistered_BaseErrorCodeShouldBe_UserEmailAlreadyExists()
     {
         //Arrange
         const string testingEmail = "test@gmail.com";
@@ -102,7 +102,7 @@ public class UserRegisterTests:BaseTest
         {
             response.Errors.Count.ShouldBe(1);
             response.Success.ShouldBe(false);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserAlreadyCreated);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserEmailAlreadyExists);
         });
     }
     

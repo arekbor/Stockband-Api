@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using MediatR;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -11,9 +12,13 @@ namespace Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 public class RegisterUserCommandHandler:IRequestHandler<RegisterUserCommand, BaseResponse>
 {
     private readonly IUserRepository _userRepository;
-    public RegisterUserCommandHandler(IUserRepository userRepository)
+    private readonly IUserFeaturesService _userFeaturesService;
+    public RegisterUserCommandHandler(
+        IUserRepository userRepository, 
+        IUserFeaturesService userFeaturesService)
     {
         _userRepository = userRepository;
+        _userFeaturesService = userFeaturesService;
     }
     public async Task<BaseResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
@@ -24,22 +29,18 @@ public class RegisterUserCommandHandler:IRequestHandler<RegisterUserCommand, Bas
             return new BaseResponse(validationResult);
         }
         
-        User? userResponse =  await _userRepository.GetUserByEmailAsync(request.Email);
-
-        if (userResponse != null)
+        if (await _userFeaturesService.IsEmailAlreadyUsed(request.Email))
         {
-            return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(User)), 
-                BaseErrorCode.UserAlreadyCreated);
+            return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(User), request.Email), 
+                BaseErrorCode.UserEmailAlreadyExists);
         }
         
-        string hash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
         User user = new User
         {
             Username = request.Username,
             Email = request.Email,
             Role = UserRole.User,
-            Password = hash
+            Password = _userFeaturesService.HashPassword(request.Password)
         };
 
         await _userRepository.AddAsync(user);

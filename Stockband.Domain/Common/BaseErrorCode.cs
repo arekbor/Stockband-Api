@@ -77,4 +77,9 @@ public enum BaseErrorCode
     /// This code indicates that the requested user could not be found.
     /// </summary>
     RequestedUserNotExists = 14,
+    
+    /// <summary>
+    /// This code indicates that the provided email already exists.
+    /// </summary>
+    UserEmailAlreadyExists = 16,
 }

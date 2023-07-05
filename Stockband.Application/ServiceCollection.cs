@@ -15,6 +15,7 @@ public static class ServiceCollection
         
         services.AddScoped<IProjectFeaturesService, ProjectFeaturesService>();
         services.AddScoped<IProjectMemberFeaturesService, ProjectMemberFeaturesService>();
+        services.AddScoped<IUserFeaturesService, UserFeaturesService>();
 
         services.AddMediatR(cfg => 
             cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));

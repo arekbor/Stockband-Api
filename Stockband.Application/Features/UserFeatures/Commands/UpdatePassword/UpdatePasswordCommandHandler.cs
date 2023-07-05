@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using MediatR;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -11,9 +12,13 @@ namespace Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand, BaseResponse>
 {
     private readonly IUserRepository _userRepository;
-    public UpdatePasswordCommandHandler(IUserRepository userRepository)
+    private readonly IUserFeaturesService _userFeaturesService;
+    public UpdatePasswordCommandHandler(
+        IUserRepository userRepository,
+        IUserFeaturesService userFeaturesService)
     {
         _userRepository = userRepository;
+        _userFeaturesService = userFeaturesService;
     }
     public async Task<BaseResponse> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
@@ -25,22 +30,19 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
         }
         
         User? user = await _userRepository.GetByIdAsync(request.RequestedUserId);
-
         if (user == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
-
-        bool verify = BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.Password);
-        if (!verify)
+        
+        if (!_userFeaturesService.VerifyHashedPassword(request.CurrentPassword, user.Password))
         {
             return new BaseResponse(new UnauthorizedOperationException(), 
                 BaseErrorCode.UserUnauthorizedOperation);
         }
-
-        string hash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-        user.Password = hash;
+        
+        user.Password = _userFeaturesService.HashPassword(request.NewPassword);
 
         await _userRepository.UpdateAsync(user);
         return new BaseResponse();

@@ -9,7 +9,7 @@ public class User : AuditEntity
     public string Password { get; set; }
     public UserRole Role { get; set; }
 
-    public bool IsEntityAccessibleByUser(int userId)
+    public bool IsAdminOrSameAsUser(int userId)
     {
         return Role == UserRole.Admin || Id == userId;
     }
