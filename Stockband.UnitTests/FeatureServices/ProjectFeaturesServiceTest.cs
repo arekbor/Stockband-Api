@@ -8,7 +8,7 @@ using Stockband.Application.FeatureServices;
 using Stockband.Application.Interfaces.Common;
 using Stockband.Domain.Entities;
 
-namespace Stockband.Application.UnitTests.FeatureServices;
+namespace Stockband.UnitTests.FeatureServices;
 
 public class ProjectFeaturesServiceTest
 {

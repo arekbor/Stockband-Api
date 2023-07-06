@@ -18,9 +18,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Api", "Stockband.Api\Stockband.Api.csproj", "{254FF858-6346-4A6F-8DE7-AFF6896E8953}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Application.IntegrationTests", "Stockband.Application.IntegrationTests\Stockband.Application.IntegrationTests.csproj", "{029E74AD-EA93-4489-90DD-C569C170DC4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.IntegrationTests", "Stockband.IntegrationTests\Stockband.IntegrationTests.csproj", "{029E74AD-EA93-4489-90DD-C569C170DC4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Application.UnitTests", "Stockband.Application.UnitTests\Stockband.Application.UnitTests.csproj", "{A305F5B1-7A62-43CE-BF02-7CC910BC6958}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.UnitTests", "Stockband.UnitTests\Stockband.UnitTests.csproj", "{A305F5B1-7A62-43CE-BF02-7CC910BC6958}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stockband.Api.E2E", "Stockband.Api.E2E\Stockband.Api.E2E.csproj", "{6DCD4C14-FE8C-4BDB-87A9-9B544C8DAF76}"
 EndProject
