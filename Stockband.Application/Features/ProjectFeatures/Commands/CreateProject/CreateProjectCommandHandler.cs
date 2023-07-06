@@ -13,15 +13,18 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IUserFeaturesService _userFeaturesService;
     private readonly IProjectFeaturesService _projectFeaturesService;
     
     public CreateProjectCommandHandler(
         IProjectRepository projectRepository, 
         IUserRepository userRepository, 
+        IUserFeaturesService userFeaturesService,
         IProjectFeaturesService projectFeaturesService)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
+        _userFeaturesService = userFeaturesService;
         _projectFeaturesService = projectFeaturesService;
     }
     public async Task<BaseResponse> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
@@ -39,8 +42,7 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
                 new PerformRestrictedOperationException(), BaseErrorCode.ProjectsLimitPerUserExceeded);
         }
         
-        User? user = await _userRepository.GetByIdAsync(request.RequestedUserId);
-        if (user == null)
+        if (!await _userFeaturesService.IsUserExists(request.RequestedUserId))
         {
             return new BaseResponse(
                 new ObjectNotFound(typeof(User), request.RequestedUserId), 

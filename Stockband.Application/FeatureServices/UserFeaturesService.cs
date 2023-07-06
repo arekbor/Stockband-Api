@@ -20,4 +20,7 @@ public class UserFeaturesService:IUserFeaturesService
 
     public bool VerifyHashedPassword(string password, string hashedPassword) =>
         BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+
+    public async Task<bool> IsUserExists(int userId) =>
+        await _userRepository.GetByIdAsync(userId) != null;
 }

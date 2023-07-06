@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using MediatR;
+using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
 using Stockband.Domain.Common;
@@ -11,9 +12,13 @@ namespace Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 public class UpdateRoleCommandHandler:IRequestHandler<UpdateRoleCommand, BaseResponse>
 {
     private readonly IUserRepository _userRepository;
-    public UpdateRoleCommandHandler(IUserRepository userRepository)
+    private readonly IUserFeaturesService _userFeaturesService;
+    public UpdateRoleCommandHandler(
+        IUserRepository userRepository,
+        IUserFeaturesService userFeaturesService)
     {
         _userRepository = userRepository;
+        _userFeaturesService = userFeaturesService;
     }
     public async Task<BaseResponse> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
     {
@@ -24,8 +29,7 @@ public class UpdateRoleCommandHandler:IRequestHandler<UpdateRoleCommand, BaseRes
             return new BaseResponse(validationResult);
         }
         
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
-        if (requestedUser == null)
+        if (!await _userFeaturesService.IsUserExists(request.RequestedUserId))
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId),
                 BaseErrorCode.RequestedUserNotExists);

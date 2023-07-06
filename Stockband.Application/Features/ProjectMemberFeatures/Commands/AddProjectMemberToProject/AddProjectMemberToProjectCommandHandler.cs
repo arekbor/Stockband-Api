@@ -13,17 +13,20 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
+    private readonly IUserFeaturesService _userFeaturesService;
     private readonly IProjectMemberFeaturesService _projectMemberFeaturesService;
 
     public AddProjectMemberToProjectCommandHandler(
         IUserRepository userRepository, 
         IProjectRepository projectRepository, 
         IProjectMemberRepository projectMemberRepository, 
+        IUserFeaturesService userFeaturesService,
         IProjectMemberFeaturesService projectMemberFeaturesService)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
+        _userFeaturesService = userFeaturesService;
         _projectMemberFeaturesService = projectMemberFeaturesService;
     }
     public async Task<BaseResponse> Handle(AddProjectMemberToProjectCommand request, CancellationToken cancellationToken)
@@ -54,8 +57,7 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
                 BaseErrorCode.UserUnauthorizedOperation);
         }
         
-        User? member = await _userRepository.GetByIdAsync(request.MemberId);
-        if (member == null)
+        if (!await _userFeaturesService.IsUserExists(request.MemberId))
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.MemberId), 
                 BaseErrorCode.MemberForProjectMemberNotExists);
