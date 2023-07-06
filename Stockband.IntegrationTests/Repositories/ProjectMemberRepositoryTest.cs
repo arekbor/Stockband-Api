@@ -6,7 +6,7 @@ using Stockband.Domain.Entities;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure.Repositories;
 
-namespace Stockband.Application.IntegrationTests.Repositories;
+namespace Stockband.IntegrationTests.Repositories;
 
 [TestFixture]
 public class ProjectMemberRepositoryTest:BaseTest

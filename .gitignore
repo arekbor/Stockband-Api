@@ -6,11 +6,11 @@
 /Stockband.Application/obj/
 /Stockband.Application/bin/
 
-/Stockband.Application.UnitTests/obj/
-/Stockband.Application.UnitTests/bin/
+/Stockband.UnitTests/obj/
+/Stockband.UnitTests/bin/
 
-/Stockband.Application.IntegrationTests/obj/
-/Stockband.Application.IntegrationTests/bin/
+/Stockband.IntegrationTests/obj/
+/Stockband.IntegrationTests/bin/
 
 /Stockband.Api.E2E/obj/
 /Stockband.Api.E2E/bin/

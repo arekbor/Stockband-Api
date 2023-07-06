@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Stockband.Infrastructure;
 
-namespace Stockband.Application.IntegrationTests;
+namespace Stockband.IntegrationTests;
 
 public abstract class BaseTest
 {
