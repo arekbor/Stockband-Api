@@ -25,20 +25,20 @@ public class RemoveProjectCommandHandler:IRequestHandler<RemoveProjectCommand, B
     }
     public async Task<BaseResponse> Handle(RemoveProjectCommand request, CancellationToken cancellationToken)
     {
-        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
-        if (project == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId),
-                BaseErrorCode.ProjectNotExists);
-        }
-
         User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
         if (requestedUser == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
-
+        
+        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
+        if (project == null)
+        {
+            return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId),
+                BaseErrorCode.ProjectNotExists);
+        }
+        
         if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),

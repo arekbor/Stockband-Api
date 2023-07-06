@@ -28,6 +28,13 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
     }
     public async Task<BaseResponse> Handle(AddProjectMemberToProjectCommand request, CancellationToken cancellationToken)
     {
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId); 
+        if (requestedUser == null)
+        {
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.RequestedUserNotExists);
+        }
+        
         Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project == null)
         {
@@ -39,13 +46,6 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
         {
             return new BaseResponse(
                 new PerformRestrictedOperationException(), BaseErrorCode.ProjectMembersLimitPerProjectExceeded);
-        }
-
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId); 
-        if (requestedUser == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
-                BaseErrorCode.RequestedUserNotExists);
         }
         
         if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))

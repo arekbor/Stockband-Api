@@ -24,14 +24,6 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
     }
     public async Task<BaseResponse<List<GetAllProjectMembersQueryViewModel>>>Handle(GetAllProjectMembersQuery request, CancellationToken cancellationToken)
     {
-        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
-        if (project == null)
-        {
-            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(
-                new ObjectNotFound(typeof(Project), request.ProjectId), 
-                BaseErrorCode.ProjectNotExists);
-        }
-
         User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
         if (requestedUser == null)
         {
@@ -39,7 +31,15 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
             (new ObjectNotFound(typeof(User), request.RequestedUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
-
+        
+        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
+        if (project == null)
+        {
+            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(
+                new ObjectNotFound(typeof(Project), request.ProjectId), 
+                BaseErrorCode.ProjectNotExists);
+        }
+        
         if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
         {
             return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>

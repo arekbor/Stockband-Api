@@ -139,6 +139,26 @@ public class UserUpdateTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.UserEmailAlreadyExists);
         });
     }
+    
+    [Test]
+    public void UserUpdate_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Arrange
+        UpdateUserDto dto = new UpdateUserDto(1200, "username", "test@gmail.com");
+        
+        //Act
+        HttpResponseModule responseModule = 
+            ActResponseModule(dto, GetUserJwtToken(8000));
+        
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
+        });
+    }
 
     private HttpResponseModule ActResponseModule
         (UpdateUserDto dto, string jwtToken)

@@ -69,7 +69,11 @@ public class ProjectMemberController:ControllerBase
                 RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
                 ProjectId = projectId
             });
-
+        
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
         return Ok(response);
     }
 }

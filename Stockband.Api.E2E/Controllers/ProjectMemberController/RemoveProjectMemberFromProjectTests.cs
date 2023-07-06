@@ -59,13 +59,18 @@ public class RemoveProjectMemberFromProjectTests:BaseTest
     }
     
     [Test]
-    public void RemoveProjectMemberFromProject_ProjectMemberNotFound_BaseErrorCodeShouldBe_ProjectMemberNotExists()
+    public async Task RemoveProjectMemberFromProject_ProjectMemberNotFound_BaseErrorCodeShouldBe_ProjectMemberNotExists()
     {
         //Arrange
+        const int testingRequestedUserId = 200;
+        await _userBuilder
+            .Build(userId: testingRequestedUserId);
+        
+        
         RemoveProjectMemberDto dto = new RemoveProjectMemberDto(200, 3400);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(5200));
+        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -108,6 +113,26 @@ public class RemoveProjectMemberFromProjectTests:BaseTest
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
             response.Errors.First().Code.ShouldBe(BaseErrorCode.UserUnauthorizedOperation);
+        });
+    }
+    
+    [Test]
+    public void RemoveProjectMemberFromProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Arrange
+        RemoveProjectMemberDto dto = new RemoveProjectMemberDto(1205, 122);
+        
+        //Act
+        HttpResponseModule responseModule = 
+            ActResponseModule(dto, GetUserJwtToken(16642));
+        
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
         });
     }
 

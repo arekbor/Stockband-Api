@@ -56,13 +56,17 @@ public class AddProjectMemberToProjectTests:BaseTest
     }
 
     [Test]
-    public void AddProjectMemberToProject_ProvidedProjectIdNotExists_BaseErrorCodeShouldBe_ProjectNotExists()
+    public async Task AddProjectMemberToProject_ProvidedProjectIdNotExists_BaseErrorCodeShouldBe_ProjectNotExists()
     {
         //Arrange
+        const int testingRequestedUserId = 9554;
+        await _userBuilder
+            .Build(userId: testingRequestedUserId);
+        
         AddProjectMemberDto dto = new AddProjectMemberDto(3200, 6500);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(6000));
+        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -189,6 +193,25 @@ public class AddProjectMemberToProjectTests:BaseTest
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
             response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectMemberAlreadyCreated);
+        });
+    }
+    
+    [Test]
+    public void AddProjectMemberToProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Arrange
+        AddProjectMemberDto dto = new AddProjectMemberDto(300, 500);
+
+        //Act
+        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(6500));
+
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
         });
     }
 

@@ -144,6 +144,26 @@ public class UpdateProjectTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectAlreadyCreated);
         });
     }
+    
+    [Test]
+    public void UpdateProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Arrange
+        UpdateProjectDto dto = new UpdateProjectDto
+            (200, "testingUpdateProjectName", "testingUpdateProjectDescription");
+
+        //Act
+        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(6500));
+
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
+        });
+    }
 
     private HttpResponseModule ActResponseModule(UpdateProjectDto dto, string jwtToken)
     {
