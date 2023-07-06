@@ -22,6 +22,13 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
     
     public async Task<BaseResponse> Handle(RemoveMemberFromProjectCommand request, CancellationToken cancellationToken)
     {
+        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        if (requestedUser == null)
+        {
+            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+                BaseErrorCode.RequestedUserNotExists);
+        }
+        
         ProjectMember? projectMember = await _projectMemberRepository
             .GetProjectMemberIncludedProjectAndMemberAsync(request.ProjectId, request.MemberId);
         if (projectMember == null)
@@ -30,13 +37,6 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
                 BaseErrorCode.ProjectMemberNotExists);
         }
         
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
-        if (requestedUser == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
-                BaseErrorCode.RequestedUserNotExists);
-        }
-
         if (!requestedUser.IsAdminOrSameAsUser(projectMember.Project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),

@@ -93,6 +93,25 @@ public class CreateProjectTests:BaseTest
         });
     }
 
+    [Test]
+    public void CreateProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Arrange
+        CreateProjectDto dto = new CreateProjectDto("testingProjectName", "testingProjectDescription");
+
+        //Act
+        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(4500));
+
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
+        });
+    }
+
     private HttpResponseModule ActResponseModule(CreateProjectDto dto, string jwtToken)
     {
         return HttpHost

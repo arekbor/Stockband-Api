@@ -4,6 +4,7 @@ using Shouldly;
 using Stockband.Api.E2E.Builders;
 using Stockband.Application.Features.ProjectMemberFeatures.Queries.GetAllProjectMembers;
 using Stockband.Domain;
+using Stockband.Domain.Common;
 
 namespace Stockband.Api.E2E.Controllers.ProjectMemberController;
 
@@ -76,6 +77,23 @@ public class GetAllProjectMembersTests:BaseTest
             response.Success.ShouldBe(true);
             response.Errors.Count.ShouldBe(0);
             response.Result.Count.ShouldBe(0);
+        });
+    }
+    
+    [Test]
+    public void GetAllProjectMembers_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Act
+        HttpResponseModule responseModule =
+            ActResponseModule(550, GetUserJwtToken(4800));
+
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
         });
     }
 

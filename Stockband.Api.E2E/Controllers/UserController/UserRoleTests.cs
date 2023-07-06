@@ -116,6 +116,26 @@ public class UserRoleTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.UserNotExists);
         });
     }
+    
+    [Test]
+    public void UserRole_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Arrange
+        UpdateRoleDto dto = new UpdateRoleDto(5985, UserRole.Admin);
+        
+        //Act
+        HttpResponseModule responseModule = 
+            ActResponseModule(dto, GetAdminJwtToken(8000));
+        
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
+        });
+    }
 
     private HttpResponseModule ActResponseModule
         (UpdateRoleDto dto, string jwtToken)

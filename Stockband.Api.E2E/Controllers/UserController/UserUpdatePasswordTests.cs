@@ -122,7 +122,28 @@ public class UserUpdatePasswordTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
         });
     }
-    
+
+    [Test]
+    public void UserUpdatePassword_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
+    {
+        //Arrange
+        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
+            ("testPassword", "testingNewPassword!@@12", "testingNewPassword!@@12");
+        
+        //Act
+        HttpResponseModule responseModule = 
+            ActResponseModule(dto, GetUserJwtToken(5000));
+        
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
+        });
+    }
+
     private HttpResponseModule ActResponseModule
         (UpdateUserPasswordDto dto, string jwtToken)
     {

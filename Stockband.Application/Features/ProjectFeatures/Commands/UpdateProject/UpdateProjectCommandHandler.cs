@@ -33,14 +33,7 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
         {
             return new BaseResponse(validationResult);
         }
-
-        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
-        if (project == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId), 
-                BaseErrorCode.ProjectNotExists);
-        }
-
+        
         User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
         if (requestedUser == null)
         {
@@ -48,6 +41,13 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
                 BaseErrorCode.RequestedUserNotExists);
         }
 
+        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
+        if (project == null)
+        {
+            return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId), 
+                BaseErrorCode.ProjectNotExists);
+        }
+        
         if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
