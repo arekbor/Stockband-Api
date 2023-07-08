@@ -2,13 +2,13 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stockband.Api.Dtos.User;
-using Stockband.Api.Interfaces;
 using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetUserById;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
@@ -18,11 +18,11 @@ namespace Stockband.Api.Controllers;
 public class UserController:ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IAuthorizationUser _authorizationUser;
-    public UserController(IMediator mediator, IAuthorizationUser authorizationUser)
+    private readonly IAuthenticationUserService _authenticationUserService;
+    public UserController(IMediator mediator, IAuthenticationUserService authenticationUserService)
     {
         _mediator = mediator;
-        _authorizationUser = authorizationUser;
+        _authenticationUserService = authenticationUserService;
     }
 
     [HttpGet]
@@ -80,14 +80,14 @@ public class UserController:ControllerBase
 
         GetLoggedUserQueryViewModel viewModel = response.Result;
 
-        string jwtToken = _authorizationUser.CreateJwt
+        string jwtToken = _authenticationUserService.GenerateJwtToken
         (
             viewModel.Id.ToString(), 
             viewModel.Username, 
             viewModel.Email,
             viewModel.Role.ToString()
         );
-        _authorizationUser.AddJwtCookie(jwtToken);
+        _authenticationUserService.AddJwtCookie(jwtToken);
         
         return Ok(response);
     }
@@ -96,7 +96,7 @@ public class UserController:ControllerBase
     [Route("/user/logout")]
     public IActionResult UserLogout()
     {
-        _authorizationUser.ClearJwtCookie();
+        _authenticationUserService.ClearJwtCookie();
         return NoContent();
     }
 
@@ -106,7 +106,7 @@ public class UserController:ControllerBase
     {
         BaseResponse response =  await _mediator.Send(new UpdatePasswordCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             CurrentPassword = updateUserPasswordDto.CurrentPassword,
             NewPassword = updateUserPasswordDto.NewPassword,
             ConfirmNewPassword = updateUserPasswordDto.ConfirmNewPassword
@@ -125,7 +125,7 @@ public class UserController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new UpdateUserCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             UserId = updateUserDto.UserId,
             Username = updateUserDto.Username,
             Email = updateUserDto.Email,
@@ -145,7 +145,7 @@ public class UserController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new UpdateRoleCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             UserId = updateRoleDto.UserId,
             Role = updateRoleDto.Role
         });

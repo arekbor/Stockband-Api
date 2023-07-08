@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Stockband.Api.Services;
-using Stockband.Application.Common.Services;
 using Stockband.Domain.Common;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure;
+using Stockband.Infrastructure.Services;
 
 namespace Stockband.Api.E2E;
 
@@ -89,13 +88,13 @@ public abstract class BaseTest
         IConfiguration configuration = ServiceProvider.GetRequiredService<IConfiguration>();
         IHttpContextAccessor httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
         
-        ConfigurationHelperCommonService configurationHelperCommonService = 
-            new ConfigurationHelperCommonService(configuration);
+        ConfigurationHelperService configurationHelper = 
+            new ConfigurationHelperService(configuration);
 
-        AuthorizationUser authorizationUser =
-            new AuthorizationUser(httpContextAccessor, configurationHelperCommonService);
+        AuthenticationUserService authenticationUser =
+            new AuthenticationUserService(httpContextAccessor, configurationHelper);
 
-        string token =  authorizationUser.CreateJwt(userId.ToString(), username, email, userRole.ToString());
+        string token =  authenticationUser.GenerateJwtToken(userId.ToString(), username, email, userRole.ToString());
 
         return token;
     }

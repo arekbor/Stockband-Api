@@ -5,7 +5,7 @@ using Shouldly;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.FeatureServices;
-using Stockband.Application.Interfaces.Common;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain.Entities;
 
 namespace Stockband.UnitTests.FeatureServices;
@@ -13,7 +13,7 @@ namespace Stockband.UnitTests.FeatureServices;
 public class ProjectFeaturesServiceTest
 {
     private Mock<IProjectRepository> _projectRepositoryMock = null!;
-    private Mock<IConfigurationHelperCommonService> _configurationHelperServiceMock = null!;
+    private Mock<IConfigurationHelperService> _configurationHelperService = null!;
 
     private IProjectFeaturesService _projectFeaturesService = null!;
     
@@ -21,7 +21,7 @@ public class ProjectFeaturesServiceTest
     public void SetUp()
     {
         _projectRepositoryMock = new Mock<IProjectRepository>();
-        _configurationHelperServiceMock = new Mock<IConfigurationHelperCommonService>();
+        _configurationHelperService = new Mock<IConfigurationHelperService>();
     }
 
     [Test]
@@ -67,10 +67,10 @@ public class ProjectFeaturesServiceTest
                 .Build()
                 .ToList());
 
-        _configurationHelperServiceMock
+        _configurationHelperService
             .Setup(x => x.GetProjectsLimitPerUser())
             .Returns(limit);
         
-        _projectFeaturesService = new ProjectFeaturesService(_configurationHelperServiceMock.Object, _projectRepositoryMock.Object);
+        _projectFeaturesService = new ProjectFeaturesService(_configurationHelperService.Object, _projectRepositoryMock.Object);
     }
 }

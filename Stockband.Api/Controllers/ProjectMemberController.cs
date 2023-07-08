@@ -2,10 +2,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stockband.Api.Dtos.ProjectMember;
-using Stockband.Api.Interfaces;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.AddProjectMemberToProject;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMemberFromProject;
 using Stockband.Application.Features.ProjectMemberFeatures.Queries.GetAllProjectMembers;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
@@ -15,12 +15,12 @@ namespace Stockband.Api.Controllers;
 public class ProjectMemberController:ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IAuthorizationUser _authorizationUser;
+    private readonly IAuthenticationUserService _authenticationUserService;
 
-    public ProjectMemberController(IMediator mediator, IAuthorizationUser authorizationUser)
+    public ProjectMemberController(IMediator mediator, IAuthenticationUserService authenticationUserService)
     {
         _mediator = mediator;
-        _authorizationUser = authorizationUser;
+        _authenticationUserService = authenticationUserService;
     }
     
     [HttpPost]
@@ -29,7 +29,7 @@ public class ProjectMemberController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new AddProjectMemberToProjectCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             ProjectId = addProjectMemberDto.ProjectId,
             MemberId = addProjectMemberDto.MemberId
         });
@@ -47,7 +47,7 @@ public class ProjectMemberController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new RemoveMemberFromProjectCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             ProjectId = removeProjectMemberDto.ProjectId,
             MemberId = removeProjectMemberDto.MemberId
         });
@@ -66,7 +66,7 @@ public class ProjectMemberController:ControllerBase
         BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = 
             await _mediator.Send(new GetAllProjectMembersQuery
             {
-                RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+                RequestedUserId = _authenticationUserService.GetCurrentUserId(),
                 ProjectId = projectId
             });
         
