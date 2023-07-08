@@ -1,17 +1,17 @@
-using Stockband.Application.Interfaces.Common;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Application.Interfaces.FeatureServices;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain.Entities;
 
 namespace Stockband.Application.FeatureServices;
 
 public class ProjectMemberFeaturesService:IProjectMemberFeaturesService
 {
-    private readonly IConfigurationHelperCommonService _configurationHelperService;
+    private readonly IConfigurationHelperService _configurationHelperService;
     private readonly IProjectMemberRepository _projectMemberRepository;
     
     public ProjectMemberFeaturesService(
-        IConfigurationHelperCommonService configurationHelperService, 
+        IConfigurationHelperService configurationHelperService, 
         IProjectMemberRepository projectMemberRepository)
     {
         _configurationHelperService = configurationHelperService;

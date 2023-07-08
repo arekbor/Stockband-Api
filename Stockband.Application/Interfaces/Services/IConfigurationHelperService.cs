@@ -1,6 +1,6 @@
-namespace Stockband.Application.Interfaces.Common;
+namespace Stockband.Application.Interfaces.Services;
 
-public interface IConfigurationHelperCommonService
+public interface IConfigurationHelperService
 { 
     int GetProjectsLimitPerUser();
     int GetProjectMembersLimitPerProject();

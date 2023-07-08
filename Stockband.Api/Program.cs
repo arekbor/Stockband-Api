@@ -1,8 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Stockband.Api.Interfaces;
-using Stockband.Api.Services;
 using Stockband.Application;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure;
@@ -58,12 +56,9 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
-
-builder.Services.AddScoped<IAuthorizationUser, AuthorizationUser>();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddInfrastructureDbContexts(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();

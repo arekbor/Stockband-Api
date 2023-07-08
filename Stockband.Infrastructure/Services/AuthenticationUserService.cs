@@ -1,36 +1,37 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using Stockband.Api.Interfaces;
-using Stockband.Application.Interfaces.Common;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain.Exceptions;
 
-namespace Stockband.Api.Services;
+namespace Stockband.Infrastructure.Services;
 
-public class AuthorizationUser:IAuthorizationUser
+public class AuthenticationUserService:IAuthenticationUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IConfigurationHelperCommonService _configurationHelperCommonService;
+    private readonly IConfigurationHelperService _configurationHelperService;
 
-    public AuthorizationUser(
-        IHttpContextAccessor httpContextAccessor, 
-        IConfigurationHelperCommonService configurationHelperCommonService)
+    public AuthenticationUserService(
+        IHttpContextAccessor httpContextAccessor,
+        IConfigurationHelperService configurationHelperService)
     {
         _httpContextAccessor = httpContextAccessor;
-        _configurationHelperCommonService = configurationHelperCommonService;
+        _configurationHelperService = configurationHelperService;
     }
-    public string CreateJwt(string userId, string username, string email, string role)
+    
+    public string GenerateJwtToken(string userId, string username, string email, string role)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
-        string jwtKey = _configurationHelperCommonService.GetJwtKey();
+        string jwtKey = _configurationHelperService.GetJwtKey();
 
-        string jwtAudience = _configurationHelperCommonService.GetJwtAudience();
+        string jwtAudience = _configurationHelperService.GetJwtAudience();
 
-        string jwtIssuer = _configurationHelperCommonService.GetJwtIssuer();
+        string jwtIssuer = _configurationHelperService.GetJwtIssuer();
 
-        double jwtExpires = _configurationHelperCommonService.GetJwtExpires();
+        double jwtExpires = _configurationHelperService.GetJwtExpires();
         
         byte[] keyBytes = Encoding.UTF8.GetBytes(jwtKey);
         SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
@@ -56,9 +57,9 @@ public class AuthorizationUser:IAuthorizationUser
 
     public void AddJwtCookie(string jwtToken)
     {
-        string cookieName = _configurationHelperCommonService.GetCookieName();
+        string cookieName = _configurationHelperService.GetCookieName();
 
-        double cookieExpires = _configurationHelperCommonService.GetCookieExpires();
+        double cookieExpires = _configurationHelperService.GetCookieExpires();
         
         HttpContext? httpContext = _httpContextAccessor.HttpContext;
         if (httpContext == null)
@@ -76,7 +77,7 @@ public class AuthorizationUser:IAuthorizationUser
 
     public void ClearJwtCookie()
     {
-        string cookieName = _configurationHelperCommonService.GetCookieName();
+        string cookieName = _configurationHelperService.GetCookieName();
 
         HttpContext? httpContext = _httpContextAccessor.HttpContext;
         if (httpContext == null)
@@ -87,7 +88,7 @@ public class AuthorizationUser:IAuthorizationUser
         httpContext.Response.Cookies.Delete(cookieName);
     }
 
-    public int GetUserIdFromClaims()
+    public int GetCurrentUserId()
     {
         HttpContext? httpContext = _httpContextAccessor.HttpContext;
         if (httpContext == null)

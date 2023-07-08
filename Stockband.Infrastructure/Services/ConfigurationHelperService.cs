@@ -1,13 +1,15 @@
 using Microsoft.Extensions.Configuration;
-using Stockband.Application.Interfaces.Common;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain.Exceptions;
 
-namespace Stockband.Application.Common.Services;
+namespace Stockband.Infrastructure.Services;
 
-public class ConfigurationHelperCommonService:IConfigurationHelperCommonService
+public class ConfigurationHelperService:IConfigurationHelperService
 {
     private readonly IConfiguration _configuration;
-    public ConfigurationHelperCommonService(IConfiguration configuration)
+
+    public ConfigurationHelperService(
+        IConfiguration configuration)
     {
         _configuration = configuration;
     }

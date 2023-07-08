@@ -5,14 +5,14 @@ using Shouldly;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.FeatureServices;
-using Stockband.Application.Interfaces.Common;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain.Entities;
 
 namespace Stockband.UnitTests.FeatureServices;
 
 public class ProjectMemberFeaturesServiceTest
 {
-    private Mock<IConfigurationHelperCommonService> _configurationHelperServiceMock = null!;
+    private Mock<IConfigurationHelperService> _configurationHelperService = null!;
     private Mock<IProjectMemberRepository> _projectMemberRepositoryMock = null!;
 
     private IProjectMemberFeaturesService _projectMemberFeaturesService = null!;
@@ -20,7 +20,7 @@ public class ProjectMemberFeaturesServiceTest
     [SetUp]
     public void SetUp()
     {
-        _configurationHelperServiceMock = new Mock<IConfigurationHelperCommonService>();
+        _configurationHelperService = new Mock<IConfigurationHelperService>();
         _projectMemberRepositoryMock = new Mock<IProjectMemberRepository>();
     }
 
@@ -69,11 +69,11 @@ public class ProjectMemberFeaturesServiceTest
             .Setup(x => x.GetAllProjectMembersByProjectIdAsync(It.IsAny<int>()))
             .ReturnsAsync(projectMembers);
 
-        _configurationHelperServiceMock
+        _configurationHelperService
             .Setup(x => x.GetProjectMembersLimitPerProject())
             .Returns(limit);
 
         _projectMemberFeaturesService = new ProjectMemberFeaturesService
-            (_configurationHelperServiceMock.Object, _projectMemberRepositoryMock.Object);
+            (_configurationHelperService.Object, _projectMemberRepositoryMock.Object);
     }
 }

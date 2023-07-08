@@ -2,10 +2,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stockband.Api.Dtos.Project;
-using Stockband.Api.Interfaces;
 using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.RemoveProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
@@ -15,11 +15,11 @@ namespace Stockband.Api.Controllers;
 public class ProjectController:ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IAuthorizationUser _authorizationUser;
-    public ProjectController(IMediator mediator, IAuthorizationUser authorizationUser)
+    private readonly IAuthenticationUserService _authenticationUserService;
+    public ProjectController(IMediator mediator, IAuthenticationUserService authenticationUserService)
     {
         _mediator = mediator;
-        _authorizationUser = authorizationUser;
+        _authenticationUserService = authenticationUserService;
     }
 
     [HttpPost]
@@ -28,7 +28,7 @@ public class ProjectController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new CreateProjectCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             ProjectName = createProjectDto.ProjectName,
             ProjectDescription = createProjectDto.ProjectDescription
         });
@@ -46,7 +46,7 @@ public class ProjectController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new UpdateProjectCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             ProjectId = updateProjectDto.ProjectId,
             ProjectName = updateProjectDto.ProjectName,
             ProjectDescription = updateProjectDto.ProjectDescription
@@ -65,7 +65,7 @@ public class ProjectController:ControllerBase
     {
         BaseResponse response = await _mediator.Send(new RemoveProjectCommand
         {
-            RequestedUserId = _authorizationUser.GetUserIdFromClaims(),
+            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
             ProjectId = removeProjectDto.ProjectId
         });
         
