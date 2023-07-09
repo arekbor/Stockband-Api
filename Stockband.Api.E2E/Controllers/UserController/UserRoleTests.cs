@@ -73,7 +73,7 @@ public class UserRoleTests:BaseTest
     }
 
     [Test]
-    public void UserRole_RequestedUserIsNotAdmin_HttpStatusCodeShouldBe_Forbidden()
+    public void UserRole_RequestedUserIsNotAdmin_BaseErrorCodeShouldBe_UserUnauthorizedOperation()
     {
         //Arrange
         const int testingUserId = 3224;
@@ -86,7 +86,13 @@ public class UserRoleTests:BaseTest
             ActResponseModule(dto, GetUserJwtToken(54435));
 
         //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.Forbidden);
+        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        {
+            response.Success.ShouldBe(false);
+            response.Errors.Count.ShouldBe(1);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserUnauthorizedOperation);
+        });
     }
 
     [Test]

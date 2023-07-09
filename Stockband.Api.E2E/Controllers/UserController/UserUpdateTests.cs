@@ -54,6 +54,8 @@ public class UserUpdateTests:BaseTest
         const int testingUserId = 2600;
         const string testingUpdateUsername = "updateUsername";
         const string testingUpdateEmail = "update@gmail.com";
+
+        await _userBuilder.Build(userId: testingUserId);
         
         UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
         

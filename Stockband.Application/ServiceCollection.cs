@@ -1,5 +1,7 @@
 using System.Reflection;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Stockband.Application.Behaviors;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.FeatureServices;
 
@@ -15,7 +17,9 @@ public static class ServiceCollection
 
         services.AddMediatR(cfg => 
             cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
-        
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AllowRoleBehavior<,>));
+
         return services;
     }
 }

@@ -1,5 +1,4 @@
 using FluentValidation.Results;
-using Newtonsoft.Json;
 using Stockband.Domain.Common;
 
 namespace Stockband.Domain;
