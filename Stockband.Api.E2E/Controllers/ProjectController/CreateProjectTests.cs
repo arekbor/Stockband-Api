@@ -1,8 +1,8 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.Project;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -33,10 +33,11 @@ public class CreateProjectTests:BaseTest
         await _userBuilder
             .Build(userId: testingRequestedUserId);
 
-        CreateProjectDto dto = new CreateProjectDto(testingProjectName, testingProjectDescription);
+        CreateProjectCommand command = new CreateProjectCommand
+            (testingProjectName, testingProjectDescription);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -53,10 +54,11 @@ public class CreateProjectTests:BaseTest
         (string projectName, string description)
     {
         //Arrange
-        CreateProjectDto dto = new CreateProjectDto(projectName, description);
+        CreateProjectCommand command = new CreateProjectCommand
+            (projectName, description);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(1000));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(1000));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -75,13 +77,14 @@ public class CreateProjectTests:BaseTest
         const string testingExistingProjectName = "test existing project name";
         await _projectBuilder.Build(projectId:5400, projectName:testingExistingProjectName);
         
-        CreateProjectDto dto = new CreateProjectDto(testingExistingProjectName, String.Empty);
+        CreateProjectCommand command = new CreateProjectCommand
+            (testingExistingProjectName, String.Empty);
 
         const int requestedUserId = 2500;
         await _userBuilder.Build(userId:requestedUserId);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(requestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(requestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -92,33 +95,14 @@ public class CreateProjectTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectAlreadyCreated);
         });
     }
-
-    [Test]
-    public void CreateProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
-    {
-        //Arrange
-        CreateProjectDto dto = new CreateProjectDto("testingProjectName", "testingProjectDescription");
-
-        //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(4500));
-
-        //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
-        });
-    }
-
-    private HttpResponseModule ActResponseModule(CreateProjectDto dto, string jwtToken)
+    
+    private HttpResponseModule ActResponseModule(CreateProjectCommand command, string jwtToken)
     {
         return HttpHost
             .Post
             .WithJwtToken(jwtToken)
             .Url(TestingUri)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }

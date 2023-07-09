@@ -2,6 +2,7 @@ using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Application.Interfaces.FeatureServices;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -12,20 +13,17 @@ namespace Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, BaseResponse>
 {
     private readonly IProjectRepository _projectRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IUserFeaturesService _userFeaturesService;
     private readonly IProjectFeaturesService _projectFeaturesService;
+    private readonly IAuthenticationUserService _authenticationUserService;
     
     public CreateProjectCommandHandler(
-        IProjectRepository projectRepository, 
-        IUserRepository userRepository, 
-        IUserFeaturesService userFeaturesService,
-        IProjectFeaturesService projectFeaturesService)
+        IProjectRepository projectRepository,
+        IProjectFeaturesService projectFeaturesService,
+        IAuthenticationUserService authenticationUserService)
     {
         _projectRepository = projectRepository;
-        _userRepository = userRepository;
-        _userFeaturesService = userFeaturesService;
         _projectFeaturesService = projectFeaturesService;
+        _authenticationUserService = authenticationUserService;
     }
     public async Task<BaseResponse> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
@@ -35,18 +33,12 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
         {
             return new BaseResponse(validationResult);
         }
-        
-        if (await _projectFeaturesService.IsProjectsLimitExceeded(request.RequestedUserId))
+
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
+        if (await _projectFeaturesService.IsProjectsLimitExceeded(currentUserId))
         {
             return new BaseResponse(
                 new PerformRestrictedOperationException(), BaseErrorCode.ProjectsLimitPerUserExceeded);
-        }
-        
-        if (!await _userFeaturesService.IsUserExists(request.RequestedUserId))
-        {
-            return new BaseResponse(
-                new ObjectNotFound(typeof(User), request.RequestedUserId), 
-                BaseErrorCode.RequestedUserNotExists);
         }
         
         if (await _projectFeaturesService.IsProjectNameAlreadyExists(request.ProjectName))
@@ -57,7 +49,7 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
 
         Project newProject = new Project
         {
-            OwnerId = request.RequestedUserId,
+            OwnerId = currentUserId,
             Name = request.ProjectName,
             Description = request.ProjectDescription,
         };

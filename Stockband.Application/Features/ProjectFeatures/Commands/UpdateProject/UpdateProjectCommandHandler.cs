@@ -2,6 +2,7 @@ using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -14,15 +15,18 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
     private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
     private readonly IProjectFeaturesService _projectFeaturesService;
+    private readonly IAuthenticationUserService _authenticationUserService;
 
     public UpdateProjectCommandHandler(
         IProjectRepository projectRepository, 
         IUserRepository userRepository,
-        IProjectFeaturesService projectFeaturesService)
+        IProjectFeaturesService projectFeaturesService,
+        IAuthenticationUserService authenticationUserService)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
         _projectFeaturesService = projectFeaturesService;
+        _authenticationUserService = authenticationUserService;
     }
     
     public async Task<BaseResponse> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
@@ -33,11 +37,13 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
         {
             return new BaseResponse(validationResult);
         }
+
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
         
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
         if (requestedUser == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
 

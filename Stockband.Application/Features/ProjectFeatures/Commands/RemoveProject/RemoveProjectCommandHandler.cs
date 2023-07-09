@@ -1,6 +1,7 @@
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -13,22 +14,27 @@ public class RemoveProjectCommandHandler:IRequestHandler<RemoveProjectCommand, B
     private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
     private readonly IProjectMemberFeaturesService _projectMemberFeaturesService;
+    private readonly IAuthenticationUserService _authenticationUserService;
 
     public RemoveProjectCommandHandler(
         IProjectRepository projectRepository,
         IUserRepository userRepository,
-        IProjectMemberFeaturesService projectMemberFeaturesService)
+        IProjectMemberFeaturesService projectMemberFeaturesService,
+        IAuthenticationUserService authenticationUserService)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
         _projectMemberFeaturesService = projectMemberFeaturesService;
+        _authenticationUserService = authenticationUserService;
     }
     public async Task<BaseResponse> Handle(RemoveProjectCommand request, CancellationToken cancellationToken)
     {
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
+        
+        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
         if (requestedUser == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
         
