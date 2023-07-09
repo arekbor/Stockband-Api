@@ -6,4 +6,5 @@ public interface IAuthenticationUserService
     void AddJwtCookie(string jwtToken);
     void ClearJwtCookie();
     int GetCurrentUserId();
+    IEnumerable<string> GetCurrentUserRoles();
 }

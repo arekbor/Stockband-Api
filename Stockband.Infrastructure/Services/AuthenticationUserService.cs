@@ -90,13 +90,7 @@ public class AuthenticationUserService:IAuthenticationUserService
 
     public int GetCurrentUserId()
     {
-        HttpContext? httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext == null)
-        {
-            throw new ObjectNotFound(typeof(HttpContext));
-        }
-        
-        Claim? claim = httpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+        Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
         if (claim == null)
         {
             throw new ObjectNotFound(typeof(Claim));
@@ -109,5 +103,24 @@ public class AuthenticationUserService:IAuthenticationUserService
         }
 
         return parsedId;
+    }
+
+    public IEnumerable<string> GetCurrentUserRoles()
+    {
+        return GetHttpContext()
+            .User
+            .Claims
+            .Where(x => x.Type == ClaimTypes.Role)
+            .Select(x => x.Value);
+    }
+
+    private HttpContext GetHttpContext()
+    {
+        HttpContext? httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null)
+        {
+            throw new ObjectNotFound(typeof(HttpContext));
+        }
+        return httpContext;
     }
 }

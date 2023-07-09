@@ -27,7 +27,6 @@ public class UserController:ControllerBase
 
     [HttpGet]
     [Route("/user/{id:int}")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUserById(int id)
     {
         BaseResponse<GetUserByIdQueryViewModel> response =  await _mediator.Send(new GetUserByIdQuery
@@ -140,7 +139,6 @@ public class UserController:ControllerBase
 
     [HttpPut]
     [Route("/user/role")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UserRole(UpdateRoleDto updateRoleDto)
     {
         BaseResponse response = await _mediator.Send(new UpdateRoleCommand
