@@ -1,6 +1,7 @@
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -15,26 +16,32 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUserFeaturesService _userFeaturesService;
     private readonly IProjectMemberFeaturesService _projectMemberFeaturesService;
+    private readonly IAuthenticationUserService _authenticationUserService;
 
     public AddProjectMemberToProjectCommandHandler(
         IUserRepository userRepository, 
         IProjectRepository projectRepository, 
         IProjectMemberRepository projectMemberRepository, 
         IUserFeaturesService userFeaturesService,
-        IProjectMemberFeaturesService projectMemberFeaturesService)
+        IProjectMemberFeaturesService projectMemberFeaturesService,
+        IAuthenticationUserService authenticationUserService)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
         _userFeaturesService = userFeaturesService;
         _projectMemberFeaturesService = projectMemberFeaturesService;
+        _authenticationUserService = authenticationUserService;
     }
     public async Task<BaseResponse> Handle(AddProjectMemberToProjectCommand request, CancellationToken cancellationToken)
     {
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId); 
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
+        
+        
+        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId); 
         if (requestedUser == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
         

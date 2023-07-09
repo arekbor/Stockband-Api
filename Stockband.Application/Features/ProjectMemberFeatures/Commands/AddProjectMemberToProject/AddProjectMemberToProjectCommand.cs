@@ -5,7 +5,15 @@ namespace Stockband.Application.Features.ProjectMemberFeatures.Commands.AddProje
 
 public class AddProjectMemberToProjectCommand:IRequest<BaseResponse>
 {
-    public int RequestedUserId { get; set; }
+    public AddProjectMemberToProjectCommand()
+    {
+        
+    }
+    public AddProjectMemberToProjectCommand(int projectId, int memberId)
+    {
+        ProjectId = projectId;
+        MemberId = memberId;
+    }
     public int ProjectId { get; set; }
     public int MemberId { get; set; }
 }

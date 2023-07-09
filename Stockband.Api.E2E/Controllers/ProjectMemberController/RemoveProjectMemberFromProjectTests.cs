@@ -1,8 +1,8 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.ProjectMember;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMemberFromProject;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -44,10 +44,11 @@ public class RemoveProjectMemberFromProjectTests:BaseTest
         await _projectMemberBuilder
             .Build(6500, projectId: testingProjectId, memberId: testingMemberIdToDelete);
 
-        RemoveProjectMemberDto dto = new RemoveProjectMemberDto(testingProjectId, testingMemberIdToDelete);
+        RemoveMemberFromProjectCommand command = new RemoveMemberFromProjectCommand
+            (testingProjectId, testingMemberIdToDelete);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -66,11 +67,11 @@ public class RemoveProjectMemberFromProjectTests:BaseTest
         await _userBuilder
             .Build(userId: testingRequestedUserId);
         
-        
-        RemoveProjectMemberDto dto = new RemoveProjectMemberDto(200, 3400);
+        RemoveMemberFromProjectCommand command = new RemoveMemberFromProjectCommand
+            (200, 3400);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -101,10 +102,11 @@ public class RemoveProjectMemberFromProjectTests:BaseTest
         await _projectMemberBuilder
             .Build(6500, projectId: testingProjectId, memberId: testingMemberIdToDelete);
 
-        RemoveProjectMemberDto dto = new RemoveProjectMemberDto(testingProjectId, testingMemberIdToDelete);
+        RemoveMemberFromProjectCommand command = new RemoveMemberFromProjectCommand
+            (testingProjectId, testingMemberIdToDelete);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -116,33 +118,13 @@ public class RemoveProjectMemberFromProjectTests:BaseTest
         });
     }
     
-    [Test]
-    public void RemoveProjectMemberFromProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
-    {
-        //Arrange
-        RemoveProjectMemberDto dto = new RemoveProjectMemberDto(1205, 122);
-        
-        //Act
-        HttpResponseModule responseModule = 
-            ActResponseModule(dto, GetUserJwtToken(16642));
-        
-        //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
-        });
-    }
-
-    private HttpResponseModule ActResponseModule(RemoveProjectMemberDto dto, string jwtToken)
+    private HttpResponseModule ActResponseModule(RemoveMemberFromProjectCommand command, string jwtToken)
     {
         return HttpHost
             .Delete
             .WithJwtToken(jwtToken)
             .Url(TestingUri)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }
