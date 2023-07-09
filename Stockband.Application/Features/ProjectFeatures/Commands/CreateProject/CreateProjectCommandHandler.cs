@@ -13,21 +13,15 @@ namespace Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, BaseResponse>
 {
     private readonly IProjectRepository _projectRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IUserFeaturesService _userFeaturesService;
     private readonly IProjectFeaturesService _projectFeaturesService;
     private readonly IAuthenticationUserService _authenticationUserService;
     
     public CreateProjectCommandHandler(
-        IProjectRepository projectRepository, 
-        IUserRepository userRepository, 
-        IUserFeaturesService userFeaturesService,
+        IProjectRepository projectRepository,
         IProjectFeaturesService projectFeaturesService,
         IAuthenticationUserService authenticationUserService)
     {
         _projectRepository = projectRepository;
-        _userRepository = userRepository;
-        _userFeaturesService = userFeaturesService;
         _projectFeaturesService = projectFeaturesService;
         _authenticationUserService = authenticationUserService;
     }
