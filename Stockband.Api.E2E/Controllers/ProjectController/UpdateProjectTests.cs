@@ -1,8 +1,8 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.Project;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -37,11 +37,11 @@ public class UpdateProjectTests:BaseTest
         await _projectBuilder
             .Build(projectId:testingUpdateProjectId, ownerProjectId: testingRequestedUserId);
 
-        UpdateProjectDto dto = new UpdateProjectDto
+        UpdateProjectCommand command = new UpdateProjectCommand
             (testingUpdateProjectId, testingUpdateProjectName, testingUpdateProjectDescription);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -64,11 +64,11 @@ public class UpdateProjectTests:BaseTest
         const string testingUpdateProjectName = "updated project name";
         const string testingUpdateProjectDescription = "updated project description";
         
-        UpdateProjectDto dto = new UpdateProjectDto
+        UpdateProjectCommand command = new UpdateProjectCommand
             (testingUpdateProjectId, testingUpdateProjectName, testingUpdateProjectDescription);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -95,11 +95,11 @@ public class UpdateProjectTests:BaseTest
         await _projectBuilder
             .Build(projectId:testingUpdateProjectId);
 
-        UpdateProjectDto dto = new UpdateProjectDto
+        UpdateProjectCommand command = new UpdateProjectCommand
             (testingUpdateProjectId, testingUpdateProjectName, testingUpdateProjectDescription);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -129,11 +129,11 @@ public class UpdateProjectTests:BaseTest
         await _projectBuilder
             .Build(projectId: 7756, projectName: testingUpdateProjectName);
 
-        UpdateProjectDto dto = new UpdateProjectDto
+        UpdateProjectCommand command = new UpdateProjectCommand
             (testingUpdateProjectId, testingUpdateProjectName, testingUpdateProjectDescription);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -145,33 +145,13 @@ public class UpdateProjectTests:BaseTest
         });
     }
     
-    [Test]
-    public void UpdateProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
-    {
-        //Arrange
-        UpdateProjectDto dto = new UpdateProjectDto
-            (200, "testingUpdateProjectName", "testingUpdateProjectDescription");
-
-        //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(6500));
-
-        //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
-        });
-    }
-
-    private HttpResponseModule ActResponseModule(UpdateProjectDto dto, string jwtToken)
+    private HttpResponseModule ActResponseModule(UpdateProjectCommand command, string jwtToken)
     {
         return HttpHost
             .Put
             .WithJwtToken(jwtToken)
             .Url(TestingUri)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }

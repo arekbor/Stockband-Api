@@ -1,11 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stockband.Api.Dtos.Project;
 using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.RemoveProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
-using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
@@ -15,24 +13,16 @@ namespace Stockband.Api.Controllers;
 public class ProjectController:ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IAuthenticationUserService _authenticationUserService;
-    public ProjectController(IMediator mediator, IAuthenticationUserService authenticationUserService)
+    public ProjectController(IMediator mediator)
     {
         _mediator = mediator;
-        _authenticationUserService = authenticationUserService;
     }
 
     [HttpPost]
     [Route("project")]
-    public async Task<IActionResult> CreateProject(CreateProjectDto createProjectDto)
+    public async Task<IActionResult> CreateProject(CreateProjectCommand command)
     {
-        BaseResponse response = await _mediator.Send(new CreateProjectCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            ProjectName = createProjectDto.ProjectName,
-            ProjectDescription = createProjectDto.ProjectDescription
-        });
-
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -42,16 +32,9 @@ public class ProjectController:ControllerBase
 
     [HttpPut]
     [Route("project")]
-    public async Task<IActionResult> UpdateProject(UpdateProjectDto updateProjectDto)
+    public async Task<IActionResult> UpdateProject(UpdateProjectCommand command)
     {
-        BaseResponse response = await _mediator.Send(new UpdateProjectCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            ProjectId = updateProjectDto.ProjectId,
-            ProjectName = updateProjectDto.ProjectName,
-            ProjectDescription = updateProjectDto.ProjectDescription
-        });
-        
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -61,14 +44,9 @@ public class ProjectController:ControllerBase
 
     [HttpDelete]
     [Route("project")]
-    public async Task<IActionResult> RemoveProject(RemoveProjectDto removeProjectDto)
+    public async Task<IActionResult> RemoveProject(RemoveProjectCommand command)
     {
-        BaseResponse response = await _mediator.Send(new RemoveProjectCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            ProjectId = removeProjectDto.ProjectId
-        });
-        
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
