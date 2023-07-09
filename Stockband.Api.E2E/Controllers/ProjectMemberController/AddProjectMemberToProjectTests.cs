@@ -1,8 +1,8 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.ProjectMember;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.ProjectMemberFeatures.Commands.AddProjectMemberToProject;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -41,10 +41,11 @@ public class AddProjectMemberToProjectTests:BaseTest
         await _userBuilder
             .Build(userId: testingNewMemberId);
 
-        AddProjectMemberDto dto = new AddProjectMemberDto(testingProjectId, testingNewMemberId);
+        AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
+            (testingProjectId, testingNewMemberId);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -63,10 +64,11 @@ public class AddProjectMemberToProjectTests:BaseTest
         await _userBuilder
             .Build(userId: testingRequestedUserId);
         
-        AddProjectMemberDto dto = new AddProjectMemberDto(3200, 6500);
+        AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
+            (3200, 6500);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -90,10 +92,11 @@ public class AddProjectMemberToProjectTests:BaseTest
         await _projectBuilder
             .Build(projectId: testingProjectId);
         
-        AddProjectMemberDto dto = new AddProjectMemberDto(testingProjectId, 7000);
+        AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
+            (testingProjectId, 7000);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -118,10 +121,11 @@ public class AddProjectMemberToProjectTests:BaseTest
         await _projectBuilder
             .Build(projectId: testingProjectId, ownerProjectId:testingRequestedUserId);
         
-        AddProjectMemberDto dto = new AddProjectMemberDto(testingProjectId, 7000);
+        AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
+            (testingProjectId, 7000);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -146,10 +150,11 @@ public class AddProjectMemberToProjectTests:BaseTest
         await _projectBuilder
             .Build(projectId: testingProjectId, ownerProjectId:testingRequestedUserId);
         
-        AddProjectMemberDto dto = new AddProjectMemberDto(testingProjectId, testingRequestedUserId);
+        AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
+            (testingProjectId, testingRequestedUserId);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -181,10 +186,11 @@ public class AddProjectMemberToProjectTests:BaseTest
         await _projectMemberBuilder
             .Build(2500, testingProjectId, testingMemberId);
         
-        AddProjectMemberDto dto = new AddProjectMemberDto(testingProjectId, testingMemberId);
+        AddProjectMemberToProjectCommand command = new AddProjectMemberToProjectCommand
+            (testingProjectId, testingMemberId);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingRequestedUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingRequestedUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -196,32 +202,13 @@ public class AddProjectMemberToProjectTests:BaseTest
         });
     }
     
-    [Test]
-    public void AddProjectMemberToProject_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
-    {
-        //Arrange
-        AddProjectMemberDto dto = new AddProjectMemberDto(300, 500);
-
-        //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(6500));
-
-        //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
-        });
-    }
-
-    private HttpResponseModule ActResponseModule(AddProjectMemberDto dto, string jwtToken)
+    private HttpResponseModule ActResponseModule(AddProjectMemberToProjectCommand command, string jwtToken)
     {
         return HttpHost
             .Post
             .WithJwtToken(jwtToken)
             .Url(TestingUri)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }

@@ -1,5 +1,6 @@
 using MediatR;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -11,21 +12,26 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
 {
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IAuthenticationUserService _authenticationUserService;
 
     public RemoveMemberFromProjectCommandHandler(
         IProjectMemberRepository projectMemberRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository, 
+        IAuthenticationUserService authenticationUserService)
     {
         _projectMemberRepository = projectMemberRepository;
         _userRepository = userRepository;
+        _authenticationUserService = authenticationUserService;
     }
     
     public async Task<BaseResponse> Handle(RemoveMemberFromProjectCommand request, CancellationToken cancellationToken)
     {
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
+        
+        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
         if (requestedUser == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
         

@@ -1,11 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stockband.Api.Dtos.ProjectMember;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.AddProjectMemberToProject;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMemberFromProject;
 using Stockband.Application.Features.ProjectMemberFeatures.Queries.GetAllProjectMembers;
-using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
@@ -15,25 +13,17 @@ namespace Stockband.Api.Controllers;
 public class ProjectMemberController:ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IAuthenticationUserService _authenticationUserService;
 
-    public ProjectMemberController(IMediator mediator, IAuthenticationUserService authenticationUserService)
+    public ProjectMemberController(IMediator mediator)
     {
         _mediator = mediator;
-        _authenticationUserService = authenticationUserService;
     }
     
     [HttpPost]
     [Route("projectMember")]
-    public async Task<IActionResult> AddProjectMemberToProject(AddProjectMemberDto addProjectMemberDto)
+    public async Task<IActionResult> AddProjectMemberToProject(AddProjectMemberToProjectCommand command)
     {
-        BaseResponse response = await _mediator.Send(new AddProjectMemberToProjectCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            ProjectId = addProjectMemberDto.ProjectId,
-            MemberId = addProjectMemberDto.MemberId
-        });
-
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -43,15 +33,9 @@ public class ProjectMemberController:ControllerBase
 
     [HttpDelete]
     [Route("projectMember")]
-    public async Task<IActionResult> RemoveProjectMemberFromProject(RemoveProjectMemberDto removeProjectMemberDto)
+    public async Task<IActionResult> RemoveProjectMemberFromProject(RemoveMemberFromProjectCommand command)
     {
-        BaseResponse response = await _mediator.Send(new RemoveMemberFromProjectCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            ProjectId = removeProjectMemberDto.ProjectId,
-            MemberId = removeProjectMemberDto.MemberId
-        });
-
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -66,7 +50,6 @@ public class ProjectMemberController:ControllerBase
         BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = 
             await _mediator.Send(new GetAllProjectMembersQuery
             {
-                RequestedUserId = _authenticationUserService.GetCurrentUserId(),
                 ProjectId = projectId
             });
         

@@ -1,5 +1,6 @@
 using MediatR;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -12,23 +13,28 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IAuthenticationUserService _authenticationUserService;
 
     public GetAllProjectMembersQueryHandler(
         IProjectMemberRepository projectMemberRepository, 
         IProjectRepository projectRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IAuthenticationUserService authenticationUserService)
     {
         _projectMemberRepository = projectMemberRepository;
         _projectRepository = projectRepository;
         _userRepository = userRepository;
+        _authenticationUserService = authenticationUserService;
     }
     public async Task<BaseResponse<List<GetAllProjectMembersQueryViewModel>>>Handle(GetAllProjectMembersQuery request, CancellationToken cancellationToken)
     {
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
+        
+        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
         if (requestedUser == null)
         {
             return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
-            (new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            (new ObjectNotFound(typeof(User), currentUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
         
