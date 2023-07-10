@@ -2,8 +2,8 @@ using System.Net;
 using FizzWare.NBuilder;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.User;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -25,10 +25,10 @@ public class UserRegisterTests:BaseTest
     public void UserRegister_BaseResponse_Success_ShouldBeTrue()
     {
         //Arrange
-        RegisterUserDto dto = RegisterUserDtoBuilder();
+        RegisterUserCommand command = RegisterUserCommandBuilder();
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto);
+        HttpResponseModule responseModule = ActResponseModule(command);
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -44,10 +44,11 @@ public class UserRegisterTests:BaseTest
     public void UserRegister_WrongEmailScheme_BaseErrorCodeShouldBe_FluentValidationCode()
     {
         //Arrange
-        RegisterUserDto dto = RegisterUserDtoBuilder(email:"test#gmail.com");
+        RegisterUserCommand command = RegisterUserCommandBuilder
+            (email:"test#gmail.com");
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto);
+        HttpResponseModule responseModule = ActResponseModule(command);
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -64,11 +65,11 @@ public class UserRegisterTests:BaseTest
     public void UserRegister_PasswordDoNotMatch_BaseErrorCodeShouldBe_FluentValidationCode()
     {
         //Arrange
-        RegisterUserDto dto = RegisterUserDtoBuilder
+        RegisterUserCommand command = RegisterUserCommandBuilder
             (password: "Tssd123!@333DD", confirmPassword: "ssssddWWEE@@##123");
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto);
+        HttpResponseModule responseModule = ActResponseModule(command);
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -90,10 +91,11 @@ public class UserRegisterTests:BaseTest
         await _userBuilder
             .Build(userId:1000, email: testingEmail);
 
-        RegisterUserDto dto = RegisterUserDtoBuilder(email: testingEmail);
+        RegisterUserCommand command = RegisterUserCommandBuilder
+            (email: testingEmail);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto);
+        HttpResponseModule responseModule = ActResponseModule(command);
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -106,17 +108,17 @@ public class UserRegisterTests:BaseTest
         });
     }
     
-    private HttpResponseModule ActResponseModule(RegisterUserDto dto)
+    private HttpResponseModule ActResponseModule(RegisterUserCommand command)
     {
         return HttpHost
             .Post
             .Url(TestingUri)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }
     
-    private static RegisterUserDto RegisterUserDtoBuilder
+    private static RegisterUserCommand RegisterUserCommandBuilder
         (string username = "", string email = "", string password = "", string confirmPassword = "")
     {
         const string testingPassword = "Tdddfgfss@!223ASD";
@@ -130,7 +132,7 @@ public class UserRegisterTests:BaseTest
         if (String.IsNullOrEmpty(confirmPassword))
             confirmPassword = testingPassword;
 
-        return Builder<RegisterUserDto>
+        return Builder<RegisterUserCommand>
             .CreateNew()
             .With(x => x.Email = email)
             .With(x => x.Password = password)

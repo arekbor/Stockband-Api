@@ -8,7 +8,15 @@ namespace Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 [AllowRole(UserRole.Admin)]
 public class UpdateRoleCommand:IRequest<BaseResponse>
 {
-    public int RequestedUserId { get; set; }
+    public UpdateRoleCommand()
+    {
+        
+    }
+    public UpdateRoleCommand(int userId, UserRole role)
+    {
+        UserId = userId;
+        Role = role;
+    }
     public int UserId { get; set; }
     public UserRole Role { get; set; }
 }

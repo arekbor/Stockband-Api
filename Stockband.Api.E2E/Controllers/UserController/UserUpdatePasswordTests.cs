@@ -1,8 +1,8 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.User;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -37,12 +37,12 @@ public class UserUpdatePasswordTests:BaseTest
             .Build(userId: testingUserId, username: testingUsername, email: testingEmail,
                 password: testingCurrentPassword, userRole: testingUserRole);
         
-        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
+        UpdatePasswordCommand command = new UpdatePasswordCommand
             (testingCurrentPassword, testingNewPassword, testingNewPassword);
         
         //Act
         HttpResponseModule responseModule = 
-            ActResponseModule(dto, GetUserJwtToken(testingUserId));
+            ActResponseModule(command, GetUserJwtToken(testingUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -70,12 +70,12 @@ public class UserUpdatePasswordTests:BaseTest
             .Build(userId: testingUserId, username: testingUsername, email: testingEmail,
                 password: testingRealCurrentPassword, userRole: testingUserRole);
 
-        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
+        UpdatePasswordCommand command = new UpdatePasswordCommand
             (testingBadCurrentPassword, testingNewPassword, testingNewPassword);
         
         //Act
         HttpResponseModule responseModule = 
-            ActResponseModule(dto, GetUserJwtToken(testingUserId));
+            ActResponseModule(command, GetUserJwtToken(testingUserId));
         
         
         //Assert
@@ -106,12 +106,12 @@ public class UserUpdatePasswordTests:BaseTest
             .Build(userId: testingUserId, username: testingUsername, email: testingEmail,
             password: testingCurrentPassword, userRole: testingUserRole);
 
-        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
+        UpdatePasswordCommand command = new UpdatePasswordCommand
             (testingCurrentPassword, testingNewPassword, testingNewConfirmPassword);
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetUserJwtToken(testingUserId));
+            ActResponseModule(command, GetUserJwtToken(testingUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -122,36 +122,15 @@ public class UserUpdatePasswordTests:BaseTest
             response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
         });
     }
-
-    [Test]
-    public void UserUpdatePassword_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
-    {
-        //Arrange
-        UpdateUserPasswordDto dto = new UpdateUserPasswordDto
-            ("testPassword", "testingNewPassword!@@12", "testingNewPassword!@@12");
-        
-        //Act
-        HttpResponseModule responseModule = 
-            ActResponseModule(dto, GetUserJwtToken(5000));
-        
-        //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
-        });
-    }
-
+    
     private HttpResponseModule ActResponseModule
-        (UpdateUserPasswordDto dto, string jwtToken)
+        (UpdatePasswordCommand command, string jwtToken)
     {
         return HttpHost
             .Put
             .Url(TestingUri)
             .WithJwtToken(jwtToken)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }
