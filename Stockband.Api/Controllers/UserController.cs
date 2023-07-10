@@ -1,13 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stockband.Application.Features.UserFeatures.Commands.LoginUser;
+using Stockband.Application.Features.UserFeatures.Commands.LogoutUser;
 using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
-using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetUserById;
-using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
@@ -17,11 +17,10 @@ namespace Stockband.Api.Controllers;
 public class UserController:ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IAuthenticationUserService _authenticationUserService;
-    public UserController(IMediator mediator, IAuthenticationUserService authenticationUserService)
+
+    public UserController(IMediator mediator)
     {
         _mediator = mediator;
-        _authenticationUserService = authenticationUserService;
     }
 
     [HttpGet]
@@ -56,34 +55,26 @@ public class UserController:ControllerBase
     [HttpPost]
     [Route("/user/login")]
     [AllowAnonymous]
-    public async Task<IActionResult> UserLogin(GetLoggedUserQuery query)
+    public async Task<IActionResult> UserLogin(LoginUserCommand command)
     {
-        BaseResponse<GetLoggedUserQueryViewModel> response = await _mediator.Send(query);
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
         }
-
-        GetLoggedUserQueryViewModel viewModel = response.Result;
-
-        string jwtToken = _authenticationUserService.GenerateJwtToken
-        (
-            viewModel.Id.ToString(), 
-            viewModel.Username, 
-            viewModel.Email,
-            viewModel.Role.ToString()
-        );
-        _authenticationUserService.AddJwtCookie(jwtToken);
-        
         return Ok(response);
     }
 
     [HttpPost]
     [Route("/user/logout")]
-    public IActionResult UserLogout()
+    public async Task<IActionResult> UserLogout()
     {
-        _authenticationUserService.ClearJwtCookie();
-        return NoContent();
+        BaseResponse response = await _mediator.Send(new LogoutUserCommand());
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
     }
 
     [HttpPut]
