@@ -3,7 +3,6 @@ using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.E2E.Builders;
 using Stockband.Application.Features.UserFeatures.Commands.LoginUser;
-using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -40,7 +39,7 @@ public class UserLoginTests:BaseTest
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
 
-        responseModule.AsJson.AssertThat<BaseResponse<GetLoggedUserQueryViewModel>>(response =>
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
         {
             response.Errors.Count.ShouldBe(0);
             response.Success.ShouldBe(true);
@@ -66,11 +65,10 @@ public class UserLoginTests:BaseTest
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
         
-        responseModule.AsJson.AssertThat<BaseResponse<GetLoggedUserQueryViewModel>>(response =>
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
         {
             response.Errors.Count.ShouldBe(1);
             response.Success.ShouldBe(false);
-            response.Result.ShouldBeNull();
             response.Errors.First().Code.ShouldBe(BaseErrorCode.WrongEmailOrPasswordLogin);
         });
     }
@@ -91,11 +89,10 @@ public class UserLoginTests:BaseTest
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
         
-        responseModule.AsJson.AssertThat<BaseResponse<GetLoggedUserQueryViewModel>>(response =>
+        responseModule.AsJson.AssertThat<BaseResponse>(response =>
         {
             response.Errors.Count.ShouldBe(1);
             response.Success.ShouldBe(false);
-            response.Result.ShouldBeNull();
             response.Errors.First().Code.ShouldBe(BaseErrorCode.FluentValidationCode);
         });
     }
