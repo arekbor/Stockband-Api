@@ -2,6 +2,7 @@ using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -13,13 +14,15 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserFeaturesService _userFeaturesService;
+    private readonly IAuthenticationUserService _authenticationUserService;
     public UpdateUserCommandHandler(
         IUserRepository userRepository,
-        IUserFeaturesService userFeaturesService
-        )
+        IUserFeaturesService userFeaturesService, 
+        IAuthenticationUserService authenticationUserService)
     {
         _userRepository = userRepository;
         _userFeaturesService = userFeaturesService;
+        _authenticationUserService = authenticationUserService;
     }
     public async Task<BaseResponse> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
@@ -29,11 +32,13 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
         {
             return new BaseResponse(validationResult);
         }
+
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
         
-        User? requestedUser = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
         if (requestedUser == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
         

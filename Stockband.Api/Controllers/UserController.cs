@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stockband.Api.Dtos.User;
 using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
@@ -44,16 +43,9 @@ public class UserController:ControllerBase
     [HttpPost]
     [Route("/user/register")]
     [AllowAnonymous]
-    public async Task<IActionResult> UserRegister(RegisterUserDto registerUserDto)
+    public async Task<IActionResult> UserRegister(RegisterUserCommand command)
     {
-        BaseResponse response = await _mediator.Send(new RegisterUserCommand
-        {
-            Username = registerUserDto.Username,
-            Email = registerUserDto.Email,
-            Password = registerUserDto.Password,
-            ConfirmPassword = registerUserDto.ConfirmPassword
-        });
-
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -64,14 +56,9 @@ public class UserController:ControllerBase
     [HttpPost]
     [Route("/user/login")]
     [AllowAnonymous]
-    public async Task<IActionResult> UserLogin(LoginUserDto loginUserDto)
+    public async Task<IActionResult> UserLogin(GetLoggedUserQuery query)
     {
-        BaseResponse<GetLoggedUserQueryViewModel> response = await _mediator.Send(new GetLoggedUserQuery
-        {
-            Email = loginUserDto.Email,
-            Password = loginUserDto.Password
-        });
-
+        BaseResponse<GetLoggedUserQueryViewModel> response = await _mediator.Send(query);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -101,16 +88,9 @@ public class UserController:ControllerBase
 
     [HttpPut]
     [Route("/user/password")]
-    public async Task<IActionResult> UserUpdatePassword(UpdateUserPasswordDto updateUserPasswordDto)
+    public async Task<IActionResult> UserUpdatePassword(UpdatePasswordCommand command)
     {
-        BaseResponse response =  await _mediator.Send(new UpdatePasswordCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            CurrentPassword = updateUserPasswordDto.CurrentPassword,
-            NewPassword = updateUserPasswordDto.NewPassword,
-            ConfirmNewPassword = updateUserPasswordDto.ConfirmNewPassword
-        });
-
+        BaseResponse response =  await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -120,16 +100,9 @@ public class UserController:ControllerBase
 
     [HttpPut]
     [Route("/user/update")]
-    public async Task<IActionResult> UserUpdate(UpdateUserDto updateUserDto)
+    public async Task<IActionResult> UserUpdate(UpdateUserCommand command)
     {
-        BaseResponse response = await _mediator.Send(new UpdateUserCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            UserId = updateUserDto.UserId,
-            Username = updateUserDto.Username,
-            Email = updateUserDto.Email,
-        });
-        
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);
@@ -139,15 +112,9 @@ public class UserController:ControllerBase
 
     [HttpPut]
     [Route("/user/role")]
-    public async Task<IActionResult> UserRole(UpdateRoleDto updateRoleDto)
+    public async Task<IActionResult> UserRole(UpdateRoleCommand command)
     {
-        BaseResponse response = await _mediator.Send(new UpdateRoleCommand
-        {
-            RequestedUserId = _authenticationUserService.GetCurrentUserId(),
-            UserId = updateRoleDto.UserId,
-            Role = updateRoleDto.Role
-        });
-
+        BaseResponse response = await _mediator.Send(command);
         if (!response.Success)
         {
             return BadRequest(response);

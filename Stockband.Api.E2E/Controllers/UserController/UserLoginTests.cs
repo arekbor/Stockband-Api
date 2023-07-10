@@ -1,7 +1,6 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.User;
 using Stockband.Api.E2E.Builders;
 using Stockband.Application.Features.UserFeatures.Queries.GetLoggedUser;
 using Stockband.Domain;
@@ -31,10 +30,11 @@ public class UserLoginTests:BaseTest
         await _userBuilder
             .Build(userId:500, email:testingEmail, password: testingPassword);
 
-        LoginUserDto dto = new LoginUserDto(testingEmail, testingPassword);
+        GetLoggedUserQuery query = new GetLoggedUserQuery
+            (testingEmail, testingPassword);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto);
+        HttpResponseModule responseModule = ActResponseModule(query);
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -57,10 +57,11 @@ public class UserLoginTests:BaseTest
         await _userBuilder
             .Build(userId:500, email:emailCreate, password: passwordCreate);
         
-        LoginUserDto dto = new LoginUserDto(emailLogin, passwordLogin);
+        GetLoggedUserQuery query = new GetLoggedUserQuery
+            (emailLogin, passwordLogin);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto);
+        HttpResponseModule responseModule = ActResponseModule(query);
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -81,10 +82,11 @@ public class UserLoginTests:BaseTest
         (string email, string password)
     {
         //Arrange
-        LoginUserDto dto = new LoginUserDto(email, password);
+        GetLoggedUserQuery query = new GetLoggedUserQuery
+            (email, password);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto);
+        HttpResponseModule responseModule = ActResponseModule(query);
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -98,12 +100,12 @@ public class UserLoginTests:BaseTest
         });
     }
     
-    private HttpResponseModule ActResponseModule(LoginUserDto dto)
+    private HttpResponseModule ActResponseModule(GetLoggedUserQuery query)
     {
         return HttpHost
             .Post
             .Url(TestingUri)
-            .Json(dto)
+            .Json(query)
             .Send()
             .Response;
     }

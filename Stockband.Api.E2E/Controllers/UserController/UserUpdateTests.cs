@@ -1,8 +1,8 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.User;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -32,11 +32,12 @@ public class UserUpdateTests:BaseTest
         await _userBuilder
             .Build(testingUserId);
         
-        UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
+        UpdateUserCommand command = new UpdateUserCommand
+            (testingUserId, testingUpdateUsername, testingUpdateEmail);
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetUserJwtToken(testingUserId));
+            ActResponseModule(command, GetUserJwtToken(testingUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -57,7 +58,8 @@ public class UserUpdateTests:BaseTest
 
         await _userBuilder.Build(userId: testingUserId);
         
-        UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
+        UpdateUserCommand command = new UpdateUserCommand
+            (testingUserId, testingUpdateUsername, testingUpdateEmail);
         
         const int testingRequestedId = 3200;
         const string testingRequestedUsername = "requestedUser";
@@ -68,7 +70,7 @@ public class UserUpdateTests:BaseTest
 
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetUserJwtToken(testingRequestedId));
+            ActResponseModule(command, GetUserJwtToken(testingRequestedId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -88,7 +90,8 @@ public class UserUpdateTests:BaseTest
         const string testingUpdateUsername = "updateUsername";
         const string testingUpdateEmail = "update@gmail.com";
         
-        UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
+        UpdateUserCommand command = new UpdateUserCommand
+            (testingUserId, testingUpdateUsername, testingUpdateEmail);
         
         const int testingRequestedId = 2500;
         const string testingRequestedUsername = "requestedUser";
@@ -100,7 +103,7 @@ public class UserUpdateTests:BaseTest
 
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetAdminJwtToken(testingRequestedId));
+            ActResponseModule(command, GetAdminJwtToken(testingRequestedId));
         
         //Assert
 
@@ -127,10 +130,11 @@ public class UserUpdateTests:BaseTest
         await _userBuilder
             .Build(userId:testingUserId);
         
-        UpdateUserDto dto = new UpdateUserDto(testingUserId, testingUpdateUsername, testingUpdateEmail);
+        UpdateUserCommand command = new UpdateUserCommand
+            (testingUserId, testingUpdateUsername, testingUpdateEmail);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(dto, GetUserJwtToken(testingUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -142,34 +146,14 @@ public class UserUpdateTests:BaseTest
         });
     }
     
-    [Test]
-    public void UserUpdate_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
-    {
-        //Arrange
-        UpdateUserDto dto = new UpdateUserDto(1200, "username", "test@gmail.com");
-        
-        //Act
-        HttpResponseModule responseModule = 
-            ActResponseModule(dto, GetUserJwtToken(8000));
-        
-        //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
-        });
-    }
-
     private HttpResponseModule ActResponseModule
-        (UpdateUserDto dto, string jwtToken)
+        (UpdateUserCommand command, string jwtToken)
     {
         return HttpHost
             .Put
             .Url(TestingUri)
             .WithJwtToken(jwtToken)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }

@@ -1,8 +1,8 @@
 using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
-using Stockband.Api.Dtos.User;
 using Stockband.Api.E2E.Builders;
+using Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 
@@ -34,11 +34,12 @@ public class UserRoleTests:BaseTest
         await _userBuilder
             .Build(userId:testingRequestedUserId, userRole: testingRequestedUserRole);
         
-        UpdateRoleDto dto = new UpdateRoleDto(testingUserId, testingUserRole);
+        UpdateRoleCommand command = new UpdateRoleCommand
+            (testingUserId, testingUserRole);
 
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetAdminJwtToken(testingRequestedUserId));
+            ActResponseModule(command, GetAdminJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -56,11 +57,12 @@ public class UserRoleTests:BaseTest
         const int testingUserId = 45530;
         const UserRole testingUserRole = (UserRole)9000;
         
-        UpdateRoleDto dto = new UpdateRoleDto(testingUserId, testingUserRole);
+        UpdateRoleCommand command = new UpdateRoleCommand
+            (testingUserId, testingUserRole);
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetAdminJwtToken(5000));
+            ActResponseModule(command, GetAdminJwtToken(5000));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -79,11 +81,12 @@ public class UserRoleTests:BaseTest
         const int testingUserId = 3224;
         const UserRole testingUserRole = UserRole.Admin;
         
-        UpdateRoleDto dto = new UpdateRoleDto(testingUserId, testingUserRole);
+        UpdateRoleCommand command = new UpdateRoleCommand
+            (testingUserId, testingUserRole);
 
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetUserJwtToken(54435));
+            ActResponseModule(command, GetUserJwtToken(54435));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -107,11 +110,12 @@ public class UserRoleTests:BaseTest
         await _userBuilder
             .Build(userId:testingRequestedUserId, userRole: UserRole.Admin);
         
-        UpdateRoleDto dto = new UpdateRoleDto(testingUserId, testingUserRole);
+        UpdateRoleCommand command = new UpdateRoleCommand
+            (testingUserId, testingUserRole);
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(dto, GetAdminJwtToken(testingRequestedUserId));
+            ActResponseModule(command, GetAdminJwtToken(testingRequestedUserId));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -123,34 +127,14 @@ public class UserRoleTests:BaseTest
         });
     }
     
-    [Test]
-    public void UserRole_ProvidedRequestedUserNotExists_BaseErrorCodeShouldBe_RequestedUserNotExists()
-    {
-        //Arrange
-        UpdateRoleDto dto = new UpdateRoleDto(5985, UserRole.Admin);
-        
-        //Act
-        HttpResponseModule responseModule = 
-            ActResponseModule(dto, GetAdminJwtToken(8000));
-        
-        //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.RequestedUserNotExists);
-        });
-    }
-
     private HttpResponseModule ActResponseModule
-        (UpdateRoleDto dto, string jwtToken)
+        (UpdateRoleCommand command, string jwtToken)
     {
         return HttpHost
             .Put
             .Url(TestingUri)
             .WithJwtToken(jwtToken)
-            .Json(dto)
+            .Json(command)
             .Send()
             .Response;
     }

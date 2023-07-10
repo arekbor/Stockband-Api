@@ -2,6 +2,7 @@ using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Application.Interfaces.Services;
 using Stockband.Domain;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
@@ -13,12 +14,15 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserFeaturesService _userFeaturesService;
+    private readonly IAuthenticationUserService _authenticationUserService;
     public UpdatePasswordCommandHandler(
         IUserRepository userRepository,
-        IUserFeaturesService userFeaturesService)
+        IUserFeaturesService userFeaturesService, 
+        IAuthenticationUserService authenticationUserService)
     {
         _userRepository = userRepository;
         _userFeaturesService = userFeaturesService;
+        _authenticationUserService = authenticationUserService;
     }
     public async Task<BaseResponse> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
@@ -28,11 +32,13 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
         {
             return new BaseResponse(validationResult);
         }
+
+        int currentUserId = _authenticationUserService.GetCurrentUserId();
         
-        User? user = await _userRepository.GetByIdAsync(request.RequestedUserId);
+        User? user = await _userRepository.GetByIdAsync(currentUserId);
         if (user == null)
         {
-            return new BaseResponse(new ObjectNotFound(typeof(User), request.RequestedUserId), 
+            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
                 BaseErrorCode.RequestedUserNotExists);
         }
         
