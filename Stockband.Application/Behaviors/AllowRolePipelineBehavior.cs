@@ -7,12 +7,12 @@ using Stockband.Domain.Exceptions;
 
 namespace Stockband.Application.Behaviors;
 
-public class AllowRoleBehavior<TRequest, TResponse>:IPipelineBehavior<TRequest, TResponse>
+public class AllowRolePipelineBehavior<TRequest, TResponse>:IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
     private readonly IAuthenticationUserService _authenticationUserService;
 
-    public AllowRoleBehavior(
+    public AllowRolePipelineBehavior(
         IAuthenticationUserService authenticationUserService)
     {
         _authenticationUserService = authenticationUserService;

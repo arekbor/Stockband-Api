@@ -1,4 +1,3 @@
-using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
@@ -26,13 +25,6 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
     }
     public async Task<BaseResponse> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
-        UpdatePasswordCommandValidator validator = new UpdatePasswordCommandValidator();
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return new BaseResponse(validationResult);
-        }
-
         int currentUserId = _authenticationUserService.GetCurrentUserId();
         
         User? user = await _userRepository.GetByIdAsync(currentUserId);

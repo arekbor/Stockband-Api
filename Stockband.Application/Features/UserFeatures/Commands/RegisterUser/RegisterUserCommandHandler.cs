@@ -1,4 +1,3 @@
-using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
@@ -22,13 +21,6 @@ public class RegisterUserCommandHandler:IRequestHandler<RegisterUserCommand, Bas
     }
     public async Task<BaseResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        RegisterUserCommandValidator validator = new RegisterUserCommandValidator();
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return new BaseResponse(validationResult);
-        }
-        
         if (await _userFeaturesService.IsEmailAlreadyUsed(request.Email))
         {
             return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(User), request.Email), 

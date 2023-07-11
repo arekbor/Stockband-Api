@@ -1,4 +1,3 @@
-using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain;
@@ -18,13 +17,6 @@ public class UpdateRoleCommandHandler:IRequestHandler<UpdateRoleCommand, BaseRes
     }
     public async Task<BaseResponse> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
     {
-        UpdateRoleCommandValidator validator = new UpdateRoleCommandValidator();
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return new BaseResponse(validationResult);
-        }
-        
         User? user = await _userRepository.GetByIdAsync(request.UserId);
         if (user == null)
         {

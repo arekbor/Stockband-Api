@@ -37,7 +37,6 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
     {
         int currentUserId = _authenticationUserService.GetCurrentUserId();
         
-        
         User? requestedUser = await _userRepository.GetByIdAsync(currentUserId); 
         if (requestedUser == null)
         {
