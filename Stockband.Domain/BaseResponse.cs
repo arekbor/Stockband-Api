@@ -36,6 +36,26 @@ public class BaseResponse
             Errors.Add(baseError);
         }
     }
+
+    public BaseResponse(IEnumerable<ValidationResult> validationResults,
+        BaseErrorCode code = BaseErrorCode.FluentValidationCode)
+    {
+        List<BaseError> errors = new List<BaseError>();
+        
+        foreach (ValidationResult validationResult in validationResults)
+        {
+            foreach (ValidationFailure validationFailure in validationResult.Errors)
+            {
+                BaseError baseError = new BaseError
+                {
+                    Message = validationFailure.ErrorMessage,
+                    Code = code
+                };
+                errors.Add(baseError);
+            }
+        }
+        Errors.AddRange(errors);
+    }
 }
 
 public class BaseResponse<T> : BaseResponse
@@ -60,6 +80,13 @@ public class BaseResponse<T> : BaseResponse
 
     public BaseResponse(ValidationResult validationResult, BaseErrorCode code = BaseErrorCode.FluentValidationCode)
         :base(validationResult, code)
+    {
+        
+    }
+
+    public BaseResponse(IEnumerable<ValidationResult> validationResults,
+        BaseErrorCode code = BaseErrorCode.FluentValidationCode)
+        :base(validationResults, code)
     {
         
     }

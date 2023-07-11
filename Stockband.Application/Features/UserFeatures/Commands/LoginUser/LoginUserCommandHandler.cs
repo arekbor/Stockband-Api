@@ -1,4 +1,3 @@
-using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
@@ -28,13 +27,6 @@ public class LoginUserCommandHandler:IRequestHandler<LoginUserCommand, BaseRespo
 
     public async Task<BaseResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        LoginUserCommandValidator validator = new LoginUserCommandValidator();
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return new BaseResponse(validationResult);
-        }
-        
         User? user = await _userRepository.GetUserByEmailAsync(request.Email);
         if (user == null)
         {

@@ -1,4 +1,3 @@
-using FluentValidation.Results;
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
@@ -31,13 +30,6 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
     
     public async Task<BaseResponse> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
-        UpdateProjectCommandValidator validator = new UpdateProjectCommandValidator();
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return new BaseResponse(validationResult);
-        }
-
         int currentUserId = _authenticationUserService.GetCurrentUserId();
         
         User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
