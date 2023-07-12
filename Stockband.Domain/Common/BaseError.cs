@@ -1,3 +1,5 @@
+using Stockband.Domain.Enums;
+
 namespace Stockband.Domain.Common;
 
 public class BaseError

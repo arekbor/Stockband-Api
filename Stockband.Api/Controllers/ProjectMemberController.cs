@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.AddProjectMemberToProject;
 using Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMemberFromProject;
 using Stockband.Application.Features.ProjectMemberFeatures.Queries.GetAllProjectMembers;
-using Stockband.Domain;
+using Stockband.Domain.Common;
 
 namespace Stockband.Api.Controllers;
 

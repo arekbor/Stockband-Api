@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Stockband.Application.Interfaces.Services;
-using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 using Stockband.Domain.Exceptions;
 
 namespace Stockband.Infrastructure.Services;

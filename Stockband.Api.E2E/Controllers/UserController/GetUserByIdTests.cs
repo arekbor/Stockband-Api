@@ -2,7 +2,7 @@ using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.E2E.Builders;
-using Stockband.Domain;
+using Stockband.Domain.Enums;
 using Stockband.Domain.Common;
 
 namespace Stockband.Api.E2E.Controllers.UserController;

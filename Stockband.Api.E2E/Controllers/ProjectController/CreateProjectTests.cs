@@ -3,7 +3,7 @@ using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.E2E.Builders;
 using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
-using Stockband.Domain;
+using Stockband.Domain.Enums;
 using Stockband.Domain.Common;
 
 namespace Stockband.Api.E2E.Controllers.ProjectController;

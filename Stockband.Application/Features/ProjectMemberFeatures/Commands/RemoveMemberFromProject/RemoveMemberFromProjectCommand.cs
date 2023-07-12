@@ -1,5 +1,5 @@
 using MediatR;
-using Stockband.Domain;
+using Stockband.Domain.Common;
 
 namespace Stockband.Application.Features.ProjectMemberFeatures.Commands.RemoveMemberFromProject;
 

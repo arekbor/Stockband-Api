@@ -1,4 +1,4 @@
-namespace Stockband.Domain.Common;
+namespace Stockband.Domain.Enums;
 
 public enum UserRole
 {
