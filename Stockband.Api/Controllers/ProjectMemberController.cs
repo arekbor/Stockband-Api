@@ -8,8 +8,8 @@ using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
 
-[ApiController]
 [Authorize]
+[ApiController]
 public class ProjectMemberController:ControllerBase
 {
     private readonly IMediator _mediator;

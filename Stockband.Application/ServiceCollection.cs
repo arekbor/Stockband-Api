@@ -21,7 +21,6 @@ public static class ServiceCollection
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AllowRolePipelineBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
         return services;
