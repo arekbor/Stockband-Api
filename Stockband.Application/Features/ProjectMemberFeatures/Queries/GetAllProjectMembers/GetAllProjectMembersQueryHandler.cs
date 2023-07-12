@@ -28,16 +28,6 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
     }
     public async Task<BaseResponse<List<GetAllProjectMembersQueryViewModel>>>Handle(GetAllProjectMembersQuery request, CancellationToken cancellationToken)
     {
-        int currentUserId = _authenticationUserService.GetCurrentUserId();
-        
-        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
-        if (requestedUser == null)
-        {
-            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
-            (new ObjectNotFound(typeof(User), currentUserId), 
-                BaseErrorCode.RequestedUserNotExists);
-        }
-        
         Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project == null)
         {
@@ -46,10 +36,10 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
                 BaseErrorCode.ProjectNotExists);
         }
         
-        if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
+        if (!_authenticationUserService.IsAuthorized(project.OwnerId))
         {
             return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
-            (new UnauthorizedOperationException(), BaseErrorCode.UserUnauthorizedOperation);
+                (new UnauthorizedOperationException(), BaseErrorCode.UserUnauthorizedOperation);
         }
         
         return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>

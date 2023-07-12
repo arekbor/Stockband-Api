@@ -25,7 +25,7 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
     }
     public async Task<BaseResponse> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
-        int currentUserId = _authenticationUserService.GetCurrentUserId();
+        int currentUserId = _authenticationUserService.GetUserId();
         
         User? user = await _userRepository.GetByIdAsync(currentUserId);
         if (user == null)

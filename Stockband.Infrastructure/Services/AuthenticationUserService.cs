@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Stockband.Application.Interfaces.Services;
+using Stockband.Domain.Common;
 using Stockband.Domain.Exceptions;
 
 namespace Stockband.Infrastructure.Services;
@@ -88,7 +89,7 @@ public class AuthenticationUserService:IAuthenticationUserService
         httpContext.Response.Cookies.Delete(cookieName);
     }
 
-    public int GetCurrentUserId()
+    public int GetUserId()
     {
         Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
         if (claim == null)
@@ -104,8 +105,8 @@ public class AuthenticationUserService:IAuthenticationUserService
 
         return parsedId;
     }
-
-    public IEnumerable<string> GetCurrentUserRoles()
+    
+    public IEnumerable<string> GetRoles()
     {
         return GetHttpContext()
             .User
@@ -114,6 +115,9 @@ public class AuthenticationUserService:IAuthenticationUserService
             .Select(x => x.Value);
     }
 
+    public bool IsAuthorized(int userId) =>
+        GetUserId() == userId || GetHttpContext().User.IsInRole(UserRole.Admin.ToString());
+    
     private HttpContext GetHttpContext()
     {
         HttpContext? httpContext = _httpContextAccessor.HttpContext;

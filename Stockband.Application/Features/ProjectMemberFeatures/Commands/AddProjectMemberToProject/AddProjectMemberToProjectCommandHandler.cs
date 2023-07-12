@@ -11,7 +11,6 @@ namespace Stockband.Application.Features.ProjectMemberFeatures.Commands.AddProje
 
 public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectMemberToProjectCommand, BaseResponse>
 {
-    private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUserFeaturesService _userFeaturesService;
@@ -19,14 +18,12 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
     private readonly IAuthenticationUserService _authenticationUserService;
 
     public AddProjectMemberToProjectCommandHandler(
-        IUserRepository userRepository, 
         IProjectRepository projectRepository, 
         IProjectMemberRepository projectMemberRepository, 
         IUserFeaturesService userFeaturesService,
         IProjectMemberFeaturesService projectMemberFeaturesService,
         IAuthenticationUserService authenticationUserService)
     {
-        _userRepository = userRepository;
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
         _userFeaturesService = userFeaturesService;
@@ -35,15 +32,6 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
     }
     public async Task<BaseResponse> Handle(AddProjectMemberToProjectCommand request, CancellationToken cancellationToken)
     {
-        int currentUserId = _authenticationUserService.GetCurrentUserId();
-        
-        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId); 
-        if (requestedUser == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
-                BaseErrorCode.RequestedUserNotExists);
-        }
-        
         Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project == null)
         {
@@ -56,13 +44,13 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
             return new BaseResponse(
                 new PerformRestrictedOperationException(), BaseErrorCode.ProjectMembersLimitPerProjectExceeded);
         }
-        
-        if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
+
+        if (!_authenticationUserService.IsAuthorized(project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
-        
+
         if (!await _userFeaturesService.IsUserExists(request.MemberId))
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.MemberId), 

@@ -26,7 +26,8 @@ public class CreateProjectCommandHandler:IRequestHandler<CreateProjectCommand, B
     }
     public async Task<BaseResponse> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        int currentUserId = _authenticationUserService.GetCurrentUserId();
+        int currentUserId = _authenticationUserService.GetUserId();
+        
         if (await _projectFeaturesService.IsProjectsLimitExceeded(currentUserId))
         {
             return new BaseResponse(

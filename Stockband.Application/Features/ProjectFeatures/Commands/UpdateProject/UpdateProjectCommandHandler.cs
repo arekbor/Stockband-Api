@@ -12,46 +12,34 @@ namespace Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
 public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, BaseResponse>
 {
     private readonly IProjectRepository _projectRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IProjectFeaturesService _projectFeaturesService;
     private readonly IAuthenticationUserService _authenticationUserService;
 
     public UpdateProjectCommandHandler(
-        IProjectRepository projectRepository, 
-        IUserRepository userRepository,
+        IProjectRepository projectRepository,
         IProjectFeaturesService projectFeaturesService,
         IAuthenticationUserService authenticationUserService)
     {
         _projectRepository = projectRepository;
-        _userRepository = userRepository;
         _projectFeaturesService = projectFeaturesService;
         _authenticationUserService = authenticationUserService;
     }
     
     public async Task<BaseResponse> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
-        int currentUserId = _authenticationUserService.GetCurrentUserId();
-        
-        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
-        if (requestedUser == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
-                BaseErrorCode.RequestedUserNotExists);
-        }
-
         Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId), 
                 BaseErrorCode.ProjectNotExists);
         }
-        
-        if (!requestedUser.IsAdminOrSameAsUser(project.OwnerId))
+
+        if (!_authenticationUserService.IsAuthorized(project.OwnerId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
         }
-        
+
         if (await _projectFeaturesService.IsProjectNameAlreadyExists(request.ProjectName))
         {
             return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(Project), request.ProjectName), 
