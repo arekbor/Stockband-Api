@@ -5,6 +5,7 @@ public interface IAuthenticationUserService
     string GenerateJwtToken(string userId, string username, string email, string role);
     void AddJwtCookie(string jwtToken);
     void ClearJwtCookie();
-    int GetCurrentUserId();
-    IEnumerable<string> GetCurrentUserRoles();
+    int GetUserId();
+    IEnumerable<string> GetRoles();
+    bool IsAuthorized(int userId);
 }

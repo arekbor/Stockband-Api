@@ -25,16 +25,7 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
     }
     public async Task<BaseResponse> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        int currentUserId = _authenticationUserService.GetCurrentUserId();
-        
-        User? requestedUser = await _userRepository.GetByIdAsync(currentUserId);
-        if (requestedUser == null)
-        {
-            return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
-                BaseErrorCode.RequestedUserNotExists);
-        }
-        
-        if (!requestedUser.IsAdminOrSameAsUser(request.UserId))
+        if (!_authenticationUserService.IsAuthorized(request.UserId))
         {
             return new BaseResponse(new UnauthorizedOperationException(),
                 BaseErrorCode.UserUnauthorizedOperation);
