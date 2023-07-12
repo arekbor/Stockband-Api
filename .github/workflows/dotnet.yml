@@ -20,6 +20,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
+    - name: Set up appsettings.json secret
+      run: |
+        echo "${{ secrets.APPSETTINGS_JSON }}" > appsettings.json
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
