@@ -1,4 +1,5 @@
 using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 
 namespace Stockband.Domain.Entities;
 

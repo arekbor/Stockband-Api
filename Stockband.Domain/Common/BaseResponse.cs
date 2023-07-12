@@ -1,7 +1,7 @@
 using FluentValidation.Results;
-using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 
-namespace Stockband.Domain;
+namespace Stockband.Domain.Common;
 
 public class BaseResponse
 {

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.RemoveProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
-using Stockband.Domain;
+using Stockband.Domain.Common;
 
 namespace Stockband.Api.Controllers;
 

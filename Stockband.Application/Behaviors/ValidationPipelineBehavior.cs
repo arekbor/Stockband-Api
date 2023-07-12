@@ -1,7 +1,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
-using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 
 namespace Stockband.Application.Behaviors;
 

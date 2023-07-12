@@ -8,7 +8,7 @@ using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetUserById;
-using Stockband.Domain;
+using Stockband.Domain.Common;
 
 namespace Stockband.Api.Controllers;
 

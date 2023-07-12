@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 
 namespace Stockband.UnitTests.Domain;
 

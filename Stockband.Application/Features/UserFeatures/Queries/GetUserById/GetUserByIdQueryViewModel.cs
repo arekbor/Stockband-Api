@@ -1,4 +1,4 @@
-using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 
 namespace Stockband.Application.Features.UserFeatures.Queries.GetUserById;
 

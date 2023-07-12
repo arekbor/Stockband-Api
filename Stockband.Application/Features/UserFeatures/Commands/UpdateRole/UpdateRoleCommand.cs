@@ -1,5 +1,5 @@
 using MediatR;
-using Stockband.Domain;
+using Stockband.Domain.Enums;
 using Stockband.Domain.Common;
 
 namespace Stockband.Application.Features.UserFeatures.Commands.UpdateRole;

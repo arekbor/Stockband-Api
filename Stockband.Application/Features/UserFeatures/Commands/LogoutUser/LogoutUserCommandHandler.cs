@@ -1,6 +1,6 @@
 using MediatR;
 using Stockband.Application.Interfaces.Services;
-using Stockband.Domain;
+using Stockband.Domain.Common;
 
 namespace Stockband.Application.Features.UserFeatures.Commands.LogoutUser;
 

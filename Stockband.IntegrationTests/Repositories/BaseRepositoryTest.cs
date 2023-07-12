@@ -3,7 +3,7 @@ using FizzWare.NBuilder;
 using NUnit.Framework;
 using Shouldly;
 using Stockband.Application.Interfaces.Repositories;
-using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 using Stockband.Domain.Entities;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure.Repositories;

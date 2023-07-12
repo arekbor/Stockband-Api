@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Stockband.Domain.Common;
+using Stockband.Domain.Enums;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure;
 using Stockband.Infrastructure.Services;
