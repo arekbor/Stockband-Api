@@ -64,7 +64,7 @@ public class UserLoginTests:BaseTest
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        
+
         responseModule.AsJson.AssertThat<BaseResponse>(response =>
         {
             response.Errors.Count.ShouldBe(1);
