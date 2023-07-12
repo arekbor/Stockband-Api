@@ -20,7 +20,15 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
-        app-settings-json: '${{ secrets.APPSETTINGS_JSON }}' 
+      env:
+        JwtKey: "evuQxdd4zJpjjlmOtzDHevuQxddawdwa"
+        JwtIssuer: "http://localhost:5000"
+        JwtAudience: "localhost:5000"
+        CookieExpires: "10"
+        CookieName: "access_token"
+        JWTExpires: "10"
+        ProjectFeaturesSettings.ProjectsLimitPerUser: 5
+        ProjectMemberFeaturesSettings.ProjectMembersLimitPerProject: 5
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
