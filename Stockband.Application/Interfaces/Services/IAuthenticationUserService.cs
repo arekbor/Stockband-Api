@@ -1,5 +1,3 @@
-using Stockband.Domain.Common;
-
 namespace Stockband.Application.Interfaces.Services;
 
 public interface IAuthenticationUserService

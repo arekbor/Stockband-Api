@@ -13,7 +13,7 @@ public class AuthenticationUserService:IAuthenticationUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfigurationHelperService _configurationHelperService;
-
+    
     public AuthenticationUserService(
         IHttpContextAccessor httpContextAccessor,
         IConfigurationHelperService configurationHelperService)
@@ -22,6 +22,14 @@ public class AuthenticationUserService:IAuthenticationUserService
         _configurationHelperService = configurationHelperService;
     }
     
+    /// <summary>
+    /// Generates a JWT token based on the provided user information.
+    /// </summary>
+    /// <param name="userId">The user ID associated with the token.</param>
+    /// <param name="username">The username associated with the token.</param>
+    /// <param name="email">The email associated with the token.</param>
+    /// <param name="role">The role associated with the token.</param>
+    /// <returns>The generated JWT token.</returns>
     public string GenerateJwtToken(string userId, string username, string email, string role)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -56,6 +64,11 @@ public class AuthenticationUserService:IAuthenticationUserService
         return tokenString;
     }
 
+    /// <summary>
+    /// Adds a JWT token as a cookie to the current HttpContext.
+    /// </summary>
+    /// <param name="jwtToken">The JWT token to be added as a cookie.</param>
+    /// <exception cref="ObjectNotFound">Thrown when the HttpContext is null.</exception>
     public void AddJwtCookie(string jwtToken)
     {
         string cookieName = _configurationHelperService.GetCookieName();
@@ -76,6 +89,10 @@ public class AuthenticationUserService:IAuthenticationUserService
         });
     }
 
+    /// <summary>
+    /// Clears the JWT cookie from the current HttpContext.
+    /// </summary>
+    /// <exception cref="ObjectNotFound">Thrown when the HttpContext is null.</exception>
     public void ClearJwtCookie()
     {
         string cookieName = _configurationHelperService.GetCookieName();
@@ -89,6 +106,12 @@ public class AuthenticationUserService:IAuthenticationUserService
         httpContext.Response.Cookies.Delete(cookieName);
     }
 
+    /// <summary>
+    /// Retrieves the current user ID.
+    /// </summary>
+    /// <returns>The current user ID.</returns>
+    /// <exception cref="ObjectNotFound">Thrown if the claim is null.</exception>
+    /// <exception cref="FormatException">Thrown if the user ID could not be parsed.</exception>
     public int GetUserId()
     {
         Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
@@ -106,6 +129,10 @@ public class AuthenticationUserService:IAuthenticationUserService
         return parsedId;
     }
     
+    /// <summary>
+    /// Retrieves all roles associated with the user.
+    /// </summary>
+    /// <returns>A collection of user roles.</returns>
     public IEnumerable<string> GetRoles()
     {
         return GetHttpContext()
@@ -115,6 +142,11 @@ public class AuthenticationUserService:IAuthenticationUserService
             .Select(x => x.Value);
     }
 
+    /// <summary>
+    /// Verifies whether the provided user ID belongs to an admin or is equal to the claim ID.
+    /// </summary>
+    /// <param name="userId">The user ID to be verified.</param>
+    /// <returns><c>true</c> if the user is authorized; otherwise, <c>false</c>.</returns>
     public bool IsAuthorized(int userId) =>
         GetUserId() == userId || GetHttpContext().User.IsInRole(UserRole.Admin.ToString());
     
