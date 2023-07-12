@@ -63,7 +63,7 @@ public class GetUserByIdTests:BaseTest
     }
 
     [Test]
-    public void GetUserById_RequestedUserIsNotAdmin_BaseErrorCodeShouldBe_UserUnauthorizedOperation()
+    public void GetUserById_RequestedUserIsNotAdmin_HttpStatusCode_Forbidden()
     {
         //Arrange
         const int testingUserId = 5200;
@@ -73,13 +73,7 @@ public class GetUserByIdTests:BaseTest
             ActResponseModule(testingUserId, GetUserJwtToken(5000));
         
         //Assert
-        responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
-        {
-            response.Success.ShouldBe(false);
-            response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserUnauthorizedOperation);
-        });
+        responseModule.AssertStatusCode(HttpStatusCode.Forbidden);
     }
 
     private HttpResponseModule ActResponseModule(int userId, string jwtToken)

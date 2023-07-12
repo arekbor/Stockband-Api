@@ -12,8 +12,8 @@ using Stockband.Domain;
 
 namespace Stockband.Api.Controllers;
 
-[ApiController]
 [Authorize]
+[ApiController]
 public class UserController:ControllerBase
 {
     private readonly IMediator _mediator;
@@ -24,6 +24,7 @@ public class UserController:ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     [Route("/user/{id:int}")]
     public async Task<IActionResult> GetUserById(int id)
     {
@@ -40,8 +41,8 @@ public class UserController:ControllerBase
     }
 
     [HttpPost]
-    [Route("/user/register")]
     [AllowAnonymous]
+    [Route("/user/register")]
     public async Task<IActionResult> UserRegister(RegisterUserCommand command)
     {
         BaseResponse response = await _mediator.Send(command);
@@ -53,8 +54,8 @@ public class UserController:ControllerBase
     }
 
     [HttpPost]
-    [Route("/user/login")]
     [AllowAnonymous]
+    [Route("/user/login")]
     public async Task<IActionResult> UserLogin(LoginUserCommand command)
     {
         BaseResponse response = await _mediator.Send(command);
@@ -102,6 +103,7 @@ public class UserController:ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Roles = "Admin")]
     [Route("/user/role")]
     public async Task<IActionResult> UserRole(UpdateRoleCommand command)
     {
