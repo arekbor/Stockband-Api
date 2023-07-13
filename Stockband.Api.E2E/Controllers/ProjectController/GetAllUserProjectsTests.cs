@@ -48,7 +48,7 @@ public class GetAllUserProjectsTests:BaseTest
     }
     
     [Test]
-    public async Task GetAllUserProjects_BaseResponse_ResultCount_ShouldBeZero()
+    public void GetAllUserProjects_UserWithoutProjects_BaseResponse_ResultCount_ShouldBeZero()
     {
         HttpResponseModule responseModule = ActResponseModule(7500, GetUserJwtToken(5600));
 
