@@ -1,0 +1,45 @@
+using MediatR;
+using Stockband.Application.Interfaces.Repositories;
+using Stockband.Domain.Common;
+using Stockband.Domain.Entities;
+
+namespace Stockband.Application.Features.ProjectFeatures.Queries.GetAllUserProjects;
+
+public class GetAllUserProjectsQueryHandler:IRequestHandler<GetAllUserProjectsQuery, BaseResponse<List<GetAllUserProjectsQueryViewModel>>>
+{
+    private readonly IProjectRepository _projectRepository;
+
+    public GetAllUserProjectsQueryHandler(IProjectRepository projectRepository)
+    {
+        _projectRepository = projectRepository;
+    }
+
+    public async Task<BaseResponse<List<GetAllUserProjectsQueryViewModel>>> Handle(GetAllUserProjectsQuery request, CancellationToken cancellationToken)
+    {
+        List<GetAllUserProjectsQueryViewModel> response = 
+            await GetAllUserProjectsQueryViewModels(request.UserId);
+        
+        return new BaseResponse<List<GetAllUserProjectsQueryViewModel>>(response);
+    }
+
+    private async Task<List<GetAllUserProjectsQueryViewModel>> GetAllUserProjectsQueryViewModels(int userId)
+    {
+        IEnumerable<Project> projects = 
+            await _projectRepository.GetAllProjectsByOwnerId(userId);
+        
+        List<GetAllUserProjectsQueryViewModel> getAllUserProjectsQueryViewModels =
+            new List<GetAllUserProjectsQueryViewModel>();
+
+        foreach (Project project in projects)
+        {
+            getAllUserProjectsQueryViewModels.Add(new GetAllUserProjectsQueryViewModel
+            {
+                OwnerId = project.OwnerId,
+                Name = project.Name,
+                Description = project.Description
+            });
+        }
+
+        return getAllUserProjectsQueryViewModels;
+    }
+}
