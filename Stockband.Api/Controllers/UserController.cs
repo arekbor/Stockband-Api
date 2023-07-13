@@ -28,10 +28,7 @@ public class UserController:ControllerBase
     [Route("/user/{id:int}")]
     public async Task<IActionResult> GetUserById(int id)
     {
-        BaseResponse<GetUserByIdQueryViewModel> response =  await _mediator.Send(new GetUserByIdQuery
-        {
-            Id = id
-        });
+        BaseResponse<GetUserByIdQueryViewModel> response =  await _mediator.Send(new GetUserByIdQuery(id));
 
         if (!response.Success)
         {

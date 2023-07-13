@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.RemoveProject;
 using Stockband.Application.Features.ProjectFeatures.Commands.UpdateProject;
+using Stockband.Application.Features.ProjectFeatures.Queries.GetAllUserProjects;
 using Stockband.Domain.Common;
 
 namespace Stockband.Api.Controllers;
@@ -19,7 +20,7 @@ public class ProjectController:ControllerBase
     }
 
     [HttpPost]
-    [Route("project")]
+    [Route("/project")]
     public async Task<IActionResult> CreateProject(CreateProjectCommand command)
     {
         BaseResponse response = await _mediator.Send(command);
@@ -31,7 +32,7 @@ public class ProjectController:ControllerBase
     }
 
     [HttpPut]
-    [Route("project")]
+    [Route("/project")]
     public async Task<IActionResult> UpdateProject(UpdateProjectCommand command)
     {
         BaseResponse response = await _mediator.Send(command);
@@ -43,10 +44,24 @@ public class ProjectController:ControllerBase
     }
 
     [HttpDelete]
-    [Route("project")]
+    [Route("/project")]
     public async Task<IActionResult> RemoveProject(RemoveProjectCommand command)
     {
         BaseResponse response = await _mediator.Send(command);
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+
+    [HttpGet]
+    [Route("/projects/{userId:int}")]
+    public async Task<IActionResult> GetAllUserProjects(int userId)
+    {
+        BaseResponse<List<GetAllUserProjectsQueryViewModel>> response = 
+            await _mediator.Send(new GetAllUserProjectsQuery(userId));
+
         if (!response.Success)
         {
             return BadRequest(response);

@@ -33,4 +33,24 @@ internal class ProjectBuilder:BaseTest
 
         await _projectRepository.AddAsync(project);
     }
+
+    internal async Task BuildMany(int? projectOwnerId = null, int size = 1)
+    {
+        List<Project> projects = Builder<Project>
+            .CreateListOfSize(size)
+            .All()
+            .With(x => x.Deleted = false)
+            .Build()
+            .ToList();
+
+        if (projectOwnerId != null)
+        {
+            foreach (Project project in projects)
+            {
+                project.OwnerId = (int)projectOwnerId;
+            }
+        }
+
+        await _projectRepository.AddRangeAsync(projects);
+    }
 }
