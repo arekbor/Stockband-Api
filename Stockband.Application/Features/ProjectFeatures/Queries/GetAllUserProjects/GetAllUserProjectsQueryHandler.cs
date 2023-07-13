@@ -16,10 +16,8 @@ public class GetAllUserProjectsQueryHandler:IRequestHandler<GetAllUserProjectsQu
 
     public async Task<BaseResponse<List<GetAllUserProjectsQueryViewModel>>> Handle(GetAllUserProjectsQuery request, CancellationToken cancellationToken)
     {
-        List<GetAllUserProjectsQueryViewModel> response = 
-            await GetAllUserProjectsQueryViewModels(request.UserId);
-        
-        return new BaseResponse<List<GetAllUserProjectsQueryViewModel>>(response);
+        return new BaseResponse<List<GetAllUserProjectsQueryViewModel>>
+            (await GetAllUserProjectsQueryViewModels(request.UserId));
     }
 
     private async Task<List<GetAllUserProjectsQueryViewModel>> GetAllUserProjectsQueryViewModels(int userId)

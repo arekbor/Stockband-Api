@@ -28,20 +28,6 @@ public class GetAllProjectMembersQueryHandler:IRequestHandler<GetAllProjectMembe
     }
     public async Task<BaseResponse<List<GetAllProjectMembersQueryViewModel>>>Handle(GetAllProjectMembersQuery request, CancellationToken cancellationToken)
     {
-        Project? project = await _projectRepository.GetByIdAsync(request.ProjectId);
-        if (project == null)
-        {
-            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>(
-                new ObjectNotFound(typeof(Project), request.ProjectId), 
-                BaseErrorCode.ProjectNotExists);
-        }
-        
-        if (!_authenticationUserService.IsAuthorized(project.OwnerId))
-        {
-            return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
-                (new UnauthorizedOperationException(), BaseErrorCode.UserUnauthorizedOperation);
-        }
-        
         return new BaseResponse<List<GetAllProjectMembersQueryViewModel>>
             (await GetAllProjectMembersQueryViewModels(request.ProjectId));
     }

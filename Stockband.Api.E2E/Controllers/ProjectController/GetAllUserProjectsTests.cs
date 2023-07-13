@@ -22,7 +22,7 @@ public class GetAllUserProjectsTests:BaseTest
     }
 
     [Test]
-    public async Task GetAllUserProjects_BaseResponse_Success_ShouldBeTrue()
+    public async Task GetAllUserProjects_UserWithoutProjects_BaseResponse_Success_ShouldBeTrue()
     {
         //Arrange
         const int sizeProjects = 10;

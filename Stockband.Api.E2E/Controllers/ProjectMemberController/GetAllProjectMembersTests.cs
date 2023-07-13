@@ -41,7 +41,7 @@ public class GetAllProjectMembersTests:BaseTest
 
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(testingProjectId, GetUserJwtToken(testingRequestedUserId));
+            ActResponseModule(testingProjectId, GetUserJwtToken(99541));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
@@ -67,7 +67,7 @@ public class GetAllProjectMembersTests:BaseTest
         
         //Act
         HttpResponseModule responseModule =
-            ActResponseModule(testingProjectId, GetUserJwtToken(testingRequestedUserId));
+            ActResponseModule(testingProjectId, GetUserJwtToken(8120));
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
