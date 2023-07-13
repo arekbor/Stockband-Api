@@ -28,3 +28,5 @@ jobs:
       run: dotnet test Stockband.IntegrationTests
     - name: Unit Tests
       run: dotnet test Stockband.UnitTests
+    - name: E2E Tests
+      run: dotnet test Stockband.E2E
