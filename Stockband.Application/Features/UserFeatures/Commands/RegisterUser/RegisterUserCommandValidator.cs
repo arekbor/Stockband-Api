@@ -1,5 +1,5 @@
 using FluentValidation;
-using Stockband.Application.Common.FluentValidationRuleBuilders;
+using Stockband.Application.Common;
 
 namespace Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 
@@ -8,12 +8,12 @@ public class RegisterUserCommandValidator:AbstractValidator<RegisterUserCommand>
     public RegisterUserCommandValidator()
     {
         RuleFor(x => x.Password)
-            .PasswordUserRuleBuilder(x => x.ConfirmPassword);
+            .PasswordUserRule(x => x.ConfirmPassword);
 
         RuleFor(x => x.Email)
-            .EmailUserRuleBuilder();
+            .EmailUserRule();
 
         RuleFor(x => x.Username)
-            .UsernameUserRuleBuilder();
+            .UsernameUserRule();
     }
 }

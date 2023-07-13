@@ -1,5 +1,5 @@
 using FluentValidation;
-using Stockband.Application.Common.FluentValidationRuleBuilders;
+using Stockband.Application.Common;
 
 namespace Stockband.Application.Features.ProjectFeatures.Commands.CreateProject;
 
@@ -8,9 +8,9 @@ public class CreateProjectCommandValidator:AbstractValidator<CreateProjectComman
     public CreateProjectCommandValidator()
     {
         RuleFor(x => x.ProjectName)
-            .ProjectNameProjectRuleBuilder();
+            .ProjectNameProjectRule();
         
         RuleFor(x => x.ProjectDescription)
-            .ProjectDescriptionProjectRuleBuilder();
+            .ProjectDescriptionProjectRule();
     }
 }

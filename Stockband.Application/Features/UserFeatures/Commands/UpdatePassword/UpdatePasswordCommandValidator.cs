@@ -1,5 +1,5 @@
 using FluentValidation;
-using Stockband.Application.Common.FluentValidationRuleBuilders;
+using Stockband.Application.Common;
 
 namespace Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 
@@ -8,9 +8,9 @@ public class UpdatePasswordCommandValidator:AbstractValidator<UpdatePasswordComm
     public UpdatePasswordCommandValidator()
     {
         RuleFor(x => x.CurrentPassword)
-            .PasswordNotEmptyUserRuleBuilder();
+            .PasswordNotEmptyUserRule();
 
         RuleFor(x => x.NewPassword)
-            .PasswordUserRuleBuilder(x => x.ConfirmNewPassword);
+            .PasswordUserRule(x => x.ConfirmNewPassword);
     }
 }
