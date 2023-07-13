@@ -60,10 +60,7 @@ public class ProjectController:ControllerBase
     public async Task<IActionResult> GetAllUserProjects(int userId)
     {
         BaseResponse<List<GetAllUserProjectsQueryViewModel>> response = 
-            await _mediator.Send(new GetAllUserProjectsQuery
-        {
-            UserId = userId
-        });
+            await _mediator.Send(new GetAllUserProjectsQuery(userId));
 
         if (!response.Success)
         {

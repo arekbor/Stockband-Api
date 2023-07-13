@@ -47,12 +47,9 @@ public class ProjectMemberController:ControllerBase
     [Route("projectMember/{projectId:int}")]
     public async Task<IActionResult> GetAllProjectMembers(int projectId)
     {
-        BaseResponse<List<GetAllProjectMembersQueryViewModel>> response = 
-            await _mediator.Send(new GetAllProjectMembersQuery
-            {
-                ProjectId = projectId
-            });
-        
+        BaseResponse<List<GetAllProjectMembersQueryViewModel>> response =
+            await _mediator.Send(new GetAllProjectMembersQuery(projectId));
+
         if (!response.Success)
         {
             return BadRequest(response);

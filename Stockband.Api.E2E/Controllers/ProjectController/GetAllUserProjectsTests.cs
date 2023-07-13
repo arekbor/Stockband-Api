@@ -50,9 +50,6 @@ public class GetAllUserProjectsTests:BaseTest
     [Test]
     public async Task GetAllUserProjects_BaseResponse_ResultCount_ShouldBeZero()
     {
-        //Arrange
-        const int sizeProjects = 10;
-        
         HttpResponseModule responseModule = ActResponseModule(7500, GetUserJwtToken(5600));
 
         //Assert
