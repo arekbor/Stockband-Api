@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     
     env: 
-      JwtKey: "l9KcugSt6VnGi2sD4DawfRaX7vwiRgqwve9cKbdb"
-      JwtIssuer: "http://localhost:5000"
-      JwtAudience: "localhost:5000"
-      CookieExpires: "10"
-      CookieName: "access_token"
-      JWTExpires: "10"
-      ProjectsLimitPerUser: "5"
-      ProjectMembersLimitPerProject: "5"
+      JwtKey: ${{ secrets.JWT_KEY }}
+      JwtIssuer: ${{ secrets.JWT_ISSUER }}
+      JwtAudience: ${{ secrets.JWT_AUDIENCE }}
+      CookieExpires: ${{ secrets.COOKIE_EXPIRES }}
+      CookieName: ${{ secrets.COOKIE_NAME }}
+      JWTExpires: ${{ secrets.JWT_EXPIRES }}
+      ProjectsLimitPerUser: ${{ secrets.PROJECTS_LIMIT_PER_USER }}
+      ProjectMembersLimitPerProject: ${{ secrets.PROJECTS_MEMBERS_LIMIT_PER_PROJECT }}
       
     steps:
     - uses: actions/checkout@v3
