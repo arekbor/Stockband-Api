@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env: 
-      JwtKey: "PHJKkNwelFshqd2dD2zdCcS8eRCDlj4FprGZbYkF"
+      JwtKey: "l9KcugSt6VnGi2sD4DawfRaX7vwiRgqwve9cKbdb"
       JwtIssuer: "http://localhost:5280"
       JwtAudience: "localhost:5280"
       CookieExpires: "10"
