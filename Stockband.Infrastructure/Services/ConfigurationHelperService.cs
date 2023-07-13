@@ -15,10 +15,10 @@ public class ConfigurationHelperService:IConfigurationHelperService
     }
     
     public int GetProjectsLimitPerUser() => 
-        Get<int>("ProjectFeaturesSettings:ProjectsLimitPerUser");
+        Get<int>("ProjectsLimitPerUser");
 
     public int GetProjectMembersLimitPerProject() => 
-        Get<int>("ProjectMemberFeaturesSettings:ProjectMembersLimitPerProject");
+        Get<int>("ProjectMembersLimitPerProject");
 
     public string GetJwtKey() => 
         Get<string>("JwtKey");
