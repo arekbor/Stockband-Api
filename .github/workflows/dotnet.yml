@@ -21,9 +21,9 @@ jobs:
       CookieExpires: "10"
       CookieName: "access_token"
       JWTExpires: "10"
-      ProjectFeaturesSettings.ProjectsLimitPerUser: 5
-      ProjectMemberFeaturesSettings.ProjectMembersLimitPerProject: 5
-
+      ProjectFeaturesSettings.ProjectsLimitPerUser: "5"
+      ProjectMemberFeaturesSettings.ProjectMembersLimitPerProject: "5"
+      
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
