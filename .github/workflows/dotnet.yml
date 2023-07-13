@@ -13,6 +13,14 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    env: 
+      JwtKey: "PHJKkNwelFshqd2dD2zdCcS8eRCDlj4FprGZbYkF"
+      JwtIssuer: "http://localhost:5280"
+      JwtAudience: "localhost:5280"
+      CookieExpires: "10"
+      CookieName: "access_token"
+      JWTExpires: "10"
 
     steps:
     - uses: actions/checkout@v3
