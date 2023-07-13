@@ -29,4 +29,4 @@ jobs:
     - name: Unit Tests
       run: dotnet test Stockband.UnitTests
     - name: E2E Tests
-      run: dotnet test Stockband.E2E
+      run: dotnet test Stockband.Api.E2E
