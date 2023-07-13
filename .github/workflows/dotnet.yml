@@ -16,8 +16,8 @@ jobs:
     
     env: 
       JwtKey: "l9KcugSt6VnGi2sD4DawfRaX7vwiRgqwve9cKbdb"
-      JwtIssuer: "http://localhost:5280"
-      JwtAudience: "localhost:5280"
+      JwtIssuer: "http://localhost:5000"
+      JwtAudience: "localhost:5000"
       CookieExpires: "10"
       CookieName: "access_token"
       JWTExpires: "10"
