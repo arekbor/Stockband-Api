@@ -32,6 +32,7 @@ public class GetAllUserProjectsQueryHandler:IRequestHandler<GetAllUserProjectsQu
         {
             getAllUserProjectsQueryViewModels.Add(new GetAllUserProjectsQueryViewModel
             {
+                ProjectId = project.Id,
                 OwnerId = project.OwnerId,
                 Name = project.Name,
                 Description = project.Description
