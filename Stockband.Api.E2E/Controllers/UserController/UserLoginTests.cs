@@ -2,7 +2,7 @@ using System.Net;
 using FlueFlame.Http.Modules;
 using Shouldly;
 using Stockband.Api.E2E.Builders;
-using Stockband.Application.Features.UserFeatures.Commands.LoginUser;
+using Stockband.Application.Features.UserFeatures.Queries.LoginUser;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Common;
 
@@ -30,19 +30,20 @@ public class UserLoginTests:BaseTest
         await _userBuilder
             .Build(userId:500, email:testingEmail, password: testingPassword);
 
-        LoginUserCommand command = new LoginUserCommand
+        LoginUserQuery query = new LoginUserQuery
             (testingEmail, testingPassword);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(command);
+        HttpResponseModule responseModule = ActResponseModule(query);
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.OK);
 
-        responseModule.AsJson.AssertThat<BaseResponse>(response =>
+        responseModule.AsJson.AssertThat<BaseResponse<LoginUserQueryViewModel>>(response =>
         {
             response.Errors.Count.ShouldBe(0);
             response.Success.ShouldBe(true);
+            response.Result.ShouldNotBeNull();
         });
     }
 
@@ -56,11 +57,11 @@ public class UserLoginTests:BaseTest
         await _userBuilder
             .Build(userId:500, email:emailCreate, password: passwordCreate);
         
-        LoginUserCommand command = new LoginUserCommand
+        LoginUserQuery query = new LoginUserQuery
             (emailLogin, passwordLogin);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(command);
+        HttpResponseModule responseModule = ActResponseModule(query);
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -79,11 +80,11 @@ public class UserLoginTests:BaseTest
         (string email, string password)
     {
         //Arrange
-        LoginUserCommand command = new LoginUserCommand
+        LoginUserQuery query = new LoginUserQuery
             (email, password);
         
         //Act
-        HttpResponseModule responseModule = ActResponseModule(command);
+        HttpResponseModule responseModule = ActResponseModule(query);
         
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -96,12 +97,12 @@ public class UserLoginTests:BaseTest
         });
     }
     
-    private HttpResponseModule ActResponseModule(LoginUserCommand command)
+    private HttpResponseModule ActResponseModule(LoginUserQuery query)
     {
         return HttpHost
             .Post
             .Url(TestingUri)
-            .Json(command)
+            .Json(query)
             .Send()
             .Response;
     }

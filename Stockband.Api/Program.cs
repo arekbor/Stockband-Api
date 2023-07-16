@@ -1,4 +1,5 @@
 using Stockband.Api;
+using Stockband.Api.Collections;
 using Stockband.Application;
 using Stockband.Infrastructure;
 using Stockband.Infrastructure.Services;
@@ -13,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddSwaggerGenCollection();
 
 var app = builder.Build();
 

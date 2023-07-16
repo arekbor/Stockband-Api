@@ -1,13 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stockband.Application.Features.UserFeatures.Commands.LoginUser;
-using Stockband.Application.Features.UserFeatures.Commands.LogoutUser;
 using Stockband.Application.Features.UserFeatures.Commands.RegisterUser;
 using Stockband.Application.Features.UserFeatures.Commands.UpdatePassword;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateRole;
 using Stockband.Application.Features.UserFeatures.Commands.UpdateUser;
 using Stockband.Application.Features.UserFeatures.Queries.GetUserById;
+using Stockband.Application.Features.UserFeatures.Queries.LoginUser;
 using Stockband.Domain.Common;
 
 namespace Stockband.Api.Controllers;
@@ -53,28 +52,16 @@ public class UserController:ControllerBase
     [HttpPost]
     [AllowAnonymous]
     [Route("/user/login")]
-    public async Task<IActionResult> UserLogin(LoginUserCommand command)
+    public async Task<IActionResult> UserLogin(LoginUserQuery query)
     {
-        BaseResponse response = await _mediator.Send(command);
+        BaseResponse<LoginUserQueryViewModel> response = await _mediator.Send(query);
         if (!response.Success)
         {
             return BadRequest(response);
         }
         return Ok(response);
     }
-
-    [HttpPost]
-    [Route("/user/logout")]
-    public async Task<IActionResult> UserLogout()
-    {
-        BaseResponse response = await _mediator.Send(new LogoutUserCommand());
-        if (!response.Success)
-        {
-            return BadRequest(response);
-        }
-        return Ok(response);
-    }
-
+    
     [HttpPut]
     [Route("/user/password")]
     public async Task<IActionResult> UserUpdatePassword(UpdatePasswordCommand command)

@@ -1,11 +1,11 @@
 using FluentValidation;
 using Stockband.Application.Common;
 
-namespace Stockband.Application.Features.UserFeatures.Commands.LoginUser;
+namespace Stockband.Application.Features.UserFeatures.Queries.LoginUser;
 
-public class LoginUserCommandValidator:AbstractValidator<LoginUserCommand>
+public class LoginUserQueryValidator:AbstractValidator<LoginUserQuery>
 {
-    public LoginUserCommandValidator()
+    public LoginUserQueryValidator()
     {
         RuleFor(x => x.Email)
             .EmailUserRule();
