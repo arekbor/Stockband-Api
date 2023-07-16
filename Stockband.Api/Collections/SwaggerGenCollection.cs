@@ -1,6 +1,6 @@
 using Microsoft.OpenApi.Models;
 
-namespace Stockband.Api;
+namespace Stockband.Api.Collections;
 
 internal static class SwaggerGenCollection
 {

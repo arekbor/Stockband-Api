@@ -1,4 +1,5 @@
 using Stockband.Api;
+using Stockband.Api.Collections;
 using Stockband.Application;
 using Stockband.Infrastructure;
 using Stockband.Infrastructure.Services;
