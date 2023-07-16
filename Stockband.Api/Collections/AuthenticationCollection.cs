@@ -15,31 +15,22 @@ internal static class AuthenticationCollection
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
             options.RequireHttpsMetadata = false;
             options.SaveToken = true;
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurationHelperService.GetJwtKey())),
-                ValidateIssuer = true,
+                
                 ValidIssuer = configurationHelperService.GetJwtIssuer(),
-                ValidateAudience = true,
                 ValidAudience = configurationHelperService.GetJwtAudience(),
-            };
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = ctx =>
-                {
-                    ctx.Token = ctx.Request.Cookies[configurationHelperService.GetCookieName()];
-                    return Task.CompletedTask;
-                },
-                OnAuthenticationFailed = ctx =>
-                {
-                    Console.WriteLine(ctx.Exception.ToString());
-                    return Task.CompletedTask;
-                }
+                IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(configurationHelperService.GetJwtKey())),
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
             };
         });
         return services;

@@ -7,15 +7,15 @@ using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
 using Stockband.Domain.Exceptions;
 
-namespace Stockband.Application.Features.UserFeatures.Commands.LoginUser;
+namespace Stockband.Application.Features.UserFeatures.Queries.LoginUser;
 
-public class LoginUserCommandHandler:IRequestHandler<LoginUserCommand, BaseResponse>
+public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<LoginUserQueryViewModel>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserFeaturesService _userFeaturesService;
     private readonly IAuthenticationUserService _authenticationUserService;
 
-    public LoginUserCommandHandler(
+    public LoginUserQueryHandler(
         IUserRepository userRepository, 
         IUserFeaturesService userFeaturesService, 
         IAuthenticationUserService authenticationUserService)
@@ -25,30 +25,34 @@ public class LoginUserCommandHandler:IRequestHandler<LoginUserCommand, BaseRespo
         _authenticationUserService = authenticationUserService;
     }
 
-    public async Task<BaseResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<LoginUserQueryViewModel>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
     {
         User? user = await _userRepository.GetUserByEmailAsync(request.Email);
         if (user == null)
         {
-            return new BaseResponse(new UnauthorizedOperationException(), 
+            return new BaseResponse<LoginUserQueryViewModel>(new UnauthorizedOperationException(), 
                 BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         
         if (!_userFeaturesService.VerifyHashedPassword(request.Password, user.Password))
         {
-            return new BaseResponse(new UnauthorizedOperationException(), 
+            return new BaseResponse<LoginUserQueryViewModel>(new UnauthorizedOperationException(), 
                 BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         
-        string jwtToken = _authenticationUserService.GenerateJwtToken
+        string jwtToken = _authenticationUserService.GetJwtToken
         (
             user.Id.ToString(), 
             user.Username, 
             user.Email,
             user.Role.ToString()
         );
-        _authenticationUserService.AddJwtCookie(jwtToken);
 
-        return new BaseResponse();
+        LoginUserQueryViewModel result = new LoginUserQueryViewModel
+        {
+            Token = jwtToken
+        };
+        
+        return new BaseResponse<LoginUserQueryViewModel>(result);
     }
 }
