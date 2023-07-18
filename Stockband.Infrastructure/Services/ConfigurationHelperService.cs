@@ -32,12 +32,6 @@ public class ConfigurationHelperService:IConfigurationHelperService
     public double GetJwtExpires() => 
         Get<double>("JWTExpires");
     
-    public double GetCookieExpires() => 
-        Get<double>("CookieExpires");
-    
-    public string GetCookieName() => 
-        Get<string>("CookieName");
-
     private T Get<T>(string key)
     {
         T? value = _configuration.GetValue<T>(key);
