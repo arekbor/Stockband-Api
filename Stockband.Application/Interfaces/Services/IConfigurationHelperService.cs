@@ -8,6 +8,4 @@ public interface IConfigurationHelperService
     string GetJwtAudience();
     string GetJwtIssuer();
     double GetJwtExpires();
-    double GetCookieExpires();
-    string GetCookieName();
 }
