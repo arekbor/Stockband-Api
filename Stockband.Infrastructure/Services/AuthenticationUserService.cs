@@ -52,7 +52,7 @@ public class AuthenticationUserService:IAuthenticationUserService
                 new (ClaimTypes.Email, email),
                 new (ClaimTypes.Role, role)
             }),
-            Expires = DateTime.Now.AddMinutes(jwtExpires),
+            Expires = DateTime.UtcNow.AddMinutes(jwtExpires),
             Audience = jwtAudience,
             Issuer = jwtIssuer,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
