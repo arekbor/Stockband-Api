@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using Stockband.Application.Interfaces.Services;
+using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Domain.Exceptions;
 
 namespace Stockband.Infrastructure.Services;
@@ -20,17 +20,17 @@ public class ConfigurationHelperService:IConfigurationHelperService
     public int GetProjectMembersLimitPerProject() => 
         Get<int>("ProjectMembersLimitPerProject");
 
-    public string GetJwtKey() => 
-        Get<string>("JwtKey");
+    public string GetAccessTokenPrivateKey() => 
+        Get<string>("AccessTokenPrivateKey");
 
-    public string GetJwtAudience() => 
-        Get<string>("JwtAudience");
+    public string GetAccessTokenAudience() => 
+        Get<string>("AccessTokenAudience");
 
-    public string GetJwtIssuer() => 
-        Get<string>("JwtIssuer");
+    public string GetAccessTokenIssuer() => 
+        Get<string>("AccessTokenIssuer");
     
-    public double GetJwtExpires() => 
-        Get<double>("JWTExpires");
+    public double GetAccessTokenExpiresInMinutes() => 
+        Get<double>("AccessTokenExpiresInMinutes");
     
     private T Get<T>(string key)
     {

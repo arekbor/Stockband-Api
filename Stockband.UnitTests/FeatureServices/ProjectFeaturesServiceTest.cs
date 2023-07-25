@@ -5,7 +5,7 @@ using Shouldly;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.FeatureServices;
-using Stockband.Application.Interfaces.Services;
+using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Domain.Entities;
 
 namespace Stockband.UnitTests.FeatureServices;

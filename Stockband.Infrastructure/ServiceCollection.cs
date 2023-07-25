@@ -1,8 +1,11 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Stockband.Application.Interfaces.Repositories;
-using Stockband.Application.Interfaces.Services;
+using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Infrastructure.Repositories;
 using Stockband.Infrastructure.Services;
 
@@ -13,6 +16,8 @@ public static class ServiceCollection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
+        ConfigurationHelperService config = new ConfigurationHelperService(configuration); 
+        
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         services.AddDbContext<StockbandDbContext>(options =>
         {
@@ -20,6 +25,29 @@ public static class ServiceCollection
                 o.SetPostgresVersion(9, 6));
         });
         
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                
+                ValidIssuer = config.GetAccessTokenIssuer(),
+                ValidAudience = config.GetAccessTokenAudience(),
+                IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(config.GetAccessTokenPrivateKey())),
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+            };
+        });
+
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();

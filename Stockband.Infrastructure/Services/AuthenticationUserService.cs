@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using Stockband.Application.Interfaces.Services;
+using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Exceptions;
 
@@ -34,13 +34,13 @@ public class AuthenticationUserService:IAuthenticationUserService
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
-        string jwtKey = _configurationHelperService.GetJwtKey();
+        string jwtKey = _configurationHelperService.GetAccessTokenPrivateKey();
 
-        string jwtAudience = _configurationHelperService.GetJwtAudience();
+        string jwtAudience = _configurationHelperService.GetAccessTokenAudience();
 
-        string jwtIssuer = _configurationHelperService.GetJwtIssuer();
+        string jwtIssuer = _configurationHelperService.GetAccessTokenIssuer();
 
-        double jwtExpires = _configurationHelperService.GetJwtExpires();
+        double jwtExpires = _configurationHelperService.GetAccessTokenExpiresInMinutes();
         
         byte[] keyBytes = Encoding.UTF8.GetBytes(jwtKey);
         SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
