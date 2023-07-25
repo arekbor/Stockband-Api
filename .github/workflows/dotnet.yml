@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     
     env: 
-      JwtKey: ${{ secrets.EHMHFLGOJ }}
-      JwtIssuer: ${{ secrets.LINPMBWNO }}
-      JwtAudience: ${{ secrets.XDOERFIOM }}
-      JWTExpires: ${{ secrets.HIUNLVMVO }}
+      AccessTokenPrivateKey: ${{ secrets.EHMHFLGOJ }}
+      AccessTokenIssuer: ${{ secrets.LINPMBWNO }}
+      AccessTokenAudience: ${{ secrets.XDOERFIOM }}
+      AccessTokenExpiresInMinutes: ${{ secrets.HIUNLVMVO }}
       ProjectsLimitPerUser: ${{ secrets.ZVYPHZEWR }}
       ProjectMembersLimitPerProject: ${{ secrets.KDKVSWGQT }}
       
