@@ -1,7 +1,7 @@
 using MediatR;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Application.Interfaces.FeatureServices;
-using Stockband.Application.Interfaces.Services;
+using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;

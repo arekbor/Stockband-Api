@@ -1,4 +1,4 @@
-namespace Stockband.Application.Interfaces.Services;
+namespace Stockband.Application.Interfaces.ExternalServices;
 
 public interface IAuthenticationUserService
 {
