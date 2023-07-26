@@ -30,7 +30,7 @@ public class AuthenticationUserService:IAuthenticationUserService
     /// <param name="email">The email associated with the token.</param>
     /// <param name="role">The role associated with the token.</param>
     /// <returns>The generated JWT token.</returns>
-    public string GetJwtToken(string userId, string username, string email, string role)
+    public string GetAccessToken(string userId, string username, string email, string role)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -63,6 +63,7 @@ public class AuthenticationUserService:IAuthenticationUserService
 
         return tokenString;
     }
+    
     public int GetUserId()
     {
         Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);

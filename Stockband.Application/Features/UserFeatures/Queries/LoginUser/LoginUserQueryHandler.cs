@@ -40,7 +40,7 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
                 BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         
-        string jwtToken = _authenticationUserService.GetJwtToken
+        string jwtToken = _authenticationUserService.GetAccessToken
         (
             user.Id.ToString(), 
             user.Username, 
