@@ -82,19 +82,6 @@ public class AuthenticationUserService:IAuthenticationUserService
     }
     
     /// <summary>
-    /// Retrieves all roles associated with the user.
-    /// </summary>
-    /// <returns>A collection of user roles.</returns>
-    public IEnumerable<string> GetRoles()
-    {
-        return GetHttpContext()
-            .User
-            .Claims
-            .Where(x => x.Type == ClaimTypes.Role)
-            .Select(x => x.Value);
-    }
-
-    /// <summary>
     /// Verifies whether the provided user ID belongs to an admin or is equal to the claim ID.
     /// </summary>
     /// <param name="userId">The user ID to be verified.</param>
