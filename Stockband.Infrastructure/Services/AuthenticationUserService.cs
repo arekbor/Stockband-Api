@@ -30,7 +30,7 @@ public class AuthenticationUserService:IAuthenticationUserService
     /// <param name="email">The email associated with the token.</param>
     /// <param name="role">The role associated with the token.</param>
     /// <returns>The generated JWT token.</returns>
-    public string GetJwtToken(string userId, string username, string email, string role)
+    public string GetAccessToken(string userId, string username, string email, string role)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -63,6 +63,7 @@ public class AuthenticationUserService:IAuthenticationUserService
 
         return tokenString;
     }
+    
     public int GetUserId()
     {
         Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
@@ -80,19 +81,6 @@ public class AuthenticationUserService:IAuthenticationUserService
         return parsedId;
     }
     
-    /// <summary>
-    /// Retrieves all roles associated with the user.
-    /// </summary>
-    /// <returns>A collection of user roles.</returns>
-    public IEnumerable<string> GetRoles()
-    {
-        return GetHttpContext()
-            .User
-            .Claims
-            .Where(x => x.Type == ClaimTypes.Role)
-            .Select(x => x.Value);
-    }
-
     /// <summary>
     /// Verifies whether the provided user ID belongs to an admin or is equal to the claim ID.
     /// </summary>

@@ -94,7 +94,7 @@ public abstract class BaseTest
         AuthenticationUserService authenticationUser =
             new AuthenticationUserService(httpContextAccessor, configurationHelper);
 
-        string token =  authenticationUser.GetJwtToken(userId.ToString(), username, email, userRole.ToString());
+        string token =  authenticationUser.GetAccessToken(userId.ToString(), username, email, userRole.ToString());
 
         return token;
     }
