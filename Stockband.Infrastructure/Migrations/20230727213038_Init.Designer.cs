@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Stockband.Infrastructure;
+using Stockband.Infrastructure.Configuration;
 
 #nullable disable
 
 namespace Stockband.Infrastructure.Migrations
 {
     [DbContext(typeof(StockbandDbContext))]
-    [Migration("20230601202928_InitProject")]
-    partial class InitProject
+    [Migration("20230727213038_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,26 +36,26 @@ namespace Stockband.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<int>("OwnerId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("Deleted");
 
                     b.HasIndex("OwnerId");
 
@@ -73,6 +73,9 @@ namespace Stockband.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("MemberId")
                         .HasColumnType("integer");
 
@@ -83,6 +86,8 @@ namespace Stockband.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Deleted");
 
                     b.HasIndex("MemberId");
 
@@ -102,31 +107,30 @@ namespace Stockband.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("character varying(260)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username")
-                        .IsUnique();
+                    b.HasIndex("Deleted");
 
                     b.ToTable("Users");
                 });

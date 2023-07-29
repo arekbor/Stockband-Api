@@ -1,33 +1,46 @@
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using Stockband.Infrastructure;
+using Stockband.Infrastructure.Configuration;
 
 namespace Stockband.IntegrationTests;
 
 public abstract class BaseTest
 {
-    protected StockbandDbContext Context = null!;
+    protected StockbandDbContext StockbandDbContext = null!;
+    protected StockbandMemoryDbContext StockbandMemoryDbContext = null!;
     
     [SetUp]
     protected async Task Setup()
     {
-        DbContextOptions<StockbandDbContext> dbContextOptions = GetDbContextOptions();
-        Context = new StockbandDbContext(dbContextOptions);
-        await Context.Database.EnsureCreatedAsync();
+        DbContextOptions<StockbandDbContext> stockbandDbContext = GetStockbandDbContextOptions();
+        StockbandDbContext = new StockbandDbContext(stockbandDbContext);
+        await StockbandDbContext.Database.EnsureCreatedAsync();
+
+        DbContextOptions<StockbandMemoryDbContext> stockbandInMemoryDbContext = GetStockbandInMemoryDbContextOptions();
+        
+        StockbandMemoryDbContext = new StockbandMemoryDbContext(stockbandInMemoryDbContext);
+        await StockbandMemoryDbContext.Database.EnsureCreatedAsync();
     }
 
     [TearDown]
     protected async Task CleanUp()
     {
-        await Context.Database.EnsureDeletedAsync();
-        await Context.DisposeAsync();
+        await StockbandDbContext.Database.EnsureDeletedAsync();
+        await StockbandDbContext.DisposeAsync();
+
+        await StockbandMemoryDbContext.Database.EnsureCreatedAsync();
+        await StockbandMemoryDbContext.DisposeAsync();
     }
     
-    private static DbContextOptions<StockbandDbContext> GetDbContextOptions()
+    private static DbContextOptions<StockbandDbContext> GetStockbandDbContextOptions()
     {
-        DbContextOptions<StockbandDbContext> dbContextOptions =
-            new DbContextOptionsBuilder<StockbandDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
-        return dbContextOptions;
+        return new DbContextOptionsBuilder<StockbandDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+    } 
+    
+    private static DbContextOptions<StockbandMemoryDbContext> GetStockbandInMemoryDbContextOptions()
+    {
+        return new DbContextOptionsBuilder<StockbandMemoryDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
     } 
 }

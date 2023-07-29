@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Stockband.Application.Interfaces.Repositories;
+using Stockband.Infrastructure.Configuration;
+
 namespace Stockband.Infrastructure.Repositories;
 
 public class BaseRepository<T>: IBaseRepository<T>

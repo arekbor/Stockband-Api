@@ -16,7 +16,7 @@ public class ProjectRepositoryTest:BaseTest
     [SetUp]
     public void SetUp()
     {
-        _projectRepository = new ProjectRepository(Context);
+        _projectRepository = new ProjectRepository(StockbandDbContext);
     }
 
     [Test]

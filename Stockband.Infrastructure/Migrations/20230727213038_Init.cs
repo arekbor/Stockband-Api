@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Stockband.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitProject : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,12 +18,13 @@ namespace Stockband.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Username = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
-                    Email = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
-                    Password = table.Column<string>(type: "character varying(260)", maxLength: 260, nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ModifiedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,10 +38,11 @@ namespace Stockband.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     OwnerId = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ModifiedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,7 +64,8 @@ namespace Stockband.Infrastructure.Migrations
                     MemberId = table.Column<int>(type: "integer", nullable: false),
                     ProjectId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ModifiedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,6 +85,11 @@ namespace Stockband.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectMembers_Deleted",
+                table: "ProjectMembers",
+                column: "Deleted");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectMembers_MemberId",
                 table: "ProjectMembers",
                 column: "MemberId");
@@ -92,10 +100,9 @@ namespace Stockband.Infrastructure.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_Name",
+                name: "IX_Projects_Deleted",
                 table: "Projects",
-                column: "Name",
-                unique: true);
+                column: "Deleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_OwnerId",
@@ -103,10 +110,9 @@ namespace Stockband.Infrastructure.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Username",
+                name: "IX_Users_Deleted",
                 table: "Users",
-                column: "Username",
-                unique: true);
+                column: "Deleted");
         }
 
         /// <inheritdoc />

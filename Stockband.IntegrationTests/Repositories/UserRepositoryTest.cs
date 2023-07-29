@@ -16,7 +16,7 @@ public class UserRepositoryTest:BaseTest
     [SetUp]
     public void SetUp()
     {
-        _userRepository = new UserRepository(Context);
+        _userRepository = new UserRepository(StockbandDbContext);
     }
 
     [Test]

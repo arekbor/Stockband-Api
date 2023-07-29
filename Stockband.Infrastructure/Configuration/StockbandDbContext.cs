@@ -5,7 +5,7 @@ using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
 using Stockband.Infrastructure.Common;
 
-namespace Stockband.Infrastructure;
+namespace Stockband.Infrastructure.Configuration;
 
 public class StockbandDbContext:DbContext
 {
