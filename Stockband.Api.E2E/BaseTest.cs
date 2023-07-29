@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Exceptions;
-using Stockband.Infrastructure;
+using Stockband.Infrastructure.Configuration;
 using Stockband.Infrastructure.Services;
 
 namespace Stockband.Api.E2E;

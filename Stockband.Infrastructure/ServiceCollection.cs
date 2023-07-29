@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Application.Interfaces.ExternalServices;
+using Stockband.Infrastructure.Configuration;
 using Stockband.Infrastructure.Repositories;
 using Stockband.Infrastructure.Services;
 
@@ -23,6 +24,10 @@ public static class ServiceCollection
         {
             options.UseNpgsql(configuration["DefaultConnection"], o =>
                 o.SetPostgresVersion(9, 6));
+        });
+        services.AddDbContext<StockbandMemoryDbContext>(options =>
+        {
+            options.UseInMemoryDatabase("StockbandInMemory");
         });
         
         services.AddAuthentication(options =>

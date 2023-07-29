@@ -17,9 +17,9 @@ public class ProjectMemberRepositoryTest:BaseTest
     [SetUp]
     public void SetUp()
     {
-        _projectMemberRepository = new ProjectMemberRepository(Context);
-        _projectRepository = new ProjectRepository(Context);
-        _userRepository = new UserRepository(Context);
+        _projectMemberRepository = new ProjectMemberRepository(StockbandDbContext);
+        _projectRepository = new ProjectRepository(StockbandDbContext);
+        _userRepository = new UserRepository(StockbandDbContext);
     }
 
     [Test]

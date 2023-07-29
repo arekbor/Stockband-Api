@@ -4,7 +4,7 @@ using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Entities;
-using Stockband.Infrastructure;
+using Stockband.Infrastructure.Configuration;
 using Stockband.Infrastructure.Repositories;
 
 namespace Stockband.Api.E2E.Builders;

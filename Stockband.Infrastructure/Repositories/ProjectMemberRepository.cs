@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain.Entities;
+using Stockband.Infrastructure.Configuration;
 
 namespace Stockband.Infrastructure.Repositories;
 
