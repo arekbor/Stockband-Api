@@ -27,7 +27,7 @@ jobs:
     - name: Find and Replace
     with:
       find: "console\.log\(([^)]+)\)"
-      replace: ""
+      replace: "..."
       regex: true
     
     - uses: actions/checkout@v3
