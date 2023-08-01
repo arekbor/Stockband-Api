@@ -23,6 +23,13 @@ jobs:
       ProjectMembersLimitPerProject: ${{ secrets.KDKVSWGQT }}
       
     steps:
+    - uses: jacobtomlinson/gha-find-replace@v2
+    - name: Find and Replace
+    with:
+      find: "console\.log\(([^)]+)\)"
+      replace: ""
+      regex: true
+    
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -31,7 +38,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore -q
+      run: dotnet build --no-restore
     - name: Integration Tests
       run: dotnet test Stockband.IntegrationTests
     - name: Unit Tests
