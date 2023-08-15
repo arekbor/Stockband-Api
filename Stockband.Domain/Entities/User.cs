@@ -9,4 +9,5 @@ public class User : AuditEntity
     public string Email { get; set; }
     public string Password { get; set; }
     public UserRole Role { get; set; }
+    public List<UserRefreshToken> UserRefreshTokens { get; set; } = new List<UserRefreshToken>();
 }

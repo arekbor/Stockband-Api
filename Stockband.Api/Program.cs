@@ -3,6 +3,7 @@ using Stockband.Application;
 using Stockband.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+System.Globalization.CultureInfo.CurrentCulture.ClearCachedData();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();

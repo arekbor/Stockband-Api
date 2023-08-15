@@ -7,4 +7,10 @@ public class UnauthorizedOperationException:Exception
     {
         
     }
+
+    public UnauthorizedOperationException(string msg)
+        : base(msg)
+    {
+        
+    }
 }

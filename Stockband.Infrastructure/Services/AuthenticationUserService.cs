@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
@@ -30,7 +32,7 @@ public class AuthenticationUserService:IAuthenticationUserService
     /// <param name="email">The email associated with the token.</param>
     /// <param name="role">The role associated with the token.</param>
     /// <returns>The generated JWT token.</returns>
-    public string GetAccessToken(string userId, string username, string email, string role)
+    public string GetAccessToken(int userId, string username, string email, UserRole role)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -47,12 +49,12 @@ public class AuthenticationUserService:IAuthenticationUserService
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new (ClaimTypes.NameIdentifier, userId),
+                new (ClaimTypes.NameIdentifier, userId.ToString()),
                 new (ClaimTypes.Name, username),
                 new (ClaimTypes.Email, email),
-                new (ClaimTypes.Role, role)
+                new (ClaimTypes.Role, role.ToString())
             }),
-            Expires = DateTime.UtcNow.AddMinutes(jwtExpires),
+            Expires = DateTime.Now.AddMinutes(jwtExpires),
             Audience = jwtAudience,
             Issuer = jwtIssuer,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
@@ -63,7 +65,33 @@ public class AuthenticationUserService:IAuthenticationUserService
 
         return tokenString;
     }
-    
+
+    public string GetRefreshToken()
+    {
+        byte[] randomNumber = new byte[126];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
+    public string GetUserIp()
+    {
+        HttpContext context = GetHttpContext();
+        bool contains = context.Request.Headers.ContainsKey("X-Forwarded-For");
+        if (contains)
+        {
+            return context.Request.Headers["X-Forwarded-For"].ToString();
+        }
+
+        IPAddress? ipAddress = context.Connection.RemoteIpAddress;
+
+        if (ipAddress == null)
+        {
+            throw new ObjectNotFound(typeof(IPAddress));
+        }
+        return ipAddress.MapToIPv4().ToString();
+    }
+
     public int GetUserId()
     {
         Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);

@@ -21,6 +21,9 @@ public abstract class BaseTest
     protected IFlueFlameHttpHost HttpHost { get; set; }
     protected IServiceProvider ServiceProvider { get; set; }
 
+    protected IConfiguration Configuration => ServiceProvider.CreateScope()
+        .ServiceProvider.GetRequiredService<IConfiguration>();
+
     protected StockbandDbContext Context => ServiceProvider.CreateScope()
         .ServiceProvider.GetRequiredService<StockbandDbContext>();
 
@@ -56,6 +59,10 @@ public abstract class BaseTest
             .BuildHttpHost(builder =>
             {
                 builder.UseNewtonsoftJsonSerializer();
+                builder.ConfigureHttpClient(config =>
+                {
+                    config.DefaultRequestHeaders.Add("X-Forwarded-For", "127.0.0.1");
+                });
                 builder.Build();
             });
         
@@ -94,7 +101,7 @@ public abstract class BaseTest
         AuthenticationUserService authenticationUser =
             new AuthenticationUserService(httpContextAccessor, configurationHelper);
 
-        string token =  authenticationUser.GetAccessToken(userId.ToString(), username, email, userRole.ToString());
+        string token =  authenticationUser.GetAccessToken(userId, username, email, userRole);
 
         return token;
     }

@@ -22,4 +22,19 @@ public class UserRepository: BaseRepository<User>, IUserRepository
             .Users
             .FirstOrDefaultAsync(x => x.Username == username);
     }
+
+    public async Task<bool> IsUserRefreshTokenIsUnique(string token)
+    {
+        return await _stockbandDbContext
+            .Users
+            .AnyAsync(x => x.UserRefreshTokens.Any(y => y.Token == token));
+    }
+
+    public async Task<User?> GetUserByRefreshToken(string token)
+    {
+        return await _stockbandDbContext
+            .Users
+            .Include(x => x.UserRefreshTokens)
+            .FirstOrDefaultAsync(x => x.UserRefreshTokens.Any(t => t.Token == token));
+    }
 }

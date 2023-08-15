@@ -13,6 +13,11 @@ public class BaseResponse
     {
         
     }
+
+    public BaseResponse(List<BaseError> errors)
+    {
+        Errors.AddRange(errors);
+    }
     
     public BaseResponse(Exception exception, BaseErrorCode code = BaseErrorCode.DefaultCode)
     {
@@ -63,6 +68,12 @@ public class BaseResponse<T> : BaseResponse
     public T Result { get; set; }
 
     public BaseResponse()
+    {
+        
+    }
+
+    public BaseResponse(List<BaseError> errors)
+        :base(errors)
     {
         
     }

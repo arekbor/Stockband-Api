@@ -31,11 +31,6 @@ public class StockbandDbContext:DbContext
                     entry.State = EntityState.Modified;
                     break;
                 }
-                case EntityState.Added:
-                {
-                    entry.Entity.CreatedAt = DateTime.Now;
-                    break;
-                }
                 case EntityState.Modified:
                 {
                     entry.Entity.ModifiedAt = DateTime.Now;

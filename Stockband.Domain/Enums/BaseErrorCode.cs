@@ -82,4 +82,9 @@ public enum BaseErrorCode
     /// This code indicates that the provided email already exists.
     /// </summary>
     UserEmailAlreadyExists = 15,
+    
+    /// <summary>
+    /// This code indicates that the provided refresh token not exists or is invoked
+    /// </summary>
+    InvalidRefreshToken = 16,
 }

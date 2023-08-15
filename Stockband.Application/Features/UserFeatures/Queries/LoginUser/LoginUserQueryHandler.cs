@@ -1,11 +1,11 @@
 using MediatR;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
-using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Common;
 using Stockband.Domain.Entities;
 using Stockband.Domain.Exceptions;
+using Stockband.Domain.Models;
 
 namespace Stockband.Application.Features.UserFeatures.Queries.LoginUser;
 
@@ -13,16 +13,16 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserFeaturesService _userFeaturesService;
-    private readonly IAuthenticationUserService _authenticationUserService;
+    private readonly IAuthTokenService _refreshTokenService;
 
     public LoginUserQueryHandler(
         IUserRepository userRepository, 
         IUserFeaturesService userFeaturesService, 
-        IAuthenticationUserService authenticationUserService)
+        IAuthTokenService refreshTokenService)
     {
         _userRepository = userRepository;
         _userFeaturesService = userFeaturesService;
-        _authenticationUserService = authenticationUserService;
+        _refreshTokenService = refreshTokenService;
     }
 
     public async Task<BaseResponse<LoginUserQueryViewModel>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
@@ -40,17 +40,16 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
                 BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         
-        string jwtToken = _authenticationUserService.GetAccessToken
-        (
-            user.Id.ToString(), 
-            user.Username, 
-            user.Email,
-            user.Role.ToString()
-        );
+        BaseResponse<AuthTokenResult> authTokenResult = await _refreshTokenService.GetTokens(user);
+        if (!authTokenResult.Success)
+        {
+            return new BaseResponse<LoginUserQueryViewModel>(authTokenResult.Errors);
+        }
 
         LoginUserQueryViewModel result = new LoginUserQueryViewModel
         {
-            Token = jwtToken
+            AccessToken = authTokenResult.Result.AccessToken,
+            RefreshToken = authTokenResult.Result.UserRefreshToken.Token
         };
         
         return new BaseResponse<LoginUserQueryViewModel>(result);

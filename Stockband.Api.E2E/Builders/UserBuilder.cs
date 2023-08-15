@@ -20,8 +20,13 @@ internal class UserBuilder:BaseTest
         _userFeaturesService = new UserFeaturesService(_userRepository);
     }
     
-    internal async Task Build
-        (int userId, string? username = "", string? email = "", string? password = "" ,UserRole userRole = UserRole.User)
+    internal async Task Build(
+        int userId, 
+        string? username = "", 
+        string? email = "", 
+        string? password = "" ,
+        List<UserRefreshToken>? refreshTokens = null,
+        UserRole userRole = UserRole.User)
     {
         User user = Builder<User>
             .CreateNew()
@@ -30,6 +35,7 @@ internal class UserBuilder:BaseTest
             .With(x => x.Password = HashPassword(password))
             .With(x => x.Email = email ?? "test@gmail.com")
             .With(x => x.Username = username ?? "testUsername")
+            .With(x => x.UserRefreshTokens = refreshTokens ?? new List<UserRefreshToken>())
             .With(x => x.Id = userId)
             .Build();
         await _userRepository.AddAsync(user);
