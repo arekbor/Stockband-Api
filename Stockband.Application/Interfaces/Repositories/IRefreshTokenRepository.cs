@@ -1,4 +1,3 @@
-using System.Collections;
 using Stockband.Domain.Entities;
 
 namespace Stockband.Application.Interfaces.Repositories;

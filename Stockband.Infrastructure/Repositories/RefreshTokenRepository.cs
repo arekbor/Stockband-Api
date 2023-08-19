@@ -1,4 +1,3 @@
-using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain.Entities;
