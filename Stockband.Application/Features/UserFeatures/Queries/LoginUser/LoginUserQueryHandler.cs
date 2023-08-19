@@ -14,15 +14,21 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
     private readonly IUserRepository _userRepository;
     private readonly IUserFeaturesService _userFeaturesService;
     private readonly IAuthenticationUserService _authenticationUserService;
+    private readonly IRefreshTokenService _refreshTokenService;
+    private readonly IConfigurationHelperService _configurationHelperService;
 
     public LoginUserQueryHandler(
         IUserRepository userRepository, 
         IUserFeaturesService userFeaturesService, 
-        IAuthenticationUserService authenticationUserService)
+        IAuthenticationUserService authenticationUserService, 
+        IRefreshTokenService refreshTokenService, 
+        IConfigurationHelperService configurationHelperService)
     {
         _userRepository = userRepository;
         _userFeaturesService = userFeaturesService;
         _authenticationUserService = authenticationUserService;
+        _refreshTokenService = refreshTokenService;
+        _configurationHelperService = configurationHelperService;
     }
 
     public async Task<BaseResponse<LoginUserQueryViewModel>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
@@ -42,15 +48,25 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
         
         string jwtToken = _authenticationUserService.GetAccessToken
         (
-            user.Id.ToString(), 
+            user.Id, 
             user.Username, 
             user.Email,
-            user.Role.ToString()
+            user.Role
         );
+
+        string userIp = _authenticationUserService.GetUserIp();
+        double refreshTokenDaysExpires = _configurationHelperService.GetRefreshTokenExpiresInDays();
+        
+        BaseResponse<string> refreshToken = await _refreshTokenService.GetRefreshToken
+            (user.Id, userIp, refreshTokenDaysExpires);
+
+        double refreshTokenTtLInDays = _configurationHelperService.GetRefreshTokenTtLInDays();
+        await _refreshTokenService.RemoveOldRefreshTokens(user.Id, refreshTokenTtLInDays);
 
         LoginUserQueryViewModel result = new LoginUserQueryViewModel
         {
-            Token = jwtToken
+            Token = jwtToken,
+            RefreshToken = refreshToken.Result
         };
         
         return new BaseResponse<LoginUserQueryViewModel>(result);

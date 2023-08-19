@@ -44,4 +44,10 @@ public class BaseRepository<T>: IBaseRepository<T>
         _stockbandDbContext.Set<T>().Remove(entity);
         await _stockbandDbContext.SaveChangesAsync();
     }
+
+    public async Task DeleteRangeAsync(IEnumerable<T> entities)
+    {
+        _stockbandDbContext.Set<T>().RemoveRange(entities);
+        await _stockbandDbContext.SaveChangesAsync();
+    }
 }

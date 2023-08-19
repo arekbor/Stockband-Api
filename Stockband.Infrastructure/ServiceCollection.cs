@@ -52,6 +52,7 @@ public static class ServiceCollection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectMemberRepository, ProjectMemberRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddSingleton<IConfigurationHelperService, ConfigurationHelperService>();
         services.AddSingleton<IAuthenticationUserService, AuthenticationUserService>();
         

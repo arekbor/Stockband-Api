@@ -31,7 +31,13 @@ public class ConfigurationHelperService:IConfigurationHelperService
     
     public double GetAccessTokenExpiresInMinutes() => 
         Get<double>("AccessTokenExpiresInMinutes");
-    
+
+    public double GetRefreshTokenExpiresInDays() => 
+        Get<double>("RefreshTokenExpiresInDays");
+
+    public double GetRefreshTokenTtLInDays() =>
+        Get<double>("RefreshTokenTTLInDays");
+
     private T Get<T>(string key)
     {
         T? value = _configuration.GetValue<T>(key);

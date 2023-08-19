@@ -56,6 +56,10 @@ public abstract class BaseTest
             .BuildHttpHost(builder =>
             {
                 builder.UseNewtonsoftJsonSerializer();
+                builder.ConfigureHttpClient(configure =>
+                {
+                    configure.DefaultRequestHeaders.Add("X-Forwarded-For", "127.0.0.1");
+                });
                 builder.Build();
             });
         
@@ -94,7 +98,7 @@ public abstract class BaseTest
         AuthenticationUserService authenticationUser =
             new AuthenticationUserService(httpContextAccessor, configurationHelper);
 
-        string token =  authenticationUser.GetAccessToken(userId.ToString(), username, email, userRole.ToString());
+        string token =  authenticationUser.GetAccessToken(userId, username, email, userRole);
 
         return token;
     }

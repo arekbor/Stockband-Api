@@ -42,7 +42,7 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
 
         if (await _projectFeaturesService.IsProjectNameAlreadyExists(request.ProjectName))
         {
-            return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(Project), request.ProjectName), 
+            return new BaseResponse(new ObjectAlreadyCreatedException(typeof(Project), request.ProjectName), 
                 BaseErrorCode.ProjectAlreadyCreated);
         }
 

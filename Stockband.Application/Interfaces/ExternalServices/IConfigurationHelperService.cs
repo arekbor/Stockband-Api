@@ -8,4 +8,6 @@ public interface IConfigurationHelperService
     string GetAccessTokenAudience();
     string GetAccessTokenIssuer();
     double GetAccessTokenExpiresInMinutes();
+    double GetRefreshTokenExpiresInDays();
+    double GetRefreshTokenTtLInDays();
 }
