@@ -15,6 +15,7 @@ public class StockbandDbContext:DbContext
         
     }
     public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
     
@@ -29,11 +30,6 @@ public class StockbandDbContext:DbContext
                     entry.Entity.Deleted = true;
                     entry.Entity.ModifiedAt = DateTime.Now;
                     entry.State = EntityState.Modified;
-                    break;
-                }
-                case EntityState.Added:
-                {
-                    entry.Entity.CreatedAt = DateTime.Now;
                     break;
                 }
                 case EntityState.Modified:

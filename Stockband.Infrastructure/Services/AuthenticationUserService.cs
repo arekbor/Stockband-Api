@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Domain.Enums;
@@ -30,7 +32,7 @@ public class AuthenticationUserService:IAuthenticationUserService
     /// <param name="email">The email associated with the token.</param>
     /// <param name="role">The role associated with the token.</param>
     /// <returns>The generated JWT token.</returns>
-    public string GetAccessToken(string userId, string username, string email, string role)
+    public string GetAccessToken(int userId, string username, string email, UserRole role)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -47,10 +49,10 @@ public class AuthenticationUserService:IAuthenticationUserService
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new (ClaimTypes.NameIdentifier, userId),
+                new (ClaimTypes.NameIdentifier, userId.ToString()),
                 new (ClaimTypes.Name, username),
                 new (ClaimTypes.Email, email),
-                new (ClaimTypes.Role, role)
+                new (ClaimTypes.Role, role.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(jwtExpires),
             Audience = jwtAudience,
@@ -64,6 +66,7 @@ public class AuthenticationUserService:IAuthenticationUserService
         return tokenString;
     }
     
+
     public int GetUserId()
     {
         Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
@@ -88,7 +91,27 @@ public class AuthenticationUserService:IAuthenticationUserService
     /// <returns><c>true</c> if the user is authorized; otherwise, <c>false</c>.</returns>
     public bool IsAuthorized(int userId) =>
         GetUserId() == userId || GetHttpContext().User.IsInRole(UserRole.Admin.ToString());
-    
+
+    public string GetUserIp()
+    {
+        HttpContext httpContext = GetHttpContext();
+        const string headerName = "X-Forwarded-For";
+        
+        bool containsKey = httpContext.Request.Headers.ContainsKey(headerName);
+        if (containsKey)
+        {
+            StringValues values = httpContext.Request.Headers[headerName];
+            return values.ToString();
+        }
+
+        IPAddress? ipAddress = httpContext.Connection.RemoteIpAddress;
+        if (ipAddress == null)
+        {
+            throw new ObjectNotFound(typeof(IPAddress));
+        }
+        return ipAddress.MapToIPv4().ToString();
+    }
+
     private HttpContext GetHttpContext()
     {
         HttpContext? httpContext = _httpContextAccessor.HttpContext;

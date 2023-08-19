@@ -65,7 +65,7 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
 
         if (await _projectMemberFeaturesService.IsProjectMemberBelongToProject(request.ProjectId, request.MemberId))
         {
-            return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(ProjectMember)), 
+            return new BaseResponse(new ObjectAlreadyCreatedException(typeof(ProjectMember)), 
                 BaseErrorCode.ProjectMemberAlreadyCreated);
         }
         

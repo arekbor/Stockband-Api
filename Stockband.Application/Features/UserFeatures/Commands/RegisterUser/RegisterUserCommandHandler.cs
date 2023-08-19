@@ -23,7 +23,7 @@ public class RegisterUserCommandHandler:IRequestHandler<RegisterUserCommand, Bas
     {
         if (await _userFeaturesService.IsEmailAlreadyUsed(request.Email))
         {
-            return new BaseResponse(new ObjectIsAlreadyCreatedException(typeof(User), request.Email), 
+            return new BaseResponse(new ObjectAlreadyCreatedException(typeof(User), request.Email), 
                 BaseErrorCode.UserEmailAlreadyExists);
         }
         

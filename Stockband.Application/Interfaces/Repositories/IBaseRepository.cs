@@ -9,4 +9,5 @@ public interface IBaseRepository<T>
     Task AddRangeAsync(IEnumerable<T> entities);
     Task UpdateAsync(T entity);
     Task DeleteAsync(T entity);
+    Task DeleteRangeAsync(IEnumerable<T> entities);
 }

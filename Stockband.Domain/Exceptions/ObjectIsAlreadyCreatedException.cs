@@ -1,20 +1,20 @@
 namespace Stockband.Domain.Exceptions;
 
-public class ObjectIsAlreadyCreatedException:Exception
+public class ObjectAlreadyCreatedException:Exception
 {
-    public ObjectIsAlreadyCreatedException(Type model)
+    public ObjectAlreadyCreatedException(Type model)
         :base ($"{model.Name} is already created")
     {
         
     }
 
-    public ObjectIsAlreadyCreatedException(Type model, int id)
+    public ObjectAlreadyCreatedException(Type model, int id)
         :base($"{model.Name} {id} is already created")
     {
         
     }
     
-    public ObjectIsAlreadyCreatedException(Type model, string name)
+    public ObjectAlreadyCreatedException(Type model, string name)
         :base($"{model.Name} {name} is already created")
     {
         
