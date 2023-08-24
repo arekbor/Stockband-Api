@@ -30,7 +30,7 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
         _refreshTokenService = refreshTokenService;
         _configurationHelperService = configurationHelperService;
     }
-
+    
     public async Task<BaseResponse<LoginUserQueryViewModel>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
     {
         User? user = await _userRepository.GetUserByEmailAsync(request.Email);
@@ -63,12 +63,14 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
         double refreshTokenTtLInDays = _configurationHelperService.GetRefreshTokenTtLInDays();
         await _refreshTokenService.RemoveOldRefreshTokens(user.Id, refreshTokenTtLInDays);
 
-        LoginUserQueryViewModel result = new LoginUserQueryViewModel
+        AuthorizationTokensResponse tokensResponse = _userFeaturesService
+            .ComposeAuthorizationTokens(jwtToken, refreshToken.Result, request.Cookie);
+
+        LoginUserQueryViewModel response = new LoginUserQueryViewModel
         {
-            Token = jwtToken,
-            RefreshToken = refreshToken.Result
+            TokensResponse = tokensResponse
         };
         
-        return new BaseResponse<LoginUserQueryViewModel>(result);
+        return new BaseResponse<LoginUserQueryViewModel>(response);
     }
 }

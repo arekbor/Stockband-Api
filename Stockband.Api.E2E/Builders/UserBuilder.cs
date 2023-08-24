@@ -1,11 +1,13 @@
 using FizzWare.NBuilder;
 using Stockband.Application.FeatureServices;
+using Stockband.Application.Interfaces.ExternalServices;
 using Stockband.Application.Interfaces.FeatureServices;
 using Stockband.Application.Interfaces.Repositories;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Entities;
 using Stockband.Infrastructure;
 using Stockband.Infrastructure.Repositories;
+using Stockband.Infrastructure.Services;
 
 namespace Stockband.Api.E2E.Builders;
 
@@ -13,15 +15,28 @@ internal class UserBuilder:BaseTest
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserFeaturesService _userFeaturesService;
-    
+
     internal UserBuilder(StockbandDbContext context)
     {
         _userRepository = new UserRepository(context);
-        _userFeaturesService = new UserFeaturesService(_userRepository);
+        
+        IConfigurationHelperService configurationHelperService =
+            new ConfigurationHelperService(Configuration);
+        
+        IAuthenticationUserService authenticationUserService = 
+            new AuthenticationUserService(HttpContextAccessor, configurationHelperService);
+        
+        _userFeaturesService = new UserFeaturesService
+            (_userRepository, authenticationUserService, configurationHelperService);
     }
     
-    internal async Task Build
-        (int userId, string? username = "", string? email = "", string? password = "" ,UserRole userRole = UserRole.User)
+    internal async Task Build(
+        int userId, 
+        string? username = "", 
+        string? email = "", 
+        string? password = "",
+        UserRole userRole = UserRole.User
+        )
     {
         User user = Builder<User>
             .CreateNew()

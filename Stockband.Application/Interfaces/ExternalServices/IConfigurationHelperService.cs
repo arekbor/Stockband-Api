@@ -10,4 +10,6 @@ public interface IConfigurationHelperService
     double GetAccessTokenExpiresInMinutes();
     double GetRefreshTokenExpiresInDays();
     double GetRefreshTokenTtLInDays();
+    string GetRefreshTokenCookieName();
+    double GetRefreshTokenCookieExpiresInDays();
 }
