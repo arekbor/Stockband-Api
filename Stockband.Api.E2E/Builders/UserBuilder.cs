@@ -19,11 +19,13 @@ internal class UserBuilder:BaseTest
     internal UserBuilder(StockbandDbContext context)
     {
         _userRepository = new UserRepository(context);
-        IAuthenticationUserService authenticationUserService = 
-            new AuthenticationUserService(null!, null!);
-
+        
         IConfigurationHelperService configurationHelperService =
-            new ConfigurationHelperService(null!);
+            new ConfigurationHelperService(Configuration);
+        
+        IAuthenticationUserService authenticationUserService = 
+            new AuthenticationUserService(HttpContextAccessor, configurationHelperService);
+        
         _userFeaturesService = new UserFeaturesService
             (_userRepository, authenticationUserService, configurationHelperService);
     }

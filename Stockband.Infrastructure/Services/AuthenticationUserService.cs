@@ -66,6 +66,12 @@ public class AuthenticationUserService:IAuthenticationUserService
         return tokenString;
     }
 
+    /// <summary>
+    /// Sets a value as an HttpOnly cookie.
+    /// </summary>
+    /// <param name="cookieName">The name of the cookie that will be created.</param>
+    /// <param name="value">The value to be stored in the cookie.</param>
+    /// <param name="cookieExpires">The expiration for the cookie.</param>
     public void SetValueAsHttpOnlyCookie(string cookieName, string value, DateTimeOffset cookieExpires)
     {
         HttpContext context = GetHttpContext();
@@ -79,6 +85,11 @@ public class AuthenticationUserService:IAuthenticationUserService
         context.Response.Cookies.Append(cookieName, value, cookieOptions);
     }
 
+    /// <summary>
+    /// Retrieves a value from a specific cookie.
+    /// </summary>
+    /// <param name="cookieName">The name of the cookie.</param>
+    /// <returns>The value stored in the specific cookie.</returns>
     public string? GetValueFromCookie(string cookieName)
     {
         HttpContext context = GetHttpContext();
