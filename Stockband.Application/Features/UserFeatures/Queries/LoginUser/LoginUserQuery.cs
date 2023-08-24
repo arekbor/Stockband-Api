@@ -14,6 +14,8 @@ public class LoginUserQuery:IRequest<BaseResponse<LoginUserQueryViewModel>>
         Email = email;
         Password = password;
     }
+
+    public bool Cookie { get; set; } = true;
     public string Email { get; set; }
     public string Password { get; set; }
 }

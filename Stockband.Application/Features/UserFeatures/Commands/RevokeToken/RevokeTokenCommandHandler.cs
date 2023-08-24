@@ -14,19 +14,29 @@ public class RevokeTokenCommandHandler:IRequestHandler<RevokeTokenCommand, BaseR
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IAuthenticationUserService _authenticationUserService;
+    private readonly IUserFeaturesService _userFeaturesService;
 
     public RevokeTokenCommandHandler(
         IRefreshTokenService refreshTokenService, 
         IRefreshTokenRepository refreshTokenRepository, 
-        IAuthenticationUserService authenticationUserService)
+        IAuthenticationUserService authenticationUserService, 
+        IUserFeaturesService userFeaturesService)
     {
         _refreshTokenService = refreshTokenService;
         _refreshTokenRepository = refreshTokenRepository;
         _authenticationUserService = authenticationUserService;
+        _userFeaturesService = userFeaturesService;
     }
 
     public async Task<BaseResponse> Handle(RevokeTokenCommand request, CancellationToken cancellationToken)
     {
+        BaseResponse<string> tokenResponse = _userFeaturesService
+            .GetRefreshTokenFromSource(request.RefreshToken, request.Cookie);
+        if (!tokenResponse.Success)
+        {
+            return new BaseResponse(tokenResponse.Errors);
+        }
+        
         RefreshToken? refreshToken = await _refreshTokenRepository
             .GetRefreshTokenByToken(request.RefreshToken);
         if (refreshToken == null)

@@ -8,4 +8,6 @@ public interface IAuthenticationUserService
     int GetUserId();
     bool IsAuthorized(int userId);
     string GetUserIp();
+    void SetValueAsHttpOnlyCookie(string cookieName, string value, DateTimeOffset cookieExpires);
+    string? GetValueFromCookie(string cookieName);
 }

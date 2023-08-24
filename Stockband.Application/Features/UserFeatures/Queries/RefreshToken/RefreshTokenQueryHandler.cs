@@ -15,22 +15,32 @@ public class RefreshTokenQueryHandler:IRequestHandler<RefreshTokenQuery, BaseRes
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IAuthenticationUserService _authenticationUserService;
     private readonly IConfigurationHelperService _configurationHelperService;
-
+    private readonly IUserFeaturesService _userFeaturesService;
     public RefreshTokenQueryHandler(IRefreshTokenRepository refreshTokenRepository, 
         IRefreshTokenService refreshTokenService, 
         IAuthenticationUserService authenticationUserService, 
-        IConfigurationHelperService configurationHelperService)
+        IConfigurationHelperService configurationHelperService, 
+        IUserFeaturesService userFeaturesService)
     {
         _refreshTokenRepository = refreshTokenRepository;
         _refreshTokenService = refreshTokenService;
         _authenticationUserService = authenticationUserService;
         _configurationHelperService = configurationHelperService;
+        _userFeaturesService = userFeaturesService;
     }
-
-    public async Task<BaseResponse<RefreshTokenQueryViewModel>> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
+    
+    public async Task<BaseResponse<RefreshTokenQueryViewModel>> Handle
+        (RefreshTokenQuery request, CancellationToken cancellationToken)
     {
+        BaseResponse<string> tokenResponse = _userFeaturesService
+            .GetRefreshTokenFromSource(request.Token, request.Cookie);
+        if (!tokenResponse.Success)
+        {
+            return new BaseResponse<RefreshTokenQueryViewModel>(tokenResponse.Errors);
+        }
+
         Domain.Entities.RefreshToken? refreshToken = await _refreshTokenRepository
-            .GetRefreshTokenByToken(request.Token);
+            .GetRefreshTokenByToken(tokenResponse.Result);
 
         if (refreshToken == null)
         {
@@ -69,13 +79,15 @@ public class RefreshTokenQueryHandler:IRequestHandler<RefreshTokenQuery, BaseRes
 
         string newAccessToken = _authenticationUserService
             .GetAccessToken(user.Id, user.Username, user.Email, user.Role);
+        
+        AuthorizationTokensResponse tokensResponse = _userFeaturesService
+            .ComposeAuthorizationTokens(newAccessToken, newRefreshToken.Result, request.Cookie);
 
-        RefreshTokenQueryViewModel refreshTokenQueryViewModel = new RefreshTokenQueryViewModel
+        RefreshTokenQueryViewModel response = new RefreshTokenQueryViewModel
         {
-            RefreshToken = newRefreshToken.Result,
-            Token = newAccessToken
+            TokensResponse = tokensResponse
         };
         
-        return new BaseResponse<RefreshTokenQueryViewModel>(refreshTokenQueryViewModel);
+        return new BaseResponse<RefreshTokenQueryViewModel>(response);
     }
 }

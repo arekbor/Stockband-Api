@@ -38,6 +38,12 @@ public class ConfigurationHelperService:IConfigurationHelperService
     public double GetRefreshTokenTtLInDays() =>
         Get<double>("RefreshTokenTTLInDays");
 
+    public string GetRefreshTokenCookieName() =>
+        Get<string>("RefreshTokenCookieName");
+
+    public double GetRefreshTokenCookieExpiresInDays() =>
+        Get<double>("RefreshTokenCookieExpiresInDays");
+
     private T Get<T>(string key)
     {
         T? value = _configuration.GetValue<T>(key);

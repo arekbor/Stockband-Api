@@ -12,7 +12,6 @@ using Stockband.Domain.Enums;
 using Stockband.Domain.Exceptions;
 using Stockband.Infrastructure;
 using Stockband.Infrastructure.Services;
-
 namespace Stockband.Api.E2E;
 
 public abstract class BaseTest
@@ -20,6 +19,12 @@ public abstract class BaseTest
     protected TestServer TestServer { get; set; }
     protected IFlueFlameHttpHost HttpHost { get; set; }
     protected IServiceProvider ServiceProvider { get; set; }
+
+    protected IConfiguration Configuration => 
+        ServiceProvider.GetRequiredService<IConfiguration>();
+    
+    protected IHttpContextAccessor HttpContextAccessor => 
+        ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
     protected StockbandDbContext Context => ServiceProvider.CreateScope()
         .ServiceProvider.GetRequiredService<StockbandDbContext>();
@@ -62,7 +67,7 @@ public abstract class BaseTest
                 });
                 builder.Build();
             });
-        
+
         await Context.Database.EnsureCreatedAsync();
     }
     
@@ -86,17 +91,15 @@ public abstract class BaseTest
     {
         return GetJwtToken(userId, username, email, UserRole.Admin);
     }
-
+    
+    
     private string GetJwtToken(int userId, string username, string email, UserRole userRole)
     {
-        IConfiguration configuration = ServiceProvider.GetRequiredService<IConfiguration>();
-        IHttpContextAccessor httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-        
         ConfigurationHelperService configurationHelper = 
-            new ConfigurationHelperService(configuration);
+            new ConfigurationHelperService(Configuration);
 
         AuthenticationUserService authenticationUser =
-            new AuthenticationUserService(httpContextAccessor, configurationHelper);
+            new AuthenticationUserService(HttpContextAccessor, configurationHelper);
 
         string token =  authenticationUser.GetAccessToken(userId, username, email, userRole);
 

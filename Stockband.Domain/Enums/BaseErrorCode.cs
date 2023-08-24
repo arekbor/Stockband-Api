@@ -97,4 +97,9 @@ public enum BaseErrorCode
     /// Thic code indicates that the provided token might be not active or revoked.
     /// </summary>
     InvalidRefreshToken = 18,
+    
+    /// <summary>
+    /// This code indicates that refresh token from cookie could not be found.
+    /// </summary>
+    CookieRefreshTokenNotFound = 19,
 }

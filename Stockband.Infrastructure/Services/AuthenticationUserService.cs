@@ -65,7 +65,25 @@ public class AuthenticationUserService:IAuthenticationUserService
 
         return tokenString;
     }
-    
+
+    public void SetValueAsHttpOnlyCookie(string cookieName, string value, DateTimeOffset cookieExpires)
+    {
+        HttpContext context = GetHttpContext();
+        
+        CookieOptions cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = cookieExpires
+        };
+        
+        context.Response.Cookies.Append(cookieName, value, cookieOptions);
+    }
+
+    public string? GetValueFromCookie(string cookieName)
+    {
+        HttpContext context = GetHttpContext();
+        return context.Request.Cookies[cookieName];
+    }
 
     public int GetUserId()
     {
