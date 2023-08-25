@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Stockband.Domain.Enums;
 using Stockband.Domain.Exceptions;
@@ -20,11 +21,9 @@ public abstract class BaseTest
     protected IFlueFlameHttpHost HttpHost { get; set; }
     protected IServiceProvider ServiceProvider { get; set; }
 
-    protected IConfiguration Configuration => 
-        ServiceProvider.GetRequiredService<IConfiguration>();
-    
-    protected IHttpContextAccessor HttpContextAccessor => 
-        ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+    protected IConfiguration Configuration { get; private set; }
+
+    protected IHttpContextAccessor HttpContextAccessor { get; set; }
 
     protected StockbandDbContext Context => ServiceProvider.CreateScope()
         .ServiceProvider.GetRequiredService<StockbandDbContext>();
@@ -38,6 +37,12 @@ public abstract class BaseTest
                 {
                     builder.UseEnvironment("E2E");
 
+                    IConfiguration configuration = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json").Build();
+
+                    configuration.GetSection("DefaultConnection").Value = null;
+                    builder.UseConfiguration(configuration);
+
                     builder.ConfigureServices(services =>
                     {
                         ServiceDescriptor? dbContextDescriptor = services.SingleOrDefault(
@@ -47,6 +52,8 @@ public abstract class BaseTest
                         {
                             throw new ObjectNotFound(typeof(ServiceDescriptor), typeof(DbContextOptions<StockbandDbContext>));
                         }
+
+                        services.AddHttpContextAccessor();
                         
                         services.Remove(dbContextDescriptor);
 
@@ -57,6 +64,9 @@ public abstract class BaseTest
 
         TestServer = factory.Server;
         ServiceProvider = factory.Services;
+        Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+        HttpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+        
         HttpHost = FlueFlameAspNetBuilder.CreateDefaultBuilder(factory)
             .BuildHttpHost(builder =>
             {
