@@ -21,6 +21,10 @@ jobs:
       AccessTokenExpiresInMinutes: ${{ secrets.HIUNLVMVO }}
       ProjectsLimitPerUser: ${{ secrets.ZVYPHZEWR }}
       ProjectMembersLimitPerProject: ${{ secrets.KDKVSWGQT }}
+      RefreshTokenCookieExpiresInDays: ${{ secrets.QKCGFTGZDH }}
+      RefreshTokenCookieName: ${{ secrets.OCKUWMMKMS }}
+      RefreshTokenTTLInDays: ${{ secrets.WZHUUOZMBX }}
+      RefreshTokenExpiresInDays: ${{ secrets.LHPTGHDPYR }}
       
     steps:
     - uses: actions/checkout@v3
