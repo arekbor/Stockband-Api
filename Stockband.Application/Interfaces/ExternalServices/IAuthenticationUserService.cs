@@ -10,4 +10,5 @@ public interface IAuthenticationUserService
     string GetUserIp();
     void SetValueAsHttpOnlyCookie(string cookieName, string value, DateTimeOffset cookieExpires);
     string? GetValueFromCookie(string cookieName);
+    void InvalidateCookie(string cookieName);
 }
