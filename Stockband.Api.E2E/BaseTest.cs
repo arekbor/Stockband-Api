@@ -20,11 +20,7 @@ public abstract class BaseTest
     protected TestServer TestServer { get; set; }
     protected IFlueFlameHttpHost HttpHost { get; set; }
     protected IServiceProvider ServiceProvider { get; set; }
-
-    protected IConfiguration Configuration { get; private set; }
-
-    protected IHttpContextAccessor HttpContextAccessor { get; set; }
-
+    
     protected StockbandDbContext Context => ServiceProvider.CreateScope()
         .ServiceProvider.GetRequiredService<StockbandDbContext>();
 
@@ -36,13 +32,6 @@ public abstract class BaseTest
                 .WithWebHostBuilder(builder =>
                 {
                     builder.UseEnvironment("E2E");
-
-                    IConfiguration configuration = new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json").Build();
-
-                    configuration.GetSection("DefaultConnection").Value = null;
-                    builder.UseConfiguration(configuration);
-
                     builder.ConfigureServices(services =>
                     {
                         ServiceDescriptor? dbContextDescriptor = services.SingleOrDefault(
@@ -64,9 +53,7 @@ public abstract class BaseTest
 
         TestServer = factory.Server;
         ServiceProvider = factory.Services;
-        Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
-        HttpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-        
+
         HttpHost = FlueFlameAspNetBuilder.CreateDefaultBuilder(factory)
             .BuildHttpHost(builder =>
             {
@@ -105,11 +92,14 @@ public abstract class BaseTest
     
     private string GetJwtToken(int userId, string username, string email, UserRole userRole)
     {
+        IConfiguration configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+        IHttpContextAccessor httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+        
         ConfigurationHelperService configurationHelper = 
-            new ConfigurationHelperService(Configuration);
+            new ConfigurationHelperService(configuration);
 
         AuthenticationUserService authenticationUser =
-            new AuthenticationUserService(HttpContextAccessor, configurationHelper);
+            new AuthenticationUserService(httpContextAccessor, configurationHelper);
 
         string token =  authenticationUser.GetAccessToken(userId, username, email, userRole);
 
