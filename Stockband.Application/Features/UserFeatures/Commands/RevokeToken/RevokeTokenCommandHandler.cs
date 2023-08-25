@@ -14,18 +14,21 @@ public class RevokeTokenCommandHandler:IRequestHandler<RevokeTokenCommand, BaseR
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IAuthenticationUserService _authenticationUserService;
+    private readonly IConfigurationHelperService _configurationHelperService;
     private readonly IUserFeaturesService _userFeaturesService;
 
     public RevokeTokenCommandHandler(
         IRefreshTokenService refreshTokenService, 
         IRefreshTokenRepository refreshTokenRepository, 
-        IAuthenticationUserService authenticationUserService, 
-        IUserFeaturesService userFeaturesService)
+        IAuthenticationUserService authenticationUserService,
+        IUserFeaturesService userFeaturesService, 
+        IConfigurationHelperService configurationHelperService)
     {
         _refreshTokenService = refreshTokenService;
         _refreshTokenRepository = refreshTokenRepository;
         _authenticationUserService = authenticationUserService;
         _userFeaturesService = userFeaturesService;
+        _configurationHelperService = configurationHelperService;
     }
 
     public async Task<BaseResponse> Handle(RevokeTokenCommand request, CancellationToken cancellationToken)
@@ -38,7 +41,7 @@ public class RevokeTokenCommandHandler:IRequestHandler<RevokeTokenCommand, BaseR
         }
         
         RefreshToken? refreshToken = await _refreshTokenRepository
-            .GetRefreshTokenByToken(request.RefreshToken);
+            .GetRefreshTokenByToken(tokenResponse.Result);
         if (refreshToken == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(RefreshToken), request.RefreshToken),
@@ -54,6 +57,9 @@ public class RevokeTokenCommandHandler:IRequestHandler<RevokeTokenCommand, BaseR
         string ipAddress = _authenticationUserService.GetUserIp();
         await _refreshTokenService
             .RevokeRefreshToken(refreshToken, ipAddress, RefreshTokenReasonRevoke.Manual);
+        
+        string cookieName = _configurationHelperService.GetRefreshTokenCookieName();
+        _authenticationUserService.InvalidateCookie(cookieName);
 
         return new BaseResponse();
     }

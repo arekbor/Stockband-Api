@@ -96,6 +96,21 @@ public class AuthenticationUserService:IAuthenticationUserService
         return context.Request.Cookies[cookieName];
     }
 
+    /// <summary>
+    /// Invalidates a cookie by setting its expiration time to a date in the past.
+    /// </summary>
+    /// <param name="cookieName">The name of the cookie.</param>
+    public void InvalidateCookie(string cookieName)
+    {
+        HttpContext context = GetHttpContext();
+        
+        CookieOptions cookieOptions = new CookieOptions
+        {
+            Expires = DateTime.Now.AddDays(-1)
+        };
+        context.Response.Cookies.Append(cookieName, String.Empty, cookieOptions);
+    }
+
     public int GetUserId()
     {
         Claim? claim = GetHttpContext().User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
