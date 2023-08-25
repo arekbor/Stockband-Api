@@ -21,10 +21,10 @@ internal class UserBuilder:BaseTest
         _userRepository = new UserRepository(context);
         
         IConfigurationHelperService configurationHelperService =
-            new ConfigurationHelperService(Configuration);
+            new ConfigurationHelperService(null!);
         
         IAuthenticationUserService authenticationUserService = 
-            new AuthenticationUserService(HttpContextAccessor, configurationHelperService);
+            new AuthenticationUserService(null!, configurationHelperService);
         
         _userFeaturesService = new UserFeaturesService
             (_userRepository, authenticationUserService, configurationHelperService);
