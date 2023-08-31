@@ -46,7 +46,7 @@ public class RefreshTokenQueryHandler:IRequestHandler<RefreshTokenQuery, BaseRes
         {
             return new BaseResponse<RefreshTokenQueryViewModel>(
                 new ObjectNotFound(typeof(Domain.Entities.RefreshToken)),
-                BaseErrorCode.RefreshTokenNotExists);
+                BaseErrorCode.RefreshTokenNotFound);
         }
         string ipAddress = _authenticationUserService.GetUserIp();
         

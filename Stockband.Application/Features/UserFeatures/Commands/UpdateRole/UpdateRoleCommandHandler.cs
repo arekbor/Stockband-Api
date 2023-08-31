@@ -21,7 +21,7 @@ public class UpdateRoleCommandHandler:IRequestHandler<UpdateRoleCommand, BaseRes
         if (user == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.UserId),
-                BaseErrorCode.UserNotExists);
+                BaseErrorCode.UserNotFound);
         }
         
         user.Role = request.Role;

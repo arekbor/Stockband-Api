@@ -76,7 +76,7 @@ public class UpdateProjectTests:BaseTest
         {
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectNotExists);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectNotFound);
         });
     }
 

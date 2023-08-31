@@ -36,7 +36,7 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
         if (project == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId), 
-                BaseErrorCode.ProjectNotExists);
+                BaseErrorCode.ProjectNotFound);
         }
         
         if (await _projectMemberFeaturesService.IsProjectMembersLimitExceeded(request.ProjectId))
@@ -54,7 +54,7 @@ public class AddProjectMemberToProjectCommandHandler:IRequestHandler<AddProjectM
         if (!await _userFeaturesService.IsUserExists(request.MemberId))
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.MemberId), 
-                BaseErrorCode.MemberForProjectMemberNotExists);
+                BaseErrorCode.MemberForProjectMemberNotFound);
         }
         
         if (project.OwnerId == request.MemberId)

@@ -31,7 +31,7 @@ public class UpdateProjectCommandHandler:IRequestHandler<UpdateProjectCommand, B
         if (project == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(Project), request.ProjectId), 
-                BaseErrorCode.ProjectNotExists);
+                BaseErrorCode.ProjectNotFound);
         }
 
         if (!_authenticationUserService.IsAuthorized(project.OwnerId))

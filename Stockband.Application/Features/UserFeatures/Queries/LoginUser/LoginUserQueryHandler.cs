@@ -42,7 +42,8 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
         
         if (!_userFeaturesService.VerifyHashedPassword(request.Password, user.Password))
         {
-            return new BaseResponse<LoginUserQueryViewModel>(new UnauthorizedOperationException(), 
+            return new BaseResponse<LoginUserQueryViewModel>(
+                new UnauthorizedOperationException("Wrong email or password"), 
                 BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         

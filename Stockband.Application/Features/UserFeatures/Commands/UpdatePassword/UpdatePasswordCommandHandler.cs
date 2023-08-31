@@ -31,7 +31,7 @@ public class UpdatePasswordCommandHandler:IRequestHandler<UpdatePasswordCommand,
         if (user == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), currentUserId), 
-                BaseErrorCode.RequestedUserNotExists);
+                BaseErrorCode.RequestedUserNotFound);
         }
         
         if (!_userFeaturesService.VerifyHashedPassword(request.CurrentPassword, user.Password))

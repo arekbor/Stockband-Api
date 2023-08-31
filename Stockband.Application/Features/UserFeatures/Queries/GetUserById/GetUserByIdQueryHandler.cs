@@ -21,7 +21,7 @@ public class GetUserByIdQueryHandler:IRequestHandler<GetUserByIdQuery, BaseRespo
         if (user == null)
         {
             return new BaseResponse<GetUserByIdQueryViewModel>(new ObjectNotFound(typeof(User), request.Id), 
-                BaseErrorCode.UserNotExists);
+                BaseErrorCode.UserNotFound);
         }
 
         GetUserByIdQueryViewModel userViewModel = new GetUserByIdQueryViewModel

@@ -23,12 +23,12 @@ public enum BaseErrorCode
     /// <summary>
     /// This code indicates that the user could not be found.
     /// </summary>
-    UserNotExists = 4,
+    UserNotFound = 4,
     
     /// <summary>
     /// This code indicates that the project could not be found.
     /// </summary>
-    ProjectNotExists = 5,
+    ProjectNotFound = 5,
     
     /// <summary>
     /// This code indicates that the project has already been created.
@@ -51,12 +51,12 @@ public enum BaseErrorCode
     /// <summary>
     /// This code indicates that the project member could not be found.
     /// </summary>
-    ProjectMemberNotExists = 9,
+    ProjectMemberNotFound = 9,
     
     /// <summary>
     /// This code indicates that the member (user) could not be found.
     /// </summary>
-    MemberForProjectMemberNotExists = 10,
+    MemberForProjectMemberNotFound = 10,
     
     /// <summary>
     /// This code indicates that the limit of created projects (per user) has been exceeded
@@ -76,7 +76,7 @@ public enum BaseErrorCode
     /// <summary>
     /// This code indicates that the requested user could not be found.
     /// </summary>
-    RequestedUserNotExists = 14,
+    RequestedUserNotFound = 14,
     
     /// <summary>
     /// This code indicates that the provided email already exists.
@@ -91,7 +91,7 @@ public enum BaseErrorCode
     /// <summary>
     /// This code indicates that the provided token not exists.
     /// </summary>
-    RefreshTokenNotExists = 17,
+    RefreshTokenNotFound = 17,
     
     /// <summary>
     /// Thic code indicates that the provided token might be not active or revoked.
