@@ -28,7 +28,7 @@ public class RemoveMemberFromProjectCommandHandler:IRequestHandler<RemoveMemberF
         if (projectMember == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(ProjectMember), request.ProjectId, request.MemberId), 
-                BaseErrorCode.ProjectMemberNotExists);
+                BaseErrorCode.ProjectMemberNotFound);
         }
         
         if (!_authenticationUserService.IsAuthorized(projectMember.Project.OwnerId))

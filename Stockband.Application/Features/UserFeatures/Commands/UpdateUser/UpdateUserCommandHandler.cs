@@ -35,7 +35,7 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
         if (user == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(User), request.UserId), 
-                BaseErrorCode.UserNotExists);
+                BaseErrorCode.UserNotFound);
         }
 
         if (await _userFeaturesService.IsEmailAlreadyUsed(request.Email))

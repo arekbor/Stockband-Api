@@ -112,7 +112,7 @@ public class UserUpdateTests:BaseTest
         {
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserNotExists);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserNotFound);
         });
     }
 

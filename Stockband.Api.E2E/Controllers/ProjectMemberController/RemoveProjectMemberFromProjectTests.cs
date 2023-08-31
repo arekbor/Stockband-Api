@@ -79,7 +79,7 @@ public class RemoveProjectMemberFromProjectTests:BaseTest
         {
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectMemberNotExists);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectMemberNotFound);
         });
     }
 

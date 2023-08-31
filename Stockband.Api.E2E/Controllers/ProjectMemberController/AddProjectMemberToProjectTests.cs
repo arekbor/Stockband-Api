@@ -76,7 +76,7 @@ public class AddProjectMemberToProjectTests:BaseTest
         {
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectNotExists);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.ProjectNotFound);
         });
     }
 
@@ -133,7 +133,7 @@ public class AddProjectMemberToProjectTests:BaseTest
         {
             response.Success.ShouldBe(false);
             response.Errors.Count.ShouldBe(1);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.MemberForProjectMemberNotExists);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.MemberForProjectMemberNotFound);
         });
     }
 

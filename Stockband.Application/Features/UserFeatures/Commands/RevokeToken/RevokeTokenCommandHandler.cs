@@ -45,7 +45,7 @@ public class RevokeTokenCommandHandler:IRequestHandler<RevokeTokenCommand, BaseR
         if (refreshToken == null)
         {
             return new BaseResponse(new ObjectNotFound(typeof(RefreshToken), request.RefreshToken),
-                BaseErrorCode.RefreshTokenNotExists);
+                BaseErrorCode.RefreshTokenNotFound);
         }
 
         if (!refreshToken.IsActive)

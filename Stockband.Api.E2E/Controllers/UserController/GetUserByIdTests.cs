@@ -58,7 +58,7 @@ public class GetUserByIdTests:BaseTest
         {
             response.Errors.Count.ShouldBe(1);
             response.Success.ShouldBe(false);
-            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserNotExists);
+            response.Errors.First().Code.ShouldBe(BaseErrorCode.UserNotFound);
         });
     }
 
