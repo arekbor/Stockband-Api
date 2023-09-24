@@ -36,7 +36,7 @@ public class LoginUserQueryHandler:IRequestHandler<LoginUserQuery, BaseResponse<
         User? user = await _userRepository.GetUserByEmailAsync(request.Email);
         if (user == null)
         {
-            return new BaseResponse<LoginUserQueryViewModel>(new UnauthorizedOperationException(), 
+            return new BaseResponse<LoginUserQueryViewModel>(new UnauthorizedOperationException("Wrong email or password"), 
                 BaseErrorCode.WrongEmailOrPasswordLogin);
         }
         

@@ -121,20 +121,21 @@ public class UserUpdateTests:BaseTest
     {
         //Arrange
         const int testingUserId = 1200;
+        const int currentUserId = 600;
+        
         string testingUpdateUsername = "updateUsername";
         string testingUpdateEmail = "existing@gmail.com";
-
-        await _userBuilder
-            .Build(userId:6500, username:"test username", email:testingUpdateEmail);
         
         await _userBuilder
-            .Build(userId:testingUserId);
+            .Build(userId: currentUserId);
+        await _userBuilder
+            .Build(userId:testingUserId, email:testingUpdateEmail);
         
         UpdateUserCommand command = new UpdateUserCommand
             (testingUserId, testingUpdateUsername, testingUpdateEmail);
 
         //Act
-        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingUserId));
+        HttpResponseModule responseModule = ActResponseModule(command, GetAdminJwtToken(currentUserId));
 
         //Assert
         responseModule.AssertStatusCode(HttpStatusCode.BadRequest);
@@ -144,6 +145,27 @@ public class UserUpdateTests:BaseTest
             response.Errors.Count.ShouldBe(1);
             response.Errors.First().Code.ShouldBe(BaseErrorCode.UserEmailAlreadyExists);
         });
+    }
+    
+    [Test]
+    public async Task UserUpdate_SameEmailAsUser_Success_ShouldBeTrue()
+    {
+        //Arrange
+        const int testingUserId = 1200;
+        string testingUpdateUsername = "updateUsername";
+        string testingUpdateEmail = "existing@gmail.com";
+        
+        await _userBuilder
+            .Build(userId:testingUserId, email:testingUpdateEmail);
+        
+        UpdateUserCommand command = new UpdateUserCommand
+            (testingUserId, testingUpdateUsername, testingUpdateEmail);
+
+        //Act
+        HttpResponseModule responseModule = ActResponseModule(command, GetUserJwtToken(testingUserId));
+
+        //Assert
+        responseModule.AssertStatusCode(HttpStatusCode.OK);
     }
     
     private HttpResponseModule ActResponseModule

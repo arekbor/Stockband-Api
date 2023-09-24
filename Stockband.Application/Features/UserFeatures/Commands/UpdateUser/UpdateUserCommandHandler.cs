@@ -38,7 +38,9 @@ public class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, BaseRes
                 BaseErrorCode.UserNotFound);
         }
 
-        if (await _userFeaturesService.IsEmailAlreadyUsed(request.Email))
+        int currentUserId = _authenticationUserService.GetUserId();
+
+        if (await _userFeaturesService.IsEmailAlreadyUsed(request.Email) && user.Id != currentUserId)
         {
             return new BaseResponse(new ObjectAlreadyCreatedException(typeof(User), request.Email), 
                 BaseErrorCode.UserEmailAlreadyExists);
