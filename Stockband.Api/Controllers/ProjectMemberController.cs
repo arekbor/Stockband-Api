@@ -20,7 +20,7 @@ public class ProjectMemberController:ControllerBase
     }
     
     [HttpPost]
-    [Route("projectMember")]
+    [Route("/projectMember")]
     public async Task<IActionResult> AddProjectMemberToProject(AddProjectMemberToProjectCommand command)
     {
         BaseResponse response = await _mediator.Send(command);
@@ -32,7 +32,7 @@ public class ProjectMemberController:ControllerBase
     }
 
     [HttpDelete]
-    [Route("projectMember")]
+    [Route("/projectMember")]
     public async Task<IActionResult> RemoveProjectMemberFromProject(RemoveMemberFromProjectCommand command)
     {
         BaseResponse response = await _mediator.Send(command);
@@ -44,7 +44,7 @@ public class ProjectMemberController:ControllerBase
     }
     
     [HttpGet]
-    [Route("projectMember/{projectId:int}")]
+    [Route("/projectMember/{projectId:int}")]
     public async Task<IActionResult> GetAllProjectMembers(int projectId)
     {
         BaseResponse<List<GetAllProjectMembersQueryViewModel>> response =
